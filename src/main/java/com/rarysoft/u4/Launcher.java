@@ -24,6 +24,11 @@
 package com.rarysoft.u4;
 
 import com.rarysoft.u4.i18n.Messages;
+import com.rarysoft.u4.model.Game;
+import com.rarysoft.u4.model.GameState;
+import com.rarysoft.u4.model.Maps;
+import com.rarysoft.u4.model.Tiles;
+import com.rarysoft.u4.ui.GamePanel;
 import com.rarysoft.u4.ui.GameWindow;
 import com.rarysoft.u4.ui.util.FrameHelper;
 
@@ -41,7 +46,13 @@ import java.util.logging.Logger;
 
 public class Launcher {
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new Launcher().run());
+        SwingUtilities.invokeLater(() -> {
+            try {
+                new Launcher().run();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     /**
@@ -53,13 +64,19 @@ public class Launcher {
      * <li>The icon <code>${project.dir}/images/icon.png</code> is used.</li>
      * <li>The main window is displayed centered on the user's screen.</li>
      */
-    public void run() {
+    public void run() throws IOException {
         initializeLogFile();
-        GameWindow gameWindow = createGameWindow();
+        Tiles tiles = Tiles.fromStream(ClassLoader.getSystemClassLoader().getResourceAsStream("data/shapes.ega"));
+        GamePanel gamePanel = new GamePanel(tiles, 3);
+        GameWindow gameWindow = createGameWindow(gamePanel);
         setGameWindowIcon(gameWindow);
+        Game game = new Game(Maps.fromFiles("data/world.map"));
+        game.addDisplayListener(gamePanel);
         FrameHelper.enableExitOnClose(gameWindow);
         FrameHelper.center(gameWindow);
+        FrameHelper.maximize(gameWindow);
         FrameHelper.show(gameWindow);
+        game.start(new GameState(78, 104));
     }
 
     private void initializeLogFile() {
@@ -77,10 +94,10 @@ public class Launcher {
         }
     }
 
-    private GameWindow createGameWindow() {
+    private GameWindow createGameWindow(GamePanel gamePanel) {
         try {
             Messages messages = new Messages();
-            return new GameWindow(messages);
+            return new GameWindow(messages, gamePanel);
         }
         catch (MissingResourceException e) {
             Logger.getGlobal().log(Level.SEVERE, null, e);
@@ -90,7 +107,7 @@ public class Launcher {
 
     private void setGameWindowIcon(GameWindow gameWindow) {
         try {
-            gameWindow.setIconImage(ImageIO.read(Launcher.class.getResource("/images/icon.png")));
+            gameWindow.setIconImage(ImageIO.read(Launcher.class.getResource("/images/ankh.png")));
         }
         catch (IOException e) {
             Logger.getGlobal().log(Level.SEVERE, null, e);

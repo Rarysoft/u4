@@ -21,20 +21,23 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.rarysoft.u4.ui;
+package com.rarysoft.u4.model;
 
-import com.rarysoft.u4.i18n.Messages;
+import java.io.IOException;
 
-import javax.swing.*;
-import java.awt.*;
+public class Maps {
+    private final World world;
 
-public class GameWindow extends JFrame {
-    private final Messages messages;
+    public static Maps fromFiles(String worldFilename) throws IOException {
+        World world = World.fromStream(ClassLoader.getSystemClassLoader().getResourceAsStream(worldFilename));
+        return new Maps(world);
+    }
 
-    public GameWindow(Messages messages, GamePanel gamePanel) {
-        super(messages.windowTitle());
-        this.messages = messages;
-        this.add(gamePanel, BorderLayout.CENTER);
-        pack();
+    private Maps(World world) {
+        this.world = world;
+    }
+
+    public World world() {
+        return world;
     }
 }

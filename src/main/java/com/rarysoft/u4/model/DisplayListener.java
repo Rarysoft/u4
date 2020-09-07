@@ -21,20 +21,8 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.rarysoft.u4.ui;
+package com.rarysoft.u4.model;
 
-import com.rarysoft.u4.i18n.Messages;
-
-import javax.swing.*;
-import java.awt.*;
-
-public class GameWindow extends JFrame {
-    private final Messages messages;
-
-    public GameWindow(Messages messages, GamePanel gamePanel) {
-        super(messages.windowTitle());
-        this.messages = messages;
-        this.add(gamePanel, BorderLayout.CENTER);
-        pack();
-    }
+public interface DisplayListener {
+    void backgroundUpdated(int[][] background, int animationCycle);
 }
