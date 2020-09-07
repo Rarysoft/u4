@@ -30,6 +30,7 @@ import com.rarysoft.u4.model.Maps;
 import com.rarysoft.u4.model.Tiles;
 import com.rarysoft.u4.ui.GamePanel;
 import com.rarysoft.u4.ui.GameWindow;
+import com.rarysoft.u4.ui.KeyboardListener;
 import com.rarysoft.u4.ui.util.FrameHelper;
 
 import javax.imageio.ImageIO;
@@ -72,6 +73,7 @@ public class Launcher {
         setGameWindowIcon(gameWindow);
         Game game = new Game(Maps.fromFiles("data/world.map"));
         game.addDisplayListener(gamePanel);
+        gameWindow.addKeyListener(new KeyboardListener(game));
         FrameHelper.enableExitOnClose(gameWindow);
         FrameHelper.center(gameWindow);
         FrameHelper.maximize(gameWindow);

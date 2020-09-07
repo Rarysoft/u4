@@ -21,38 +21,35 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.rarysoft.u4.model;
+package com.rarysoft.u4.ui;
 
-public class GameState {
-    private int x;
-    private int y;
+import com.rarysoft.u4.model.Game;
 
-    public GameState(int x, int y) {
-        this.x = x;
-        this.y = y;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+
+public class KeyboardListener extends KeyAdapter {
+    private final Game game;
+
+    public KeyboardListener(Game game) {
+        this.game = game;
     }
 
-    public int x() {
-        return x;
-    }
-
-    public int y() {
-        return y;
-    }
-
-    public void increaseX() {
-        x ++;
-    }
-
-    public void decreaseX() {
-        x --;
-    }
-
-    public void increaseY() {
-        y ++;
-    }
-
-    public void decreaseY() {
-        y --;
+    @Override
+    public void keyPressed(KeyEvent event) {
+        switch (event.getKeyCode()) {
+            case KeyEvent.VK_UP:
+                game.onMoveUp();
+                break;
+            case KeyEvent.VK_DOWN:
+                game.onMoveDown();
+                break;
+            case KeyEvent.VK_LEFT:
+                game.onMoveLeft();
+                break;
+            case KeyEvent.VK_RIGHT:
+                game.onMoveRight();
+                break;
+        }
     }
 }

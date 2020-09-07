@@ -55,6 +55,26 @@ public class Game {
         updateBackground();
     }
 
+    public void onMoveUp() {
+        gameState.decreaseY();
+        updateBackground();
+    }
+
+    public void onMoveDown() {
+        gameState.increaseY();
+        updateBackground();
+    }
+
+    public void onMoveLeft() {
+        gameState.decreaseX();
+        updateBackground();
+    }
+
+    public void onMoveRight() {
+        gameState.increaseX();
+        updateBackground();
+    }
+
     private void initializeAnimation() {
         animationCycle = 0;
         new Timer(200, event -> {
