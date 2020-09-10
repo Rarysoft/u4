@@ -170,6 +170,9 @@ public class GamePanel extends JPanel implements DisplayListener {
     }
 
     private int codeWithOffsetApplied(int tile, int row, int col, boolean drawInForeground) {
+        if (tile < 0) {
+            return Colours.COLOUR_BLACK;
+        }
         int animatedTile;
         int code;
         switch (tile) {

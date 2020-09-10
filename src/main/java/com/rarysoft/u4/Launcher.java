@@ -79,7 +79,7 @@ public class Launcher {
         FrameHelper.maximize(gameWindow);
         FrameHelper.show(gameWindow);
         Maps maps = Maps.fromFiles("data/world.map");
-        game.start(new GameState(maps, maps.world(), 78, 104));
+        game.start(new GameState(maps, maps.world()));
     }
 
     private void initializeLogFile() {

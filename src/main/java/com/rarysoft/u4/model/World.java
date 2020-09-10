@@ -33,17 +33,42 @@ public class World implements Map {
     }
 
     @Override
+    public MapType type() {
+        return MapType.WORLD;
+    }
+
+    @Override
+    public int worldX() {
+        return 0;
+    }
+
+    @Override
+    public int worldY() {
+        return 0;
+    }
+
+    @Override
+    public int startX() {
+        return 78;
+    }
+
+    @Override
+    public int startY() {
+        return 104;
+    }
+
+    @Override
     public int[][] view(int centerX, int centerY, int radius) {
         int size = radius * 2 + 1;
-        int[][] chunk = new int[size][size];
+        int[][] view = new int[size][size];
         for (int row = 0; row < size; row ++) {
             for (int col = 0; col < size; col ++) {
                 int mapRow = centerY - radius + row;
                 int mapCol = centerX - radius + col;
-                chunk[row][col] = isWithinMapRange(mapCol, mapRow) ? data[mapRow][mapCol] : -1;
+                view[row][col] = isWithinMapRange(mapCol, mapRow) ? data[mapRow][mapCol] : Tile.DEEP_WATER.index();
             }
         }
-        return chunk;
+        return view;
     }
 
     @Override

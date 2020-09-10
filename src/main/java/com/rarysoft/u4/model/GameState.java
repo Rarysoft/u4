@@ -27,22 +27,16 @@ public class GameState {
     private final Maps maps;
 
     private Map map;
+    private int surfaceX;
+    private int surfaceY;
     private int x;
     private int y;
 
-    public GameState(Maps maps, Map map, int x, int y) {
+    public GameState(Maps maps, Map map) {
         this.maps = maps;
         this.map = map;
-        this.x = x;
-        this.y = y;
-    }
-
-    public Map map() {
-        return map;
-    }
-
-    public void setMap(Map map) {
-        this.map = map;
+        this.x = maps.world().startX();
+        this.y = maps.world().startY();
     }
 
     public int x() {
@@ -74,6 +68,28 @@ public class GameState {
     }
 
     public Tile tileAt(int x, int y) {
-        return Tile.forIndex(map.at(x, y));
+        int tile = map.at(x, y);
+        if (tile < 0) {
+            return null;
+        }
+        return Tile.forIndex(tile);
+    }
+
+    public void enter() {
+        map = maps.mapAt(x, y);
+        surfaceX = x;
+        surfaceY = y;
+        x = map.startX();
+        y = map.startY();
+    }
+
+    public void returnToSurface() {
+        map = maps.world();
+        x = surfaceX;
+        y = surfaceY;
+    }
+
+    public boolean isOnSurface() {
+        return map.type() == MapType.WORLD;
     }
 }

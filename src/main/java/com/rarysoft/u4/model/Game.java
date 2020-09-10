@@ -58,57 +58,92 @@ public class Game {
 
     public void onMoveUp() {
         Tile tile = gameState.tileAt(gameState.x(), gameState.y() - 1);
-        if (tile.walkability() == 0) {
-            moveBlocked();
-            return;
+        if (tile == null) {
+            gameState.returnToSurface();
         }
-        if (! allowWalkTo(tile)) {
-            moveSlowed();
-            return;
+        else {
+            if (tile.index() < 0 && !gameState.isOnSurface()) {
+                gameState.returnToSurface();
+            }
+            if (tile.walkability() == 0) {
+                moveBlocked();
+                return;
+            }
+            if (! allowWalkTo(tile)) {
+                moveSlowed();
+                return;
+            }
+            gameState.decreaseY();
+            if (tile.type() == TileType.PORTAL) {
+                gameState.enter();
+            }
         }
-        gameState.decreaseY();
         updateBackground();
     }
 
     public void onMoveDown() {
         Tile tile = gameState.tileAt(gameState.x(), gameState.y() + 1);
-        if (tile.walkability() == 0) {
-            moveBlocked();
-            return;
+        if (tile == null) {
+            gameState.returnToSurface();
         }
-        if (! allowWalkTo(tile)) {
-            moveSlowed();
-            return;
+        else {
+            if (tile.walkability() == 0) {
+                moveBlocked();
+                return;
+            }
+            if (! allowWalkTo(tile)) {
+                moveSlowed();
+                return;
+            }
+            gameState.increaseY();
+            if (tile.type() == TileType.PORTAL) {
+                gameState.enter();
+            }
         }
-        gameState.increaseY();
         updateBackground();
     }
 
     public void onMoveLeft() {
         Tile tile = gameState.tileAt(gameState.x() - 1, gameState.y());
-        if (tile.walkability() == 0) {
-            moveBlocked();
-            return;
+        if (tile == null) {
+            gameState.returnToSurface();
         }
-        if (! allowWalkTo(tile)) {
-            moveSlowed();
-            return;
+        else {
+            if (tile.walkability() == 0) {
+                moveBlocked();
+                return;
+            }
+            if (! allowWalkTo(tile)) {
+                moveSlowed();
+                return;
+            }
+            gameState.decreaseX();
+            if (tile.type() == TileType.PORTAL) {
+                gameState.enter();
+            }
         }
-        gameState.decreaseX();
         updateBackground();
     }
 
     public void onMoveRight() {
         Tile tile = gameState.tileAt(gameState.x() + 1, gameState.y());
-        if (tile.walkability() == 0) {
-            moveBlocked();
-            return;
+        if (tile == null) {
+            gameState.returnToSurface();
         }
-        if (! allowWalkTo(tile)) {
-            moveSlowed();
-            return;
+        else {
+            if (tile.walkability() == 0) {
+                moveBlocked();
+                return;
+            }
+            if (! allowWalkTo(tile)) {
+                moveSlowed();
+                return;
+            }
+            gameState.increaseX();
+            if (tile.type() == TileType.PORTAL) {
+                gameState.enter();
+            }
         }
-        gameState.increaseX();
         updateBackground();
     }
 
