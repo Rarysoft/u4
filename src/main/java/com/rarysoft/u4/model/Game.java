@@ -25,6 +25,7 @@ package com.rarysoft.u4.model;
 
 import javax.swing.*;
 import java.util.HashSet;
+import java.util.Random;
 import java.util.Set;
 
 public class Game {
@@ -34,15 +35,15 @@ public class Game {
 
     private final Set<DisplayListener> displayListeners;
 
-    private final Maps maps;
+    private final Random random;
 
     private GameState gameState;
 
     private int animationCycle;
 
-    public Game(Maps maps) {
+    public Game() {
         this.displayListeners = new HashSet<>();
-        this.maps = maps;
+        this.random = new Random();
     }
 
     public void addDisplayListener(DisplayListener displayListener) {
@@ -56,21 +57,57 @@ public class Game {
     }
 
     public void onMoveUp() {
+        Tile tile = gameState.tileAt(gameState.x(), gameState.y() - 1);
+        if (tile.walkability() == 0) {
+            moveBlocked();
+            return;
+        }
+        if (! allowWalkTo(tile)) {
+            moveSlowed();
+            return;
+        }
         gameState.decreaseY();
         updateBackground();
     }
 
     public void onMoveDown() {
+        Tile tile = gameState.tileAt(gameState.x(), gameState.y() + 1);
+        if (tile.walkability() == 0) {
+            moveBlocked();
+            return;
+        }
+        if (! allowWalkTo(tile)) {
+            moveSlowed();
+            return;
+        }
         gameState.increaseY();
         updateBackground();
     }
 
     public void onMoveLeft() {
+        Tile tile = gameState.tileAt(gameState.x() - 1, gameState.y());
+        if (tile.walkability() == 0) {
+            moveBlocked();
+            return;
+        }
+        if (! allowWalkTo(tile)) {
+            moveSlowed();
+            return;
+        }
         gameState.decreaseX();
         updateBackground();
     }
 
     public void onMoveRight() {
+        Tile tile = gameState.tileAt(gameState.x() + 1, gameState.y());
+        if (tile.walkability() == 0) {
+            moveBlocked();
+            return;
+        }
+        if (! allowWalkTo(tile)) {
+            moveSlowed();
+            return;
+        }
         gameState.increaseX();
         updateBackground();
     }
@@ -84,6 +121,21 @@ public class Game {
     }
 
     private void updateBackground() {
-        displayListeners.forEach(displayListener -> displayListener.backgroundUpdated(maps.world().view(gameState.x(), gameState.y(), VIEW_RADIUS), animationCycle));
+        displayListeners.forEach(displayListener -> displayListener.backgroundUpdated(gameState.playerView(VIEW_RADIUS), animationCycle));
+    }
+
+    private void moveBlocked() {
+        displayListeners.forEach(DisplayListener::moveBlocked);
+    }
+
+    private void moveSlowed() {
+        displayListeners.forEach(DisplayListener::moveSlowed);
+    }
+
+    private boolean allowWalkTo(Tile tile) {
+        if (tile.walkability() == 100) {
+            return true;
+        }
+        return random.nextInt(100) < tile.walkability();
     }
 }

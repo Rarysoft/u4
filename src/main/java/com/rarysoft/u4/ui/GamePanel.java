@@ -52,6 +52,16 @@ public class GamePanel extends JPanel implements DisplayListener {
     }
 
     @Override
+    public void moveBlocked() {
+        // TODO: alert player
+    }
+
+    @Override
+    public void moveSlowed() {
+        // TODO: alert player
+    }
+
+    @Override
     public void paint(Graphics graphics) {
         super.paint(graphics);
         if (background != null) {

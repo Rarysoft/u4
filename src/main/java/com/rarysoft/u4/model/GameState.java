@@ -24,12 +24,25 @@
 package com.rarysoft.u4.model;
 
 public class GameState {
+    private final Maps maps;
+
+    private Map map;
     private int x;
     private int y;
 
-    public GameState(int x, int y) {
+    public GameState(Maps maps, Map map, int x, int y) {
+        this.maps = maps;
+        this.map = map;
         this.x = x;
         this.y = y;
+    }
+
+    public Map map() {
+        return map;
+    }
+
+    public void setMap(Map map) {
+        this.map = map;
     }
 
     public int x() {
@@ -54,5 +67,13 @@ public class GameState {
 
     public void decreaseY() {
         y --;
+    }
+
+    public int[][] playerView(int radius) {
+        return map.view(x, y, radius);
+    }
+
+    public Tile tileAt(int x, int y) {
+        return Tile.forIndex(map.at(x, y));
     }
 }

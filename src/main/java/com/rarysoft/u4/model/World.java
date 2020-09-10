@@ -45,7 +45,12 @@ public class World implements Map {
         }
         return chunk;
     }
-    
+
+    @Override
+    public int at(int x, int y) {
+        return data[y][x];
+    }
+
     private boolean isWithinMapRange(int x, int y) {
         return ! (y < 0 || y >= MAP_HEIGHT || x < 0 || x >= MAP_WIDTH);
     }

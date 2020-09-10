@@ -71,14 +71,15 @@ public class Launcher {
         GamePanel gamePanel = new GamePanel(tiles, 3);
         GameWindow gameWindow = createGameWindow(gamePanel);
         setGameWindowIcon(gameWindow);
-        Game game = new Game(Maps.fromFiles("data/world.map"));
+        Game game = new Game();
         game.addDisplayListener(gamePanel);
         gameWindow.addKeyListener(new KeyboardListener(game));
         FrameHelper.enableExitOnClose(gameWindow);
         FrameHelper.center(gameWindow);
         FrameHelper.maximize(gameWindow);
         FrameHelper.show(gameWindow);
-        game.start(new GameState(78, 104));
+        Maps maps = Maps.fromFiles("data/world.map");
+        game.start(new GameState(maps, maps.world(), 78, 104));
     }
 
     private void initializeLogFile() {
