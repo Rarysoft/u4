@@ -11,7 +11,7 @@ public interface Map {
 
     int startY();
 
-    int[][] view(int centerX, int centerY, int radius);
+    Tile[][] view(int centerX, int centerY, int radius);
 
-    int at(int x, int y);
+    Tile at(int x, int y);
 }

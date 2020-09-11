@@ -36,23 +36,23 @@ public class Maps {
     public static Maps fromFiles(String worldFilename) throws IOException {
         World world = World.fromStream(ClassLoader.getSystemClassLoader().getResourceAsStream(worldFilename));
         Set<Map> maps = new HashSet<>();
-        maps.add(loadMap("data/empath.ult", 28, 50, 15, 30, Tile.GRASSLANDS.index()));
-        maps.add(loadMap("data/lcb_1.ult", 86, 107, 15, 30, Tile.GRASSLANDS.index()));
-        maps.add(loadMap("data/lcb_2.ult", -1, -1, 15, 30, Tile.GRASSLANDS.index()));
-        maps.add(loadMap("data/lycaeum.ult", 218, 107, 15, 30, Tile.GRASSLANDS.index()));
-        maps.add(loadMap("data/serpent.ult", 146, 241, 15, 30, Tile.GRASSLANDS.index()));
-        maps.add(loadMap("data/britain.ult", 82, 106, 1, 15, Tile.GRASSLANDS.index()));
-        maps.add(loadMap("data/jhelom.ult", 36, 222, 1, 15, Tile.GRASSLANDS.index()));
-        maps.add(loadMap("data/magincia.ult", 187, 169, 1, 15, Tile.GRASSLANDS.index()));
-        maps.add(loadMap("data/minoc.ult", 159, 20, 1, 15, Tile.GRASSLANDS.index()));
-        maps.add(loadMap("data/moonglow.ult", 232, 135, 1, 15, Tile.GRASSLANDS.index()));
-        maps.add(loadMap("data/skara.ult", 22, 128, 1, 15, Tile.GRASSLANDS.index()));
-        maps.add(loadMap("data/trinsic.ult", 106, 184, 1, 15, Tile.GRASSLANDS.index()));
-        maps.add(loadMap("data/yew.ult", 58, 43, 1, 15, Tile.GRASSLANDS.index()));
-        maps.add(loadMap("data/cove.ult", 136, 90, 1, 15, Tile.GRASSLANDS.index()));
-        maps.add(loadMap("data/den.ult", 136, 158, 1, 15, Tile.GRASSLANDS.index()));
-        maps.add(loadMap("data/paws.ult", 98, 145, 1, 15, Tile.GRASSLANDS.index()));
-        maps.add(loadMap("data/vesper.ult", 201, 59, 1, 15, Tile.GRASSLANDS.index()));
+        maps.add(loadMap("data/empath.ult", 28, 50, 15, 30, Tile.GRASSLANDS));
+        maps.add(loadMap("data/lcb_1.ult", 86, 107, 15, 30, Tile.GRASSLANDS));
+        maps.add(loadMap("data/lcb_2.ult", -1, -1, 15, 30, Tile.GRASSLANDS));
+        maps.add(loadMap("data/lycaeum.ult", 218, 107, 15, 30, Tile.GRASSLANDS));
+        maps.add(loadMap("data/serpent.ult", 146, 241, 15, 30, Tile.GRASSLANDS));
+        maps.add(loadMap("data/britain.ult", 82, 106, 1, 15, Tile.GRASSLANDS));
+        maps.add(loadMap("data/jhelom.ult", 36, 222, 1, 15, Tile.GRASSLANDS));
+        maps.add(loadMap("data/magincia.ult", 187, 169, 1, 15, Tile.GRASSLANDS));
+        maps.add(loadMap("data/minoc.ult", 159, 20, 1, 15, Tile.GRASSLANDS));
+        maps.add(loadMap("data/moonglow.ult", 232, 135, 1, 15, Tile.GRASSLANDS));
+        maps.add(loadMap("data/skara.ult", 22, 128, 1, 15, Tile.GRASSLANDS));
+        maps.add(loadMap("data/trinsic.ult", 106, 184, 1, 15, Tile.GRASSLANDS));
+        maps.add(loadMap("data/yew.ult", 58, 43, 1, 15, Tile.GRASSLANDS));
+        maps.add(loadMap("data/cove.ult", 136, 90, 1, 15, Tile.GRASSLANDS));
+        maps.add(loadMap("data/den.ult", 136, 158, 1, 15, Tile.GRASSLANDS));
+        maps.add(loadMap("data/paws.ult", 98, 145, 1, 15, Tile.GRASSLANDS));
+        maps.add(loadMap("data/vesper.ult", 201, 59, 1, 15, Tile.GRASSLANDS));
         return new Maps(world, maps);
     }
 
@@ -73,7 +73,7 @@ public class Maps {
         return world;
     }
 
-    private static Map loadMap(String mapFilename, int worldX, int worldY, int startX, int startY, int areaTile) throws IOException {
+    private static Map loadMap(String mapFilename, int worldX, int worldY, int startX, int startY, Tile areaTile) throws IOException {
         InputStream stream = ClassLoader.getSystemClassLoader().getResourceAsStream(mapFilename);
         return Settlement.fromStream(stream, worldX, worldY, startX, startY, areaTile);
     }

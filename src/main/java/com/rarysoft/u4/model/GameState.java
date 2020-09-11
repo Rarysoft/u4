@@ -63,16 +63,12 @@ public class GameState {
         y --;
     }
 
-    public int[][] playerView(int radius) {
+    public Tile[][] playerView(int radius) {
         return map.view(x, y, radius);
     }
 
     public Tile tileAt(int x, int y) {
-        int tile = map.at(x, y);
-        if (tile < 0) {
-            return null;
-        }
-        return Tile.forIndex(tile);
+        return map.at(x, y);
     }
 
     public void enter() {

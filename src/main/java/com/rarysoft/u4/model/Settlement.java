@@ -15,14 +15,14 @@ public class Settlement implements Map {
     private final int worldY;
     private final int startX;
     private final int startY;
-    private final int areaTile;
+    private final Tile areaTile;
 
-    public static Settlement fromStream(InputStream stream, int worldX, int worldY, int startX, int startY, int areaTile) throws IOException {
-        int[][] data = new int[MAP_HEIGHT][MAP_WIDTH];
+    public static Settlement fromStream(InputStream stream, int worldX, int worldY, int startX, int startY, Tile areaTile) throws IOException {
+        Tile[][] data = new Tile[MAP_HEIGHT][MAP_WIDTH];
         for (int row = 0; row < MAP_HEIGHT; row ++) {
             for (int col = 0; col < MAP_WIDTH; col ++) {
                 int tile = stream.read();
-                data[row][col] = tile;
+                data[row][col] = Tile.forIndex(tile);
             }
         }
         int[] npcTiles = new int[NPC_COUNT];
@@ -66,11 +66,11 @@ public class Settlement implements Map {
         return new Settlement(data, people, worldX, worldY, startX, startY, areaTile);
     }
 
-    private final int[][] data;
+    private final Tile[][] data;
 
     private final List<Person> people;
 
-    private Settlement(int[][] data, List<Person> people, int worldX, int worldY, int startX, int startY, int areaTile) {
+    private Settlement(Tile[][] data, List<Person> people, int worldX, int worldY, int startX, int startY, Tile areaTile) {
         this.data = data;
         this.people = people;
         this.worldX = worldX;
@@ -106,9 +106,9 @@ public class Settlement implements Map {
     }
 
     @Override
-    public int[][] view(int centerX, int centerY, int radius) {
+    public Tile[][] view(int centerX, int centerY, int radius) {
         int size = radius * 2 + 1;
-        int[][] view = new int[size][size];
+        Tile[][] view = new Tile[size][size];
         for (int row = 0; row < size; row ++) {
             for (int col = 0; col < size; col ++) {
                 int mapRow = centerY - radius + row;
@@ -120,9 +120,9 @@ public class Settlement implements Map {
     }
 
     @Override
-    public int at(int x, int y) {
+    public Tile at(int x, int y) {
         if (x < 0 || x >= MAP_WIDTH || y < 0 || y >= MAP_HEIGHT) {
-            return -1;
+            return null;
         }
         return data[y][x];
     }

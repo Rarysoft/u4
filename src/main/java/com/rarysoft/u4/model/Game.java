@@ -62,10 +62,12 @@ public class Game {
             gameState.returnToSurface();
         }
         else {
-            if (tile.index() < 0 && !gameState.isOnSurface()) {
-                gameState.returnToSurface();
-            }
             if (tile.walkability() == 0) {
+                moveBlocked();
+                return;
+            }
+            // Special case: don't allow northward exit from LB's castle
+            if (gameState.tileAt(gameState.x(), gameState.y()) == Tile.LORD_BRITISHS_CASTLE_ENTRANCE) {
                 moveBlocked();
                 return;
             }
@@ -88,6 +90,11 @@ public class Game {
         }
         else {
             if (tile.walkability() == 0) {
+                moveBlocked();
+                return;
+            }
+            // Special case: don't allow entry to LB's castle from the north
+            if (tile == Tile.LORD_BRITISHS_CASTLE_ENTRANCE) {
                 moveBlocked();
                 return;
             }
