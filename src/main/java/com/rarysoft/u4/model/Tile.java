@@ -11,7 +11,7 @@ public enum Tile {
     SWAMP(3, GROUND, 90, false),
     GRASSLANDS(4, GROUND, 100, false),
     SCRUBLAND(5, GROUND, 60, false),
-    FOREST(6, GROUND, 78, false),
+    FOREST(6, GROUND, 78, true),
     HILLS(7, GROUND, 50, false),
     MOUNTAINS(8, GROUND, 0, true),
     DUNGEON_ENTRANCE(9, PORTAL, 100, false),
