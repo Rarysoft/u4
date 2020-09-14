@@ -163,7 +163,8 @@ public class Game {
     }
 
     private void updateBackground() {
-        displayListeners.forEach(displayListener -> displayListener.backgroundUpdated(gameState.playerView(VIEW_RADIUS), animationCycle));
+        RenderedTile[][] playerView = determinePlayerView(gameState.mapView(VIEW_RADIUS));
+        displayListeners.forEach(displayListener -> displayListener.backgroundUpdated(playerView, animationCycle));
     }
 
     private void moveBlocked() {
@@ -179,5 +180,65 @@ public class Game {
             return true;
         }
         return random.nextInt(100) < tile.walkability();
+    }
+
+    private RenderedTile[][] determinePlayerView(Tile[][] view) {
+        int size = view.length;
+        int center = (size - 1) / 2;
+        RenderedTile[][] playerView = new RenderedTile[size][size];
+        for (int row = 0; row < size; row ++) {
+            for (int col = 0; col < size; col ++) {
+                if (isInStandardView(row, col)) {
+                    playerView[row][col] = new RenderedTile(view[row][col]);
+                }
+                else {
+                    playerView[row][col] = new RenderedTile(view[row][col]).hidden();
+                }
+            }
+        }
+        for (int row = center - 1; row <= center + 1; row ++) {
+            for (int col = center - 1; col <= center + 1; col ++) {
+                RenderedTile renderedTile = playerView[row][col];
+                if (row == center && col == center || ! renderedTile.render() || ! renderedTile.tile().opaque()) {
+                    continue;
+                }
+                //
+            }
+        }
+        return playerView;
+    }
+
+    private boolean isInStandardView(int row, int col) {
+        // Eliminate corners to make a circular view; this could be done mathematically, but brute force is simple
+        switch (row) {
+            case 1:
+            case 19:
+                return col > 8 && col < 12;
+            case 2:
+            case 18:
+                return col > 6 && col < 14;
+            case 3:
+            case 17:
+                return col > 4 && col < 16;
+            case 4:
+            case 16:
+                return col > 3 && col < 17;
+            case 5:
+            case 6:
+            case 15:
+            case 14:
+                return col > 2 && col < 18;
+            case 7:
+            case 8:
+            case 13:
+            case 12:
+                return col > 1 && col < 19;
+            case 9:
+            case 10:
+            case 11:
+                return true;
+            default:
+                return false;
+        }
     }
 }

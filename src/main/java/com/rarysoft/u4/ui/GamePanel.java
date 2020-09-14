@@ -35,7 +35,7 @@ public class GamePanel extends JPanel implements DisplayListener {
 
     private final int scale;
 
-    private Tile[][] background;
+    private RenderedTile[][] background;
 
     private int animationCycle;
 
@@ -45,7 +45,7 @@ public class GamePanel extends JPanel implements DisplayListener {
     }
 
     @Override
-    public void backgroundUpdated(Tile[][] background, int animationCycle) {
+    public void backgroundUpdated(RenderedTile[][] background, int animationCycle) {
         this.background = background;
         this.animationCycle = animationCycle;
         this.getParent().repaint();
@@ -77,7 +77,8 @@ public class GamePanel extends JPanel implements DisplayListener {
         int centerCol = (background[centerRow].length - 1) / 2;
         for (int row = 1; row < background.length - 1; row ++) {
             for (int col = 1; col < background[row].length - 1; col ++) {
-                Tile backgroundTile = background[row][col];
+                RenderedTile renderedTile = background[row][col];
+                Tile backgroundTile = renderedTile.render() ? renderedTile.tile() : null;
                 if (! handledAsSpecialCase(graphics, backgroundTile, row, col)) {
                     drawTile(graphics, backgroundTile, col * Tiles.TILE_WIDTH * scale, row * Tiles.TILE_HEIGHT * scale, false);
                 }
@@ -149,7 +150,7 @@ public class GamePanel extends JPanel implements DisplayListener {
         List<Integer> counts = new ArrayList<>();
         for (int row = (y >= 0 ? y - 1 : y); row < (y + 1 < background.length ? y + 1 : y) + 1; row ++) {
             for (int col = (x >= 0 ? x - 1 : x); col < (x + 1 < background[row].length ? x + 1 : x) + 1; col ++) {
-                Tile tile = background[row][col];
+                Tile tile = background[row][col].tile();
                 if (tile.type() == TileType.GROUND) {
                     int tileIndex = groundTiles.indexOf(tile);
                     if (tileIndex > -1) {
@@ -217,6 +218,7 @@ public class GamePanel extends JPanel implements DisplayListener {
                 }
                 return tiles.data()[tile.index()][row][col];
 
+            case AVATAR:
             case LYIN_DOWN:
             case ANKH:
                 code = tiles.data()[tile.index()][row][col];

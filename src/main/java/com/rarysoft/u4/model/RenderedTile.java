@@ -23,65 +23,30 @@
  */
 package com.rarysoft.u4.model;
 
-public class GameState {
-    private final Maps maps;
+public class RenderedTile {
+    private final Tile tile;
 
-    private Map map;
-    private int surfaceX;
-    private int surfaceY;
-    private int x;
-    private int y;
+    private final boolean render;
 
-    public GameState(Maps maps, Map map) {
-        this.maps = maps;
-        this.map = map;
-        this.x = maps.world().startX();
-        this.y = maps.world().startY();
+    public RenderedTile(Tile tile) {
+        this.tile = tile;
+        this.render = true;
     }
 
-    public int x() {
-        return x;
+    private RenderedTile(Tile tile, boolean render) {
+        this.tile = tile;
+        this.render = render;
     }
 
-    public int y() {
-        return y;
+    public Tile tile() {
+        return tile;
     }
 
-    public void increaseX() {
-        x ++;
+    public boolean render() {
+        return render;
     }
 
-    public void decreaseX() {
-        x --;
-    }
-
-    public void increaseY() {
-        y ++;
-    }
-
-    public void decreaseY() {
-        y --;
-    }
-
-    public Tile[][] mapView(int radius) {
-        return map.view(x, y, radius);
-    }
-
-    public Tile tileAt(int x, int y) {
-        return map.at(x, y);
-    }
-
-    public void enter() {
-        map = maps.mapAt(x, y);
-        surfaceX = x;
-        surfaceY = y;
-        x = map.startX();
-        y = map.startY();
-    }
-
-    public void returnToSurface() {
-        map = maps.world();
-        x = surfaceX;
-        y = surfaceY;
+    public RenderedTile hidden() {
+        return new RenderedTile(tile, false);
     }
 }
