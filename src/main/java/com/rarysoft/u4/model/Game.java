@@ -188,7 +188,7 @@ public class Game {
         RenderedTile[][] playerView = new RenderedTile[size][size];
         for (int row = 0; row < size; row ++) {
             for (int col = 0; col < size; col ++) {
-                if (isInStandardView(row, col) && isVisibleToPlayer(playerView, row, col)) {
+                if (isInStandardView(row, col)) {
                     playerView[row][col] = new RenderedTile(view[row][col]);
                 }
                 else {
@@ -198,7 +198,7 @@ public class Game {
         }
         for (int row = 0; row < size; row ++) {
             for (int col = 0; col < size; col ++) {
-                if (playerView[row][col].render() && isVisibleToPlayer(playerView, row, col)) {
+                if (playerView[row][col].render() && isVisibleToPlayer(playerView, Coordinate.forRowCol(row, col))) {
                     continue;
                 }
                 playerView[row][col] = new RenderedTile(view[row][col]).hidden();
@@ -241,44 +241,47 @@ public class Game {
         }
     }
 
-    private boolean isVisibleToPlayer(RenderedTile[][] view, int row, int col) {
-        if (view[row][col] == null) {
+    private boolean isVisibleToPlayer(RenderedTile[][] view, Coordinate coordinate) {
+        if (view[coordinate.row()][coordinate.col()] == null) {
             return true;
         }
-        int size = view.length;
-        int center = (size - 1) / 2;
+        Coordinate playerCoordinate = Coordinate.center();
+        // Simplest case: the player tile and all adjacent tiles are always visible
+        if (coordinate.equals(playerCoordinate) || coordinate.isAdjacentTo(playerCoordinate)) {
+            return true;
+        }
         // Simple case: straight N, S, E, or W
-        if (row == center) {
-            if (col < center) {
+        if (coordinate.isCenterRow()) {
+            if (coordinate.isBelowCenterCol()) {
                 // Check for opaque tiles eastward toward the player
-                for (int x = col; x < center; x ++) {
-                    if (view[row][x].tile().opaque()) {
+                for (int checkCol = coordinate.col() + 1; checkCol < playerCoordinate.col(); checkCol ++) {
+                    if (view[coordinate.row()][checkCol].tile().opaque()) {
                         return false;
                     }
                 }
             }
             else {
                 // Check for opaque tiles westward toward the player
-                for (int x = col; x > center; x --) {
-                    if (view[row][x].tile().opaque()) {
+                for (int checkCol = coordinate.col() - 1; checkCol > playerCoordinate.col(); checkCol --) {
+                    if (view[coordinate.row()][checkCol].tile().opaque()) {
                         return false;
                     }
                 }
             }
         }
-        else if (col == center) {
-            if (row < center) {
+        else if (coordinate.isCenterCol()) {
+            if (coordinate.isBelowCenterRow()) {
                 // Check for opaque tiles southward toward the player
-                for (int y = row; y < center; y ++) {
-                    if (view[y][col].tile().opaque()) {
+                for (int checkRow = coordinate.row() + 1; checkRow < playerCoordinate.row(); checkRow ++) {
+                    if (view[checkRow][coordinate.col()].tile().opaque()) {
                         return false;
                     }
                 }
             }
             else {
                 // Check for opaque tiles northward toward the player
-                for (int y = row; y > center; y --) {
-                    if (view[y][col].tile().opaque()) {
+                for (int checkRow = coordinate.row() - 1; checkRow > playerCoordinate.row(); checkRow --) {
+                    if (view[checkRow][coordinate.col()].tile().opaque()) {
                         return false;
                     }
                 }
@@ -286,76 +289,26 @@ public class Game {
         }
         else {
             // Complicated case
-            int x1 = 0; // Treat center as 0,0
-            int y1 = 0;
-            int x2 = colToX(col);
-            int y2 = rowToY(row);
-            int rise = y2 - y1;
-            int run = x2 - x1;
-            // Negate the slope since the y-axis is inverted
-            BigDecimal slope = BigDecimal.valueOf(rise).divide(BigDecimal.valueOf(run), 8, BigDecimal.ROUND_HALF_UP);
-            if (x1 < x2) {
-                for (int x = x1; x < x2; x ++) {
-                    int y = slope.multiply(BigDecimal.valueOf(x)).setScale(0, BigDecimal.ROUND_HALF_UP).intValue();
-                    int passingThroughRow = yToRow(y);
-                    int passingThroughCol = xToCol(x);
-                    if (view[passingThroughRow][passingThroughCol].tile().opaque()) {
-                        return false;
-                    }
-                }
+            Coordinate westernCoordinate = playerCoordinate;
+            Coordinate easternCoordinate = coordinate;
+            if (westernCoordinate.isEastOf(easternCoordinate)) {
+                // Swap the coordinates so we can loop ascending from west to east
+                westernCoordinate = coordinate;
+                easternCoordinate = playerCoordinate;
             }
-            else {
-                for (int x = x2; x < x1; x ++) {
-                    int y = slope.multiply(BigDecimal.valueOf(x)).setScale(0, BigDecimal.ROUND_HALF_UP).intValue();
-                    int passingThroughRow = yToRow(y);
-                    int passingThroughCol = xToCol(x);
-                    if (view[passingThroughRow][passingThroughCol].tile().opaque()) {
-                        return false;
-                    }
+            BigDecimal slope = westernCoordinate.slopeTo(easternCoordinate);
+            for (int x = westernCoordinate.x(); x < easternCoordinate.x(); x ++) {
+                int y = slope.multiply(BigDecimal.valueOf(x)).setScale(0, BigDecimal.ROUND_HALF_UP).intValue();
+                Coordinate passingThroughCoordinate = Coordinate.forXY(x, y);
+                if (passingThroughCoordinate.isCenter() || passingThroughCoordinate.isSameRowCol(coordinate)) {
+                    // The tile can't be blocked by the player or by itself
+                    continue;
+                }
+                if (view[passingThroughCoordinate.row()][passingThroughCoordinate.col()].tile().opaque()) {
+                    return false;
                 }
             }
         }
         return true;
-    }
-
-    public int rowToY(int row) {
-        // Convert a row index, which starts at the top and increases going down, to a proper y value where each tile
-        // is itself an 11x11 grid with the center of the player tile at 0,0 and the y value representing the value at
-        // the center of the tile
-        int center = 10;
-        int TILE_SIZE = 11;
-        if (row == center) {
-            return 0;
-        }
-        return (center - row) * TILE_SIZE;
-    }
-
-    public int colToX(int col) {
-        // Convert a col index to a proper x value where each tile is itself an 11x11 grid with the center of the
-        // player tile at 0,0 and the x value representing the value at the center of the tile
-        int center = 10;
-        int TILE_SIZE = 11;
-        if (col == center) {
-            return 0;
-        }
-        return (col - center) * TILE_SIZE;
-    }
-
-    public int yToRow(int y) {
-        int center = 10;
-        int TILE_SIZE = 11;
-        if (y == 0) {
-            return center;
-        }
-        return center - y / TILE_SIZE;
-    }
-
-    public int xToCol(int x) {
-        int center = 10;
-        int TILE_SIZE = 11;
-        if (x == 0) {
-            return center;
-        }
-        return center + x / TILE_SIZE;
     }
 }
