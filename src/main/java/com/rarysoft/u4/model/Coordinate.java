@@ -35,9 +35,8 @@ public class Coordinate {
 
     private final int row;
     private final int col;
-
-    private int x;
-    private int y;
+    private final int x;
+    private final int y;
 
     public static Coordinate forRowCol(int row, int col) {
         return new Coordinate(row, col, calculateX(col), calculateY(row));
@@ -77,24 +76,36 @@ public class Coordinate {
         return y;
     }
 
+    public Region region() {
+        if (row == CENTER_INDEX) {
+            if (col == CENTER_INDEX) {
+                return Region.CENTER;
+            }
+            if (col > CENTER_INDEX) {
+                return Region.EAST;
+            }
+            return Region.WEST;
+        }
+        if (col == CENTER_INDEX) {
+            if (row > CENTER_INDEX) {
+                return Region.SOUTH;
+            }
+            return Region.NORTH;
+        }
+        if (row < CENTER_INDEX) {
+            if (col > CENTER_INDEX) {
+                return Region.NORTHEAST;
+            }
+            return Region.NORTHWEST;
+        }
+        if (col < CENTER_INDEX) {
+            return Region.SOUTHWEST;
+        }
+        return Region.SOUTHEAST;
+    }
+
     public boolean isCenter() {
         return row == CENTER_INDEX && col == CENTER_INDEX;
-    }
-
-    public boolean isCenterRow() {
-        return row == CENTER_INDEX;
-    }
-
-    public boolean isBelowCenterRow() {
-        return row < CENTER_INDEX;
-    }
-
-    public boolean isCenterCol() {
-        return col == CENTER_INDEX;
-    }
-
-    public boolean isBelowCenterCol() {
-        return col < CENTER_INDEX;
     }
 
     public boolean isAdjacentTo(Coordinate coordinate) {
@@ -104,15 +115,50 @@ public class Coordinate {
     }
 
     public boolean isEastOf(Coordinate coordinate) {
-        return col > coordinate.col();
+        return x > coordinate.x();
     }
 
     public BigDecimal slopeTo(Coordinate coordinate) {
+        if (! coordinate.isEastOf(this)) {
+            throw new IllegalArgumentException();
+        }
         return BigDecimal.valueOf(coordinate.y - y).divide(BigDecimal.valueOf(coordinate.x - x), 2, BigDecimal.ROUND_HALF_UP);
     }
 
     public boolean isSameRowCol(Coordinate coordinate) {
         return coordinate.row() == row && coordinate.col() == col;
+    }
+
+    public Coordinate atNorthSide() {
+        return Coordinate.forXY(x, y + 6);
+    }
+
+    public Coordinate atNortheastCorner() {
+        return Coordinate.forXY(x + 6, y + 6);
+    }
+
+    public Coordinate atEastSide() {
+        return Coordinate.forXY(x + 6, y);
+    }
+
+    public Coordinate atSoutheastCorner() {
+        return Coordinate.forXY(x + 6, y - 6);
+    }
+
+    public Coordinate atSouthSide() {
+        return Coordinate.forXY(x, y - 6);
+    }
+
+    public Coordinate atSouthwestCorner() {
+        return Coordinate.forXY(x - 6, y - 6);
+    }
+
+    public Coordinate atWestSide() {
+        return Coordinate.forXY(x - 6, y);
+    }
+
+    public Coordinate atNorthwestCorner() {
+        return Coordinate.forXY(x - 6, y + 6);
     }
 
     private static int calculateX(int col) {
