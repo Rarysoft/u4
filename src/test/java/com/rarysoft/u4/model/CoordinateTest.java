@@ -301,6 +301,24 @@ public class CoordinateTest {
     }
 
     @Test
+    public void isNorthOfWhenCoordinateIsNorthOfArgumentReturnsTrue() {
+        for (int x = -115; x < 116; x ++) {
+            for (int y = 1; y < 116; y ++) {
+                assertThat(Coordinate.forXY(x, y).isNorthOf(Coordinate.center())).isTrue();
+            }
+        }
+    }
+
+    @Test
+    public void isNorthOfWhenCoordinateIsNotNorthOfArgumentReturnsFalse() {
+        for (int x = -115; x < 116; x ++) {
+            for (int y = -115; y < 0; y ++) {
+                assertThat(Coordinate.forXY(x, y).isNorthOf(Coordinate.center())).isFalse();
+            }
+        }
+    }
+
+    @Test
     public void isEastOfWhenCoordinateIsEastOfArgumentReturnsTrue() {
         for (int x = 1; x < 116; x ++) {
             for (int y = -115; y < 116; y ++) {
@@ -359,7 +377,6 @@ public class CoordinateTest {
         for (int x = -115; x < 116; x ++) {
             for (int y = -115; y < 116; y ++) {
                 if (! (x > -61 && x < -49 && y > 49 && y < 61)) {
-                    System.out.println(x+","+y);
                     assertThat(Coordinate.forXY(x, y).isSameRowCol(Coordinate.forRowCol(5, 5))).isFalse();
                 }
             }

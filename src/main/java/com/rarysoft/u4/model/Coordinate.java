@@ -114,6 +114,10 @@ public class Coordinate {
                 (delta(coordinate.row(), row) == 1 && delta(coordinate.col(), col) == 1);
     }
 
+    public boolean isNorthOf(Coordinate coordinate) {
+        return y > coordinate.y();
+    }
+
     public boolean isEastOf(Coordinate coordinate) {
         return x > coordinate.x();
     }

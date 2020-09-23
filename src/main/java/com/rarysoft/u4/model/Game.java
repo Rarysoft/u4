@@ -24,7 +24,6 @@
 package com.rarysoft.u4.model;
 
 import javax.swing.*;
-import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
@@ -196,9 +195,10 @@ public class Game {
                 }
             }
         }
+        Visibility visibility = new Visibility(playerView);
         for (int row = 0; row < size; row ++) {
             for (int col = 0; col < size; col ++) {
-                if (playerView[row][col].render() && isVisibleToPlayer(playerView, Coordinate.forRowCol(row, col))) {
+                if (playerView[row][col].render() && visibility.isVisibleToPlayer(Coordinate.forRowCol(row, col))) {
                     continue;
                 }
                 playerView[row][col] = new RenderedTile(view[row][col]).hidden();
@@ -238,185 +238,6 @@ public class Game {
                 return true;
             default:
                 return false;
-        }
-    }
-
-    private boolean isVisibleToPlayer(RenderedTile[][] view, Coordinate coordinate) {
-        if (view[coordinate.row()][coordinate.col()] == null) {
-            return true;
-        }
-        Coordinate playerCoordinate = Coordinate.center();
-        // Simplest case: the player tile and all adjacent tiles are always visible
-        if (coordinate.equals(playerCoordinate) || coordinate.isAdjacentTo(playerCoordinate)) {
-            return true;
-        }
-        // Simple case: straight N, E, S, or W
-        switch (coordinate.region()) {
-            case NORTH:
-                // Check for opaque tiles southward toward the player
-                for (int checkRow = coordinate.row() + 1; checkRow < playerCoordinate.row(); checkRow ++) {
-                    if (view[checkRow][coordinate.col()].tile().opaque()) {
-                        return false;
-                    }
-                }
-                return true;
-            case EAST:
-                // Check for opaque tiles westward toward the player
-                for (int checkCol = coordinate.col() - 1; checkCol > playerCoordinate.col(); checkCol --) {
-                    if (view[coordinate.row()][checkCol].tile().opaque()) {
-                        return false;
-                    }
-                }
-                return true;
-            case SOUTH:
-                // Check for opaque tiles northward toward the player
-                for (int checkRow = coordinate.row() - 1; checkRow > playerCoordinate.row(); checkRow --) {
-                    if (view[checkRow][coordinate.col()].tile().opaque()) {
-                        return false;
-                    }
-                }
-                return true;
-            case WEST:
-                // Check for opaque tiles eastward toward the player
-                for (int checkCol = coordinate.col() + 1; checkCol < playerCoordinate.col(); checkCol ++) {
-                    if (view[coordinate.row()][checkCol].tile().opaque()) {
-                        return false;
-                    }
-                }
-                return true;
-        }
-        // Complicated case
-        Coordinate[] targetCoordinates = findTargetCoordinates(view, coordinate);
-        if (targetCoordinates.length == 0) {
-            return false;
-        }
-        for (Coordinate targetCoordinate : targetCoordinates) {
-            Coordinate westernCoordinate = playerCoordinate;
-            Coordinate easternCoordinate = targetCoordinate;
-            if (westernCoordinate.isEastOf(easternCoordinate)) {
-                // Swap the coordinates so we can loop ascending from west to east
-                westernCoordinate = targetCoordinate;
-                easternCoordinate = playerCoordinate;
-            }
-            BigDecimal slope = westernCoordinate.slopeTo(easternCoordinate);
-            for (int x = westernCoordinate.x(); x < easternCoordinate.x(); x ++) {
-                int y = slope.multiply(BigDecimal.valueOf(x)).setScale(0, BigDecimal.ROUND_HALF_UP).intValue();
-                Coordinate passingThroughCoordinate = Coordinate.forXY(x, y);
-                if (passingThroughCoordinate.isCenter() || passingThroughCoordinate.isSameRowCol(targetCoordinate)) {
-                    // The tile can't be blocked by the player or by itself
-                    continue;
-                }
-                if (view[passingThroughCoordinate.row()][passingThroughCoordinate.col()].tile().opaque()) {
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
-
-    private Coordinate[] findTargetCoordinates(RenderedTile[][] view, Coordinate coordinate) {
-        // Determine which surrounding tiles to analyze based on the region
-        boolean northTileOpaque;
-        boolean northeastTileOpaque;
-        boolean eastTileOpaque;
-        boolean southeastTileOpaque;
-        boolean southTileOpaque;
-        boolean southwestTileOpaque;
-        boolean westTileOpaque;
-        boolean northwestTileOpaque;
-
-        switch (coordinate.region()) {
-            case NORTHEAST:
-                westTileOpaque = view[coordinate.row()][coordinate.col() - 1].tile().opaque();
-                southwestTileOpaque = view[coordinate.row() + 1][coordinate.col() - 1].tile().opaque();
-                southTileOpaque = view[coordinate.row() + 1][coordinate.col()].tile().opaque();
-                if (westTileOpaque && southwestTileOpaque && southTileOpaque) {
-                    // Totally blocked, no need to map a sight-line to any coordinates at all
-                    return new Coordinate[0];
-                }
-                if (westTileOpaque && ! southTileOpaque) {
-                    return new Coordinate[] { coordinate.atSouthSide() };
-                }
-                if (southTileOpaque && ! westTileOpaque) {
-                    return new Coordinate[] { coordinate.atWestSide() };
-                }
-                if (southwestTileOpaque) {
-                    return new Coordinate[] { coordinate.atSouthSide(), coordinate.atWestSide() };
-                }
-                if (! (westTileOpaque)) {
-                    return new Coordinate[] { coordinate };
-                }
-                return new Coordinate[] { coordinate.atSouthwestCorner() };
-
-            case SOUTHEAST:
-                westTileOpaque = view[coordinate.row()][coordinate.col() - 1].tile().opaque();
-                northwestTileOpaque = view[coordinate.row() - 1][coordinate.col() - 1].tile().opaque();
-                northTileOpaque = view[coordinate.row() - 1][coordinate.col()].tile().opaque();
-                if (westTileOpaque && northwestTileOpaque && northTileOpaque) {
-                    // Totally blocked, no need to map a sight-line to any coordinates at all
-                    return new Coordinate[0];
-                }
-                if (westTileOpaque && ! northTileOpaque) {
-                    return new Coordinate[] { coordinate.atNorthSide() };
-                }
-                if (northTileOpaque && ! westTileOpaque) {
-                    return new Coordinate[] { coordinate.atWestSide() };
-                }
-                if (northwestTileOpaque) {
-                    return new Coordinate[] { coordinate.atNorthSide(), coordinate.atWestSide() };
-                }
-                if (! (westTileOpaque)) {
-                    return new Coordinate[] { coordinate };
-                }
-                return new Coordinate[] { coordinate.atNorthwestCorner() };
-
-            case SOUTHWEST:
-                eastTileOpaque = view[coordinate.row()][coordinate.col() + 1].tile().opaque();
-                northeastTileOpaque = view[coordinate.row() - 1][coordinate.col() + 1].tile().opaque();
-                northTileOpaque = view[coordinate.row() - 1][coordinate.col()].tile().opaque();
-                if (eastTileOpaque && northeastTileOpaque && northTileOpaque) {
-                    // Totally blocked, no need to map a sight-line to any coordinates at all
-                    return new Coordinate[0];
-                }
-                if (eastTileOpaque && ! northTileOpaque) {
-                    return new Coordinate[] { coordinate.atNorthSide() };
-                }
-                if (northTileOpaque && ! eastTileOpaque) {
-                    return new Coordinate[] { coordinate.atEastSide() };
-                }
-                if (northeastTileOpaque) {
-                    return new Coordinate[] { coordinate.atNorthSide(), coordinate.atEastSide() };
-                }
-                if (! (eastTileOpaque)) {
-                    return new Coordinate[] { coordinate };
-                }
-                return new Coordinate[] { coordinate.atNortheastCorner() };
-
-            case NORTHWEST:
-                eastTileOpaque = view[coordinate.row()][coordinate.col() + 1].tile().opaque();
-                southeastTileOpaque = view[coordinate.row() + 1][coordinate.col() + 1].tile().opaque();
-                southTileOpaque = view[coordinate.row() + 1][coordinate.col()].tile().opaque();
-                if (eastTileOpaque && southeastTileOpaque && southTileOpaque) {
-                    // Totally blocked, no need to map a sight-line to any coordinates at all
-                    return new Coordinate[0];
-                }
-                if (eastTileOpaque && ! southTileOpaque) {
-                    return new Coordinate[] { coordinate.atSouthSide() };
-                }
-                if (southTileOpaque && ! eastTileOpaque) {
-                    return new Coordinate[] { coordinate.atEastSide() };
-                }
-                if (southeastTileOpaque) {
-                    return new Coordinate[] { coordinate.atSouthSide(), coordinate.atEastSide() };
-                }
-                if (! (eastTileOpaque)) {
-                    return new Coordinate[] { coordinate };
-                }
-                return new Coordinate[] { coordinate.atSoutheastCorner() };
-
-            default:
-                // We only handle the above four cases; the rest should have been ruled out before calling this method
-                return new Coordinate[0];
         }
     }
 }
