@@ -126,24 +126,52 @@ public class Visibility {
     }
 
     private Coordinate[] findTargetCoordinates(Coordinate coordinate) {
+        Coordinate[] alternativeTargetCoordinates;
         // We'll look for a sight-line to three different points in the tile
         switch (coordinate.region()) {
             case NORTHEAST:
+                alternativeTargetCoordinates = findAlternativeTargetCoordinates(coordinate.toTheWest(), coordinate.toTheSouth(), coordinate.toTheSouthwest());
+                if (alternativeTargetCoordinates.length > 0) {
+                    return alternativeTargetCoordinates;
+                }
                 return new Coordinate[] { coordinate.atSouthwestCorner(), coordinate.atSouthSide(), coordinate.atWestSide() };
 
             case SOUTHEAST:
+                alternativeTargetCoordinates = findAlternativeTargetCoordinates(coordinate.toTheWest(), coordinate.toTheNorth(), coordinate.toTheNorthwest());
+                if (alternativeTargetCoordinates.length > 0) {
+                    return alternativeTargetCoordinates;
+                }
                 return new Coordinate[] { coordinate.atNorthwestCorner(), coordinate.atNorthSide(), coordinate.atWestSide() };
 
             case SOUTHWEST:
+                alternativeTargetCoordinates = findAlternativeTargetCoordinates(coordinate.toTheEast(), coordinate.toTheNorth(), coordinate.toTheNortheast());
+                if (alternativeTargetCoordinates.length > 0) {
+                    return alternativeTargetCoordinates;
+                }
                 return new Coordinate[] { coordinate.atNortheastCorner(), coordinate.atNorthSide(), coordinate.atEastSide() };
 
             case NORTHWEST:
+                alternativeTargetCoordinates = findAlternativeTargetCoordinates(coordinate.toTheEast(), coordinate.toTheSouth(), coordinate.toTheSoutheast());
+                if (alternativeTargetCoordinates.length > 0) {
+                    return alternativeTargetCoordinates;
+                }
                 return new Coordinate[] { coordinate.atSoutheastCorner(), coordinate.atSouthSide(), coordinate.atEastSide() };
 
             default:
                 // We only handle the above four cases; the rest should have been ruled out before calling this method
                 return new Coordinate[0];
         }
+    }
+
+    private Coordinate[] findAlternativeTargetCoordinates(Coordinate colAdjacentCoordinate, Coordinate rowAdjacentCoordinate, Coordinate cornerAdjacentCoordinate) {
+        // Special case: if the two adjacent on the visible side are opaque but the corner one is not, this will be
+        // visible if one of the adjacent tiles is visible, determined by whichever is not center-aligned
+        if (area[colAdjacentCoordinate.row()][colAdjacentCoordinate.col()].tile().opaque() &&
+                area[rowAdjacentCoordinate.row()][rowAdjacentCoordinate.col()].tile().opaque() &&
+                ! area[cornerAdjacentCoordinate.row()][cornerAdjacentCoordinate.col()].tile().opaque()) {
+            return new Coordinate[] { rowAdjacentCoordinate.isCenterRow() ? colAdjacentCoordinate.atSideFacingCenterRow() : rowAdjacentCoordinate.atSideFacingCenterCol() };
+        }
+        return new Coordinate[] {};
     }
 
     private int xForY(int y, BigDecimal slope) {

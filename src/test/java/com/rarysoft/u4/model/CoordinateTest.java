@@ -384,6 +384,118 @@ public class CoordinateTest {
     }
 
     @Test
+    public void toTheNorthAlwaysReturnsTileWithCorrectRow() {
+        Coordinate result = Coordinate.forRowCol(5, 5).toTheNorth();
+
+        assertThat(result.row()).isEqualTo(4);
+    }
+
+    @Test
+    public void toTheNorthAlwaysReturnsTileWithCorrectCol() {
+        Coordinate result = Coordinate.forRowCol(5, 5).toTheNorth();
+
+        assertThat(result.col()).isEqualTo(5);
+    }
+
+    @Test
+    public void toTheNortheastAlwaysReturnsTileWithCorrectRow() {
+        Coordinate result = Coordinate.forRowCol(5, 5).toTheNortheast();
+
+        assertThat(result.row()).isEqualTo(4);
+    }
+
+    @Test
+    public void toTheNortheastAlwaysReturnsTileWithCorrectCol() {
+        Coordinate result = Coordinate.forRowCol(5, 5).toTheNortheast();
+
+        assertThat(result.col()).isEqualTo(6);
+    }
+
+    @Test
+    public void toTheEastAlwaysReturnsTileWithCorrectRow() {
+        Coordinate result = Coordinate.forRowCol(5, 5).toTheEast();
+
+        assertThat(result.row()).isEqualTo(5);
+    }
+
+    @Test
+    public void toTheEastAlwaysReturnsTileWithCorrectCol() {
+        Coordinate result = Coordinate.forRowCol(5, 5).toTheEast();
+
+        assertThat(result.col()).isEqualTo(6);
+    }
+
+    @Test
+    public void toTheSoutheastAlwaysReturnsTileWithCorrectRow() {
+        Coordinate result = Coordinate.forRowCol(5, 5).toTheSoutheast();
+
+        assertThat(result.row()).isEqualTo(6);
+    }
+
+    @Test
+    public void toTheSoutheastAlwaysReturnsTileWithCorrectCol() {
+        Coordinate result = Coordinate.forRowCol(5, 5).toTheSoutheast();
+
+        assertThat(result.col()).isEqualTo(6);
+    }
+
+    @Test
+    public void toTheSouthAlwaysReturnsTileWithCorrectRow() {
+        Coordinate result = Coordinate.forRowCol(5, 5).toTheSouth();
+
+        assertThat(result.row()).isEqualTo(6);
+    }
+
+    @Test
+    public void toTheSouthAlwaysReturnsTileWithCorrectCol() {
+        Coordinate result = Coordinate.forRowCol(5, 5).toTheSouth();
+
+        assertThat(result.col()).isEqualTo(5);
+    }
+
+    @Test
+    public void toTheSouthwestAlwaysReturnsTileWithCorrectRow() {
+        Coordinate result = Coordinate.forRowCol(5, 5).toTheSouthwest();
+
+        assertThat(result.row()).isEqualTo(6);
+    }
+
+    @Test
+    public void toTheSouthwestAlwaysReturnsTileWithCorrectCol() {
+        Coordinate result = Coordinate.forRowCol(5, 5).toTheSouthwest();
+
+        assertThat(result.col()).isEqualTo(4);
+    }
+
+    @Test
+    public void toTheWestAlwaysReturnsTileWithCorrectRow() {
+        Coordinate result = Coordinate.forRowCol(5, 5).toTheWest();
+
+        assertThat(result.row()).isEqualTo(5);
+    }
+
+    @Test
+    public void toTheWestAlwaysReturnsTileWithCorrectCol() {
+        Coordinate result = Coordinate.forRowCol(5, 5).toTheWest();
+
+        assertThat(result.col()).isEqualTo(4);
+    }
+
+    @Test
+    public void toTheNorthwestAlwaysReturnsTileWithCorrectRow() {
+        Coordinate result = Coordinate.forRowCol(5, 5).toTheNorthwest();
+
+        assertThat(result.row()).isEqualTo(4);
+    }
+
+    @Test
+    public void toTheNorthwestAlwaysReturnsTileWithCorrectCol() {
+        Coordinate result = Coordinate.forRowCol(5, 5).toTheNorthwest();
+
+        assertThat(result.col()).isEqualTo(4);
+    }
+
+    @Test
     public void atNorthSideAlwaysReturnsCoordinateWithCorrectX() {
         Coordinate result = Coordinate.center().atNorthSide();
 
@@ -394,28 +506,28 @@ public class CoordinateTest {
     public void atNorthSideAlwaysReturnsCoordinateWithCorrectY() {
         Coordinate result = Coordinate.center().atNorthSide();
 
-        assertThat(result.y()).isEqualTo(6);
+        assertThat(result.y()).isEqualTo(5);
     }
 
     @Test
-    public void atNortheastCornereAlwaysReturnsCoordinateWithCorrectX() {
+    public void atNortheastCornerAlwaysReturnsCoordinateWithCorrectX() {
         Coordinate result = Coordinate.center().atNortheastCorner();
 
-        assertThat(result.x()).isEqualTo(6);
+        assertThat(result.x()).isEqualTo(5);
     }
 
     @Test
     public void atNortheastCornerAlwaysReturnsCoordinateWithCorrectY() {
         Coordinate result = Coordinate.center().atNortheastCorner();
 
-        assertThat(result.y()).isEqualTo(6);
+        assertThat(result.y()).isEqualTo(5);
     }
 
     @Test
     public void atEastSideAlwaysReturnsCoordinateWithCorrectX() {
         Coordinate result = Coordinate.center().atEastSide();
 
-        assertThat(result.x()).isEqualTo(6);
+        assertThat(result.x()).isEqualTo(5);
     }
 
     @Test
@@ -426,17 +538,17 @@ public class CoordinateTest {
     }
 
     @Test
-    public void atSoutheastCornereAlwaysReturnsCoordinateWithCorrectX() {
+    public void atSoutheastCornerAlwaysReturnsCoordinateWithCorrectX() {
         Coordinate result = Coordinate.center().atSoutheastCorner();
 
-        assertThat(result.x()).isEqualTo(6);
+        assertThat(result.x()).isEqualTo(5);
     }
 
     @Test
     public void atSoutheastCornerAlwaysReturnsCoordinateWithCorrectY() {
         Coordinate result = Coordinate.center().atSoutheastCorner();
 
-        assertThat(result.y()).isEqualTo(-6);
+        assertThat(result.y()).isEqualTo(-5);
     }
 
     @Test
@@ -450,28 +562,28 @@ public class CoordinateTest {
     public void atSouthSideAlwaysReturnsCoordinateWithCorrectY() {
         Coordinate result = Coordinate.center().atSouthSide();
 
-        assertThat(result.y()).isEqualTo(-6);
+        assertThat(result.y()).isEqualTo(-5);
     }
 
     @Test
-    public void atSouthwestCornereAlwaysReturnsCoordinateWithCorrectX() {
+    public void atSouthwestCornerAlwaysReturnsCoordinateWithCorrectX() {
         Coordinate result = Coordinate.center().atSouthwestCorner();
 
-        assertThat(result.x()).isEqualTo(-6);
+        assertThat(result.x()).isEqualTo(-5);
     }
 
     @Test
     public void atSouthwestCornerAlwaysReturnsCoordinateWithCorrectY() {
         Coordinate result = Coordinate.center().atSouthwestCorner();
 
-        assertThat(result.y()).isEqualTo(-6);
+        assertThat(result.y()).isEqualTo(-5);
     }
 
     @Test
     public void atWestSideAlwaysReturnsCoordinateWithCorrectX() {
         Coordinate result = Coordinate.center().atWestSide();
 
-        assertThat(result.x()).isEqualTo(-6);
+        assertThat(result.x()).isEqualTo(-5);
     }
 
     @Test
@@ -482,16 +594,100 @@ public class CoordinateTest {
     }
 
     @Test
-    public void atNorthwestCornereAlwaysReturnsCoordinateWithCorrectX() {
+    public void atNorthwestCornerAlwaysReturnsCoordinateWithCorrectX() {
         Coordinate result = Coordinate.center().atNorthwestCorner();
 
-        assertThat(result.x()).isEqualTo(-6);
+        assertThat(result.x()).isEqualTo(-5);
     }
 
     @Test
     public void atNorthwestCornerAlwaysReturnsCoordinateWithCorrectY() {
         Coordinate result = Coordinate.center().atNorthwestCorner();
 
+        assertThat(result.y()).isEqualTo(5);
+    }
+
+    @Test
+    public void atSideFacingCenterRowWhenOnCenterRowReturnsCoordinateWithCorrectX() {
+        Coordinate result = Coordinate.forRowCol(10, 10).atSideFacingCenterRow();
+
+        assertThat(result.x()).isEqualTo(0);
+    }
+
+    @Test
+    public void atSideFacingCenterRowWhenOnCenterRowReturnsCoordinateWithCorrectY() {
+        Coordinate result = Coordinate.forRowCol(10, 10).atSideFacingCenterRow();
+
+        assertThat(result.y()).isEqualTo(0);
+    }
+
+    @Test
+    public void atSideFacingCenterRowWhenNorthOfCenterRowReturnsCoordinateWithCorrectX() {
+        Coordinate result = Coordinate.forRowCol(9, 10).atSideFacingCenterRow();
+
+        assertThat(result.x()).isEqualTo(0);
+    }
+
+    @Test
+    public void atSideFacingCenterRowWhenNorthOfCenterRowReturnsCoordinateWithCorrectY() {
+        Coordinate result = Coordinate.forRowCol(9, 10).atSideFacingCenterRow();
+
         assertThat(result.y()).isEqualTo(6);
+    }
+
+    @Test
+    public void atSideFacingCenterRowWhenSouthOfCenterRowReturnsCoordinateWithCorrectX() {
+        Coordinate result = Coordinate.forRowCol(11, 10).atSideFacingCenterRow();
+
+        assertThat(result.x()).isEqualTo(0);
+    }
+
+    @Test
+    public void atSideFacingCenterRowWhenSouthOfCenterRowReturnsCoordinateWithCorrectY() {
+        Coordinate result = Coordinate.forRowCol(11, 10).atSideFacingCenterRow();
+
+        assertThat(result.y()).isEqualTo(-6);
+    }
+
+    @Test
+    public void atSideFacingCenterColWhenOnCenterColReturnsCoordinateWithCorrectX() {
+        Coordinate result = Coordinate.forRowCol(10, 10).atSideFacingCenterCol();
+
+        assertThat(result.x()).isEqualTo(0);
+    }
+
+    @Test
+    public void atSideFacingCenterColWhenOnCenterColReturnsCoordinateWithCorrectY() {
+        Coordinate result = Coordinate.forRowCol(10, 10).atSideFacingCenterCol();
+
+        assertThat(result.y()).isEqualTo(0);
+    }
+
+    @Test
+    public void atSideFacingCenterColWhenEastOfCenterColReturnsCoordinateWithCorrectX() {
+        Coordinate result = Coordinate.forRowCol(10, 11).atSideFacingCenterCol();
+
+        assertThat(result.x()).isEqualTo(6);
+    }
+
+    @Test
+    public void atSideFacingCenterColWhenEastOfCenterColReturnsCoordinateWithCorrectY() {
+        Coordinate result = Coordinate.forRowCol(10, 11).atSideFacingCenterCol();
+
+        assertThat(result.y()).isEqualTo(0);
+    }
+
+    @Test
+    public void atSideFacingCenterColWhenWestOfCenterColReturnsCoordinateWithCorrectX() {
+        Coordinate result = Coordinate.forRowCol(10, 9).atSideFacingCenterCol();
+
+        assertThat(result.x()).isEqualTo(-6);
+    }
+
+    @Test
+    public void atSideFacingCenterColWhenWestOfCenterColReturnsCoordinateWithCorrectY() {
+        Coordinate result = Coordinate.forRowCol(10, 9).atSideFacingCenterCol();
+
+        assertThat(result.y()).isEqualTo(0);
     }
 }

@@ -109,6 +109,14 @@ public class Coordinate {
         return row == CENTER_INDEX && col == CENTER_INDEX;
     }
 
+    public boolean isCenterRow() {
+        return row == CENTER_INDEX;
+    }
+
+    public boolean isCenterCol() {
+        return col == CENTER_INDEX;
+    }
+
     public boolean isAdjacentTo(Coordinate coordinate) {
         return coordinate.row() == row && delta(coordinate.col(), col) == 1 ||
                 coordinate.col() == col && delta(coordinate.row, row) == 1 ||
@@ -132,6 +140,38 @@ public class Coordinate {
 
     public boolean isSameRowCol(Coordinate coordinate) {
         return coordinate.row() == row && coordinate.col() == col;
+    }
+
+    public Coordinate toTheNorth() {
+        return Coordinate.forRowCol(row - 1, col);
+    }
+
+    public Coordinate toTheNortheast() {
+        return Coordinate.forRowCol(row - 1, col + 1);
+    }
+
+    public Coordinate toTheEast() {
+        return Coordinate.forRowCol(row, col + 1);
+    }
+
+    public Coordinate toTheSoutheast() {
+        return Coordinate.forRowCol(row + 1, col + 1);
+    }
+
+    public Coordinate toTheSouth() {
+        return Coordinate.forRowCol(row + 1, col);
+    }
+
+    public Coordinate toTheSouthwest() {
+        return Coordinate.forRowCol(row + 1, col - 1);
+    }
+
+    public Coordinate toTheWest() {
+        return Coordinate.forRowCol(row, col - 1);
+    }
+
+    public Coordinate toTheNorthwest() {
+        return Coordinate.forRowCol(row - 1, col - 1);
     }
 
     public Coordinate atNorthSide() {
@@ -166,6 +206,26 @@ public class Coordinate {
         return Coordinate.forXY(x - TILE_RADIUS, y + TILE_RADIUS);
     }
 
+    public Coordinate atSideFacingCenterRow() {
+        if (row == CENTER_INDEX) {
+            return this;
+        }
+        if (row < CENTER_INDEX) {
+            return this.atSouthSide();
+        }
+        return this.atNorthSide();
+    }
+
+    public Coordinate atSideFacingCenterCol() {
+        if (col == CENTER_INDEX) {
+            return this;
+        }
+        if (col < CENTER_INDEX) {
+            return this.atEastSide();
+        }
+        return this.atWestSide();
+    }
+
     private static int calculateX(int col) {
         // Convert a col index to a proper x value where each tile is itself an 11x11 grid with the center of the
         // player tile at 0,0 and the x value representing the value at the center of the tile
@@ -189,14 +249,14 @@ public class Coordinate {
         if (y == 0) {
             return CENTER_INDEX;
         }
-        return (MAX_INDEX - ((y + (CENTER_INDEX * TILE_SIZE) + 5)) / TILE_SIZE);
+        return (MAX_INDEX - ((y + (CENTER_INDEX * TILE_SIZE) + TILE_RADIUS)) / TILE_SIZE);
     }
 
     private static int calculateCol(int x) {
         if (x == 0) {
             return CENTER_INDEX;
         }
-        return (x + (CENTER_INDEX * TILE_SIZE) + 5) / TILE_SIZE;
+        return (x + (CENTER_INDEX * TILE_SIZE) + TILE_RADIUS) / TILE_SIZE;
     }
 
     private int delta(int a, int b) {
