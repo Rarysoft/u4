@@ -69,10 +69,6 @@ public class Maps {
         return maps.stream().filter(map -> map.worldX() == x && map.worldY() == y).findAny().orElseThrow(RuntimeException::new);
     }
 
-    public Map exit() {
-        return world;
-    }
-
     private static Map loadMap(String mapFilename, int worldX, int worldY, int startX, int startY, Tile areaTile) throws IOException {
         InputStream stream = ClassLoader.getSystemClassLoader().getResourceAsStream(mapFilename);
         return Settlement.fromStream(stream, worldX, worldY, startX, startY, areaTile);

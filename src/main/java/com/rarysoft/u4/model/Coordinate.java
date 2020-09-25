@@ -27,6 +27,7 @@ import java.math.BigDecimal;
 
 public class Coordinate {
     private static final int TILE_SIZE = 11;
+    private static final int TILE_RADIUS = (TILE_SIZE - 1) / 2;
     private static final int CENTER_INDEX = 10;
     private static final int MIN_INDEX = 0;
     private static final int MAX_INDEX = CENTER_INDEX * 2;
@@ -134,35 +135,35 @@ public class Coordinate {
     }
 
     public Coordinate atNorthSide() {
-        return Coordinate.forXY(x, y + 6);
+        return Coordinate.forXY(x, y + TILE_RADIUS);
     }
 
     public Coordinate atNortheastCorner() {
-        return Coordinate.forXY(x + 6, y + 6);
+        return Coordinate.forXY(x + TILE_RADIUS, y + TILE_RADIUS);
     }
 
     public Coordinate atEastSide() {
-        return Coordinate.forXY(x + 6, y);
+        return Coordinate.forXY(x + TILE_RADIUS, y);
     }
 
     public Coordinate atSoutheastCorner() {
-        return Coordinate.forXY(x + 6, y - 6);
+        return Coordinate.forXY(x + TILE_RADIUS, y - TILE_RADIUS);
     }
 
     public Coordinate atSouthSide() {
-        return Coordinate.forXY(x, y - 6);
+        return Coordinate.forXY(x, y - TILE_RADIUS);
     }
 
     public Coordinate atSouthwestCorner() {
-        return Coordinate.forXY(x - 6, y - 6);
+        return Coordinate.forXY(x - TILE_RADIUS, y - TILE_RADIUS);
     }
 
     public Coordinate atWestSide() {
-        return Coordinate.forXY(x - 6, y);
+        return Coordinate.forXY(x - TILE_RADIUS, y);
     }
 
     public Coordinate atNorthwestCorner() {
-        return Coordinate.forXY(x - 6, y + 6);
+        return Coordinate.forXY(x - TILE_RADIUS, y + TILE_RADIUS);
     }
 
     private static int calculateX(int col) {
