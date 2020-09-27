@@ -56,8 +56,8 @@ public class Game {
         updateBackground();
     }
 
-    public void onMoveUp() {
-        RenderedTile renderedTile = gameState.tileAt(gameState.row() - 1, gameState.col());
+    private void onMove(int rowDelta, int colDelta) {
+        RenderedTile renderedTile = gameState.tileAt(gameState.row() + rowDelta, gameState.col() + colDelta);
         if (renderedTile.tile() == null) {
             gameState.returnToSurface();
         }
@@ -68,38 +68,13 @@ public class Game {
                 return;
             }
             // Special case: don't allow northward exit from LB's castle
-            if (gameState.tileAt(gameState.row(), gameState.col()).tile() == Tile.LORD_BRITISHS_CASTLE_ENTRANCE) {
-                moveBlocked();
-                afterPlayerMove();
-                return;
-            }
-            if (! allowWalkTo(renderedTile)) {
-                moveSlowed();
-                afterPlayerMove();
-                return;
-            }
-            gameState.decreaseRow();
-            if (renderedTile.tile().type() == TileType.PORTAL) {
-                gameState.enter();
-            }
-        }
-        updateBackground();
-        afterPlayerMove();
-    }
-
-    public void onMoveDown() {
-        RenderedTile renderedTile = gameState.tileAt(gameState.row() + 1, gameState.col());
-        if (renderedTile.tile() == null) {
-            gameState.returnToSurface();
-        }
-        else {
-            if (renderedTile.tile().walkability() == 0) {
+            if (rowDelta == -1 && gameState.tileAt(gameState.row(), gameState.col()).tile() == Tile.LORD_BRITISHS_CASTLE_ENTRANCE) {
                 moveBlocked();
                 afterPlayerMove();
                 return;
             }
             // Special case: don't allow entry to LB's castle from the north
-            if (renderedTile.tile() == Tile.LORD_BRITISHS_CASTLE_ENTRANCE) {
+            if (rowDelta == 1 && renderedTile.tile() == Tile.LORD_BRITISHS_CASTLE_ENTRANCE) {
                 moveBlocked();
                 afterPlayerMove();
                 return;
@@ -109,7 +84,8 @@ public class Game {
                 afterPlayerMove();
                 return;
             }
-            gameState.increaseRow();
+            gameState.changeRow(rowDelta);
+            gameState.changeCol(colDelta);
             if (renderedTile.tile().type() == TileType.PORTAL) {
                 gameState.enter();
             }
@@ -118,54 +94,36 @@ public class Game {
         afterPlayerMove();
     }
 
-    public void onMoveLeft() {
-        RenderedTile renderedTile = gameState.tileAt(gameState.row(), gameState.col() - 1);
-        if (renderedTile.tile() == null) {
-            gameState.returnToSurface();
-        }
-        else {
-            if (renderedTile.tile().walkability() == 0) {
-                moveBlocked();
-                afterPlayerMove();
-                return;
-            }
-            if (! allowWalkTo(renderedTile)) {
-                moveSlowed();
-                afterPlayerMove();
-                return;
-            }
-            gameState.decreaseCol();
-            if (renderedTile.tile().type() == TileType.PORTAL) {
-                gameState.enter();
-            }
-        }
-        updateBackground();
-        afterPlayerMove();
+    public void onMoveNorth() {
+        onMove(-1, 0);
     }
 
-    public void onMoveRight() {
-        RenderedTile renderedTile = gameState.tileAt(gameState.row(), gameState.col() + 1);
-        if (renderedTile.tile() == null) {
-            gameState.returnToSurface();
-        }
-        else {
-            if (renderedTile.tile().walkability() == 0) {
-                moveBlocked();
-                afterPlayerMove();
-                return;
-            }
-            if (! allowWalkTo(renderedTile)) {
-                moveSlowed();
-                afterPlayerMove();
-                return;
-            }
-            gameState.increaseCol();
-            if (renderedTile.tile().type() == TileType.PORTAL) {
-                gameState.enter();
-            }
-        }
-        updateBackground();
-        afterPlayerMove();
+    public void onMoveNortheast() {
+        onMove(-1, 1);
+    }
+
+    public void onMoveEast() {
+        onMove(0, 1);
+    }
+
+    public void onMoveSoutheast() {
+        onMove(1, 1);
+    }
+
+    public void onMoveSouth() {
+        onMove(1, 0);
+    }
+
+    public void onMoveSouthwest() {
+        onMove(1, -1);
+    }
+
+    public void onMoveWest() {
+        onMove(0, -1);
+    }
+
+    public void onMoveNorthwest() {
+        onMove(-1, -1);
     }
 
     private void initializeAnimation() {

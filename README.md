@@ -32,4 +32,5 @@ files from their own original Ultima IV game disk into the `src/main/resources/d
 * Animation of the water portion of the half white / half water tiles
 * Apply transparency to characters to see the ground tile below them
 * Apply transparency to some object tiles and guess at the correct ground tile to show below them
+* Add diagonal movement
 * more to come...

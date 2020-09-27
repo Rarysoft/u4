@@ -25,7 +25,6 @@ package com.rarysoft.u4.model;
 
 import java.util.*;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public class PeopleTracker {
     private static final Random RANDOM = new Random();
@@ -70,6 +69,8 @@ public class PeopleTracker {
                                 person,
                                 direction < 4 ? person.row() - 1 : direction > 5 ? person.row() + 1 : person.row(),
                                 direction == 1 || direction == 4 || direction == 6 ? person.col() - 1 : direction == 3 || direction == 5 || direction == 8 ? person.col() + 1 : person.col(),
+                                playerRow,
+                                playerCol,
                                 area);
                     }
                     break;
@@ -81,6 +82,8 @@ public class PeopleTracker {
                             person,
                             person.row() > playerRow ? person.row() - 1 : person.row() < playerRow ? person.row() + 1 : person.row(),
                             person.col() > playerCol ? person.col() - 1 : person.col() < playerCol ? person.col() + 1 : person.col(),
+                            playerRow,
+                            playerCol,
                             area);
                     break;
 
@@ -91,6 +94,8 @@ public class PeopleTracker {
                             person,
                             person.row() > playerRow ? person.row() - 1 : person.row() < playerRow ? person.row() + 1 : person.row(),
                             person.col() > playerCol ? person.col() - 1 : person.col() < playerCol ? person.col() + 1 : person.col(),
+                            playerRow,
+                            playerCol,
                             area);
                     // TODO: need to implement combat
                     break;
@@ -101,9 +106,15 @@ public class PeopleTracker {
         }));
     }
 
-    private void attemptToMoveTo(int id, Person person, int row, int col, Tile[][] area) {
+    private void attemptToMoveTo(int id, Person person, int row, int col, int playerRow, int playerCol, Tile[][] area) {
+        if (row == playerRow && col == playerCol) {
+            return;
+        }
         int walkability = area[row][col].walkability();
         if (walkability < 100 && RANDOM.nextInt(100) >= walkability) {
+            return;
+        }
+        if (people.get(id).stream().anyMatch(otherPerson -> otherPerson.row() == row && otherPerson.col() == col)) {
             return;
         }
         person.moveTo(row, col);

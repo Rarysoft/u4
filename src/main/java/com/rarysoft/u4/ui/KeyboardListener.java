@@ -39,16 +39,32 @@ public class KeyboardListener extends KeyAdapter {
     public void keyPressed(KeyEvent event) {
         switch (event.getKeyCode()) {
             case KeyEvent.VK_UP:
-                game.onMoveUp();
+            case KeyEvent.VK_NUMPAD8:
+                game.onMoveNorth();
                 break;
-            case KeyEvent.VK_DOWN:
-                game.onMoveDown();
-                break;
-            case KeyEvent.VK_LEFT:
-                game.onMoveLeft();
+            case KeyEvent.VK_NUMPAD9:
+                game.onMoveNortheast();
                 break;
             case KeyEvent.VK_RIGHT:
-                game.onMoveRight();
+            case KeyEvent.VK_NUMPAD6:
+                game.onMoveEast();
+                break;
+            case KeyEvent.VK_NUMPAD3:
+                game.onMoveSoutheast();
+                break;
+            case KeyEvent.VK_DOWN:
+            case KeyEvent.VK_NUMPAD2:
+                game.onMoveSouth();
+                break;
+            case KeyEvent.VK_NUMPAD1:
+                game.onMoveSouthwest();
+                break;
+            case KeyEvent.VK_LEFT:
+            case KeyEvent.VK_NUMPAD4:
+                game.onMoveWest();
+                break;
+            case KeyEvent.VK_NUMPAD7:
+                game.onMoveNorthwest();
                 break;
         }
     }

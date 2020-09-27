@@ -50,6 +50,14 @@ public class GameState {
         return col;
     }
 
+    public void changeRow(int delta) {
+        row += delta;
+    }
+
+    public void changeCol(int delta) {
+        col += delta;
+    }
+
     public void increaseRow() {
         row++;
     }
