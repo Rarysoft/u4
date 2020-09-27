@@ -107,6 +107,9 @@ public class PeopleTracker {
     }
 
     private void attemptToMoveTo(int id, Person person, int row, int col, int playerRow, int playerCol, Tile[][] area) {
+        if (row < 0 || row >= area.length || col < 0 || col >= area[row].length) {
+            return;
+        }
         if (row == playerRow && col == playerCol) {
             return;
         }
