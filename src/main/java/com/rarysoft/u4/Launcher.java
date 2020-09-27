@@ -24,10 +24,7 @@
 package com.rarysoft.u4;
 
 import com.rarysoft.u4.i18n.Messages;
-import com.rarysoft.u4.model.Game;
-import com.rarysoft.u4.model.GameState;
-import com.rarysoft.u4.model.Maps;
-import com.rarysoft.u4.model.Tiles;
+import com.rarysoft.u4.model.*;
 import com.rarysoft.u4.ui.GamePanel;
 import com.rarysoft.u4.ui.GameWindow;
 import com.rarysoft.u4.ui.KeyboardListener;
@@ -79,7 +76,7 @@ public class Launcher {
         FrameHelper.maximize(gameWindow);
         FrameHelper.show(gameWindow);
         Maps maps = Maps.fromFiles("data/world.map");
-        game.start(new GameState(maps, maps.world()));
+        game.start(new GameState(maps, new PeopleTracker(), maps.world()));
     }
 
     private void initializeLogFile() {

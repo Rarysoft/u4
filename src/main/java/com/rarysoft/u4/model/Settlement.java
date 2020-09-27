@@ -11,13 +11,14 @@ public class Settlement implements Map {
 
     private static final int NPC_COUNT = 32;
 
+    private final int id;
     private final int worldX;
     private final int worldY;
     private final int startX;
     private final int startY;
     private final Tile areaTile;
 
-    public static Settlement fromStream(InputStream stream, int worldX, int worldY, int startX, int startY, Tile areaTile) throws IOException {
+    public static Settlement fromStream(InputStream stream, int id, int worldX, int worldY, int startX, int startY, Tile areaTile) throws IOException {
         Tile[][] data = new Tile[MAP_HEIGHT][MAP_WIDTH];
         for (int row = 0; row < MAP_HEIGHT; row ++) {
             for (int col = 0; col < MAP_WIDTH; col ++) {
@@ -60,17 +61,18 @@ public class Settlement implements Map {
         List<Person> people = new ArrayList<>();
         for (int npc = 0; npc < NPC_COUNT; npc ++) {
             if (npcTiles[npc] > 0) {
-                people.add(new Person(npcTiles[npc], npcStartXs[npc], npcStartYs[npc], npcMovementBehaviours[npc], npcConversationIndexes[npc]));
+                people.add(new Person(Tile.forIndex(npcTiles[npc]), npcStartXs[npc], npcStartYs[npc], npcMovementBehaviours[npc], npcConversationIndexes[npc]));
             }
         }
-        return new Settlement(data, people, worldX, worldY, startX, startY, areaTile);
+        return new Settlement(id, data, people, worldX, worldY, startX, startY, areaTile);
     }
 
     private final Tile[][] data;
 
     private final List<Person> people;
 
-    private Settlement(Tile[][] data, List<Person> people, int worldX, int worldY, int startX, int startY, Tile areaTile) {
+    private Settlement(int id, Tile[][] data, List<Person> people, int worldX, int worldY, int startX, int startY, Tile areaTile) {
+        this.id = id;
         this.data = data;
         this.people = people;
         this.worldX = worldX;
@@ -78,6 +80,11 @@ public class Settlement implements Map {
         this.startX = startX;
         this.startY = startY;
         this.areaTile = areaTile;
+    }
+
+    @Override
+    public int id() {
+        return id;
     }
 
     @Override
@@ -106,6 +113,16 @@ public class Settlement implements Map {
     }
 
     @Override
+    public List<Person> people() {
+        return people;
+    }
+
+    @Override
+    public Tile[][] full() {
+        return data;
+    }
+
+    @Override
     public Tile[][] view(int centerX, int centerY, int radius) {
         int size = radius * 2 + 1;
         Tile[][] view = new Tile[size][size];
@@ -113,21 +130,21 @@ public class Settlement implements Map {
             for (int col = 0; col < size; col ++) {
                 int mapRow = centerY - radius + row;
                 int mapCol = centerX - radius + col;
-                view[row][col] = isWithinMapRange(mapCol, mapRow) ? data[mapRow][mapCol] : areaTile;
+                view[row][col] = isWithinMapRange(mapRow, mapCol) ? data[mapRow][mapCol] : areaTile;
             }
         }
         return view;
     }
 
     @Override
-    public Tile at(int x, int y) {
-        if (x < 0 || x >= MAP_WIDTH || y < 0 || y >= MAP_HEIGHT) {
+    public Tile at(int row, int col) {
+        if (col < 0 || col >= MAP_WIDTH || row < 0 || row >= MAP_HEIGHT) {
             return null;
         }
-        return data[y][x];
+        return data[row][col];
     }
 
-    private boolean isWithinMapRange(int x, int y) {
-        return ! (y < 0 || y >= MAP_HEIGHT || x < 0 || x >= MAP_WIDTH);
+    private boolean isWithinMapRange(int row, int col) {
+        return ! (row < 0 || row >= MAP_HEIGHT || col < 0 || col >= MAP_WIDTH);
     }
 }

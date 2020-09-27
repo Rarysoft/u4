@@ -57,26 +57,26 @@ public class Game {
     }
 
     public void onMoveUp() {
-        Tile tile = gameState.tileAt(gameState.x(), gameState.y() - 1);
-        if (tile == null) {
+        RenderedTile renderedTile = gameState.tileAt(gameState.row() - 1, gameState.col());
+        if (renderedTile.tile() == null) {
             gameState.returnToSurface();
         }
         else {
-            if (tile.walkability() == 0) {
+            if (renderedTile.tile().walkability() == 0) {
                 moveBlocked();
                 return;
             }
             // Special case: don't allow northward exit from LB's castle
-            if (gameState.tileAt(gameState.x(), gameState.y()) == Tile.LORD_BRITISHS_CASTLE_ENTRANCE) {
+            if (gameState.tileAt(gameState.row(), gameState.col()).tile() == Tile.LORD_BRITISHS_CASTLE_ENTRANCE) {
                 moveBlocked();
                 return;
             }
-            if (! allowWalkTo(tile)) {
+            if (! allowWalkTo(renderedTile)) {
                 moveSlowed();
                 return;
             }
-            gameState.decreaseY();
-            if (tile.type() == TileType.PORTAL) {
+            gameState.decreaseRow();
+            if (renderedTile.tile().type() == TileType.PORTAL) {
                 gameState.enter();
             }
         }
@@ -84,26 +84,26 @@ public class Game {
     }
 
     public void onMoveDown() {
-        Tile tile = gameState.tileAt(gameState.x(), gameState.y() + 1);
-        if (tile == null) {
+        RenderedTile renderedTile = gameState.tileAt(gameState.row() + 1, gameState.col());
+        if (renderedTile.tile() == null) {
             gameState.returnToSurface();
         }
         else {
-            if (tile.walkability() == 0) {
+            if (renderedTile.tile().walkability() == 0) {
                 moveBlocked();
                 return;
             }
             // Special case: don't allow entry to LB's castle from the north
-            if (tile == Tile.LORD_BRITISHS_CASTLE_ENTRANCE) {
+            if (renderedTile.tile() == Tile.LORD_BRITISHS_CASTLE_ENTRANCE) {
                 moveBlocked();
                 return;
             }
-            if (! allowWalkTo(tile)) {
+            if (! allowWalkTo(renderedTile)) {
                 moveSlowed();
                 return;
             }
-            gameState.increaseY();
-            if (tile.type() == TileType.PORTAL) {
+            gameState.increaseRow();
+            if (renderedTile.tile().type() == TileType.PORTAL) {
                 gameState.enter();
             }
         }
@@ -111,21 +111,21 @@ public class Game {
     }
 
     public void onMoveLeft() {
-        Tile tile = gameState.tileAt(gameState.x() - 1, gameState.y());
-        if (tile == null) {
+        RenderedTile renderedTile = gameState.tileAt(gameState.row(), gameState.col() - 1);
+        if (renderedTile.tile() == null) {
             gameState.returnToSurface();
         }
         else {
-            if (tile.walkability() == 0) {
+            if (renderedTile.tile().walkability() == 0) {
                 moveBlocked();
                 return;
             }
-            if (! allowWalkTo(tile)) {
+            if (! allowWalkTo(renderedTile)) {
                 moveSlowed();
                 return;
             }
-            gameState.decreaseX();
-            if (tile.type() == TileType.PORTAL) {
+            gameState.decreaseCol();
+            if (renderedTile.tile().type() == TileType.PORTAL) {
                 gameState.enter();
             }
         }
@@ -133,21 +133,21 @@ public class Game {
     }
 
     public void onMoveRight() {
-        Tile tile = gameState.tileAt(gameState.x() + 1, gameState.y());
-        if (tile == null) {
+        RenderedTile renderedTile = gameState.tileAt(gameState.row(), gameState.col() + 1);
+        if (renderedTile.tile() == null) {
             gameState.returnToSurface();
         }
         else {
-            if (tile.walkability() == 0) {
+            if (renderedTile.tile().walkability() == 0) {
                 moveBlocked();
                 return;
             }
-            if (! allowWalkTo(tile)) {
+            if (! allowWalkTo(renderedTile)) {
                 moveSlowed();
                 return;
             }
-            gameState.increaseX();
-            if (tile.type() == TileType.PORTAL) {
+            gameState.increaseCol();
+            if (renderedTile.tile().type() == TileType.PORTAL) {
                 gameState.enter();
             }
         }
@@ -175,36 +175,35 @@ public class Game {
         displayListeners.forEach(DisplayListener::moveSlowed);
     }
 
-    private boolean allowWalkTo(Tile tile) {
-        if (tile.walkability() == 100) {
+    private boolean allowWalkTo(RenderedTile renderedTile) {
+        if (renderedTile.person().isPresent()) {
+            return false;
+        }
+        if (renderedTile.tile().walkability() == 100) {
             return true;
         }
-        return random.nextInt(100) < tile.walkability();
+        return random.nextInt(100) < renderedTile.tile().walkability();
     }
 
-    private RenderedTile[][] determinePlayerView(Tile[][] view) {
+    private RenderedTile[][] determinePlayerView(RenderedTile[][] view) {
         int size = view.length;
-        RenderedTile[][] playerView = new RenderedTile[size][size];
         for (int row = 0; row < size; row ++) {
             for (int col = 0; col < size; col ++) {
-                if (isInStandardView(row, col)) {
-                    playerView[row][col] = new RenderedTile(view[row][col]);
-                }
-                else {
-                    playerView[row][col] = new RenderedTile(view[row][col]).hidden();
+                if (! isInStandardView(row, col)) {
+                    view[row][col] = view[row][col].hidden();
                 }
             }
         }
-        Visibility visibility = new Visibility(playerView);
+        Visibility visibility = new Visibility(view);
         for (int row = 0; row < size; row ++) {
             for (int col = 0; col < size; col ++) {
-                if (playerView[row][col].render() && visibility.isVisibleToPlayer(Coordinate.forRowCol(row, col))) {
+                if (view[row][col].render() && visibility.isVisibleToPlayer(Coordinate.forRowCol(row, col))) {
                     continue;
                 }
-                playerView[row][col] = new RenderedTile(view[row][col]).hidden();
+                view[row][col] = view[row][col].hidden();
             }
         }
-        return playerView;
+        return view;
     }
 
     private boolean isInStandardView(int row, int col) {

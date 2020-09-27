@@ -23,18 +23,24 @@
  */
 package com.rarysoft.u4.model;
 
+import java.util.Optional;
+
 public class RenderedTile {
     private final Tile tile;
 
+    private final Person person;
+
     private final boolean render;
 
-    public RenderedTile(Tile tile) {
+    public RenderedTile(Tile tile, Person person) {
         this.tile = tile;
+        this.person = person;
         this.render = true;
     }
 
-    private RenderedTile(Tile tile, boolean render) {
+    private RenderedTile(Tile tile, Person person, boolean render) {
         this.tile = tile;
+        this.person = person;
         this.render = render;
     }
 
@@ -42,11 +48,15 @@ public class RenderedTile {
         return tile;
     }
 
+    public Optional<Person> person() {
+        return Optional.ofNullable(person);
+    }
+
     public boolean render() {
         return render;
     }
 
     public RenderedTile hidden() {
-        return new RenderedTile(tile, false);
+        return new RenderedTile(tile, person, false);
     }
 }

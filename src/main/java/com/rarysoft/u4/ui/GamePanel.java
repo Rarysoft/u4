@@ -80,77 +80,84 @@ public class GamePanel extends JPanel implements DisplayListener {
                 RenderedTile renderedTile = background[row][col];
                 Tile backgroundTile = renderedTile.render() ? renderedTile.tile() : null;
                 if (! handledAsSpecialCase(graphics, backgroundTile, row, col)) {
-                    drawTile(graphics, backgroundTile, col * Tiles.TILE_WIDTH * scale, row * Tiles.TILE_HEIGHT * scale, false);
+                    drawTile(graphics, backgroundTile, row * Tiles.TILE_HEIGHT * scale, col * Tiles.TILE_WIDTH * scale, false);
+                    if (renderedTile.render()) {
+                        int currentRow = row;
+                        int currentCol = col;
+                        renderedTile.person().ifPresent(person ->
+                                drawTile(graphics, person.tile(), currentRow * Tiles.TILE_HEIGHT * scale, currentCol * Tiles.TILE_WIDTH * scale, true)
+                        );
+                    }
                 }
             }
         }
-        drawTile(graphics, Tile.AVATAR, centerCol * Tiles.TILE_WIDTH * scale, centerRow * Tiles.TILE_HEIGHT * scale, true);
+        drawTile(graphics, Tile.AVATAR, centerRow * Tiles.TILE_HEIGHT * scale, centerCol * Tiles.TILE_WIDTH * scale, true);
     }
 
     private boolean handledAsSpecialCase(Graphics graphics, Tile tile, int row, int col) {
         if (tile == Tile.LYIN_DOWN) {
-            Tile groundTile = guessGroundTile(col, row);
+            Tile groundTile = guessGroundTile(row, col);
             if (groundTile != null) {
-                drawTile(graphics, groundTile, col * Tiles.TILE_WIDTH * scale, row * Tiles.TILE_HEIGHT * scale, false);
-                drawTile(graphics, tile, col * Tiles.TILE_WIDTH * scale, row * Tiles.TILE_HEIGHT * scale, true);
+                drawTile(graphics, groundTile, row * Tiles.TILE_HEIGHT * scale, col * Tiles.TILE_WIDTH * scale, false);
+                drawTile(graphics, tile, row * Tiles.TILE_HEIGHT * scale, col * Tiles.TILE_WIDTH * scale, true);
                 return true;
             }
         }
         if (tile == Tile.WHITE_SW || tile == Tile.WHITE_SE || tile == Tile.WHITE_NW || tile == Tile.WHITE_NE) {
-            drawTile(graphics, Tile.SHALLOW_WATER, col * Tiles.TILE_WIDTH * scale, row * Tiles.TILE_HEIGHT * scale, false);
-            drawPartialTile(graphics, tile, Colours.COLOUR_BRIGHT_WHITE, col * Tiles.TILE_WIDTH * scale, row * Tiles.TILE_HEIGHT * scale);
+            drawTile(graphics, Tile.SHALLOW_WATER, row * Tiles.TILE_HEIGHT * scale, col * Tiles.TILE_WIDTH * scale, false);
+            drawPartialTile(graphics, tile, Colours.COLOUR_BRIGHT_WHITE, row * Tiles.TILE_HEIGHT * scale, col * Tiles.TILE_WIDTH * scale);
             return true;
         }
         if (tile == Tile.ANKH) {
-            Tile groundTile = guessGroundTile(col, row);
+            Tile groundTile = guessGroundTile(row, col);
             if (groundTile != null) {
-                drawTile(graphics, groundTile, col * Tiles.TILE_WIDTH * scale, row * Tiles.TILE_HEIGHT * scale, false);
-                drawTile(graphics, tile, col * Tiles.TILE_WIDTH * scale, row * Tiles.TILE_HEIGHT * scale, true);
+                drawTile(graphics, groundTile, row * Tiles.TILE_HEIGHT * scale, col * Tiles.TILE_WIDTH * scale, false);
+                drawTile(graphics, tile, row * Tiles.TILE_HEIGHT * scale, col * Tiles.TILE_WIDTH * scale, true);
                 return true;
             }
         }
         if (tile == Tile.CHEST) {
-            Tile groundTile = guessGroundTile(col, row);
+            Tile groundTile = guessGroundTile(row, col);
             if (groundTile == null) {
                 groundTile = Tile.BRICK_FLOOR;
             }
-            drawTile(graphics, groundTile, col * Tiles.TILE_WIDTH * scale, row * Tiles.TILE_HEIGHT * scale, false);
-            drawTile(graphics, tile, col * Tiles.TILE_WIDTH * scale, row * Tiles.TILE_HEIGHT * scale, true);
+            drawTile(graphics, groundTile, row * Tiles.TILE_HEIGHT * scale, col * Tiles.TILE_WIDTH * scale, false);
+            drawTile(graphics, tile, row * Tiles.TILE_HEIGHT * scale, col * Tiles.TILE_WIDTH * scale, true);
             return true;
         }
         return false;
     }
 
-    private void drawTile(Graphics graphics, Tile tile, int x, int y, boolean drawInForeground) {
-        for (int row = 0; row < Tiles.TILE_HEIGHT; row ++) {
-            for (int col = 0; col < Tiles.TILE_WIDTH; col ++) {
-                int code = codeWithOffsetApplied(tile, row, col, drawInForeground);
+    private void drawTile(Graphics graphics, Tile tile, int row, int col, boolean drawInForeground) {
+        for (int pixelRow = 0; pixelRow < Tiles.TILE_HEIGHT; pixelRow ++) {
+            for (int pixelCol = 0; pixelCol < Tiles.TILE_WIDTH; pixelCol ++) {
+                int code = codeWithOffsetApplied(tile, pixelRow, pixelCol, drawInForeground);
                 if (code != -1) {
                     graphics.setColor(Colours.BY_CODE[code]);
-                    graphics.fillRect(x + col * scale, y + row * scale, scale, scale);
+                    graphics.fillRect(col + pixelCol * scale, row + pixelRow * scale, scale, scale);
                 }
             }
         }
     }
 
-    private void drawPartialTile(Graphics graphics, Tile tile, int colour, int x, int y) {
-        for (int row = 0; row < Tiles.TILE_HEIGHT; row ++) {
-            for (int col = 0; col < Tiles.TILE_WIDTH; col ++) {
-                int code = tiles.data()[tile.index()][row][col];
+    private void drawPartialTile(Graphics graphics, Tile tile, int colour, int row, int col) {
+        for (int pixelRow = 0; pixelRow < Tiles.TILE_HEIGHT; pixelRow ++) {
+            for (int pixelCol = 0; pixelCol < Tiles.TILE_WIDTH; pixelCol ++) {
+                int code = tiles.data()[tile.index()][pixelRow][pixelCol];
                 if (code == colour) {
                     graphics.setColor(Colours.BY_CODE[code]);
-                    graphics.fillRect(x + col * scale, y + row * scale, scale, scale);
+                    graphics.fillRect(col + pixelCol * scale, row + pixelRow * scale, scale, scale);
                 }
             }
         }
     }
 
-    private Tile guessGroundTile(int x, int y) {
+    private Tile guessGroundTile(int row, int col) {
         java.util.List<Tile> groundTiles = new ArrayList<>();
         List<Integer> counts = new ArrayList<>();
-        for (int row = (y >= 0 ? y - 1 : y); row < (y + 1 < background.length ? y + 1 : y) + 1; row ++) {
-            for (int col = (x >= 0 ? x - 1 : x); col < (x + 1 < background[row].length ? x + 1 : x) + 1; col ++) {
-                Tile tile = background[row][col].tile();
+        for (int surroundingRow = (row >= 0 ? row - 1 : row); surroundingRow < (row + 1 < background.length ? row + 1 : row) + 1; surroundingRow ++) {
+            for (int surroundingCol = (col >= 0 ? col - 1 : col); surroundingCol < (col + 1 < background[surroundingRow].length ? col + 1 : col) + 1; surroundingCol ++) {
+                Tile tile = background[surroundingRow][surroundingCol].tile();
                 if (tile.type() == TileType.GROUND) {
                     int tileIndex = groundTiles.indexOf(tile);
                     if (tileIndex > -1) {

@@ -23,65 +23,95 @@
  */
 package com.rarysoft.u4.model;
 
+import java.sql.SQLOutput;
+import java.util.List;
+
 public class GameState {
     private final Maps maps;
+    private final PeopleTracker peopleTracker;
 
     private Map map;
-    private int surfaceX;
-    private int surfaceY;
-    private int x;
-    private int y;
+    private int surfaceRow;
+    private int surfaceCol;
+    private int row;
+    private int col;
 
-    public GameState(Maps maps, Map map) {
+    public GameState(Maps maps, PeopleTracker peopleTracker, Map map) {
         this.maps = maps;
+        this.peopleTracker = peopleTracker;
         this.map = map;
-        this.x = maps.world().startX();
-        this.y = maps.world().startY();
+        this.col = maps.world().startX();
+        this.row = maps.world().startY();
+        switchToMap(this.map);
     }
 
-    public int x() {
-        return x;
+    public int row() {
+        return row;
     }
 
-    public int y() {
-        return y;
+    public int col() {
+        return col;
     }
 
-    public void increaseX() {
-        x ++;
+    public void increaseRow() {
+        row++;
     }
 
-    public void decreaseX() {
-        x --;
+    public void decreaseRow() {
+        row--;
     }
 
-    public void increaseY() {
-        y ++;
+    public void increaseCol() {
+        col++;
     }
 
-    public void decreaseY() {
-        y --;
+    public void decreaseCol() {
+        col--;
     }
 
-    public Tile[][] mapView(int radius) {
-        return map.view(x, y, radius);
+    public RenderedTile[][] mapView(int radius) {
+        Tile[][] mapView = map.view(col, row, radius);
+        int viewSize = radius * 2 + 1;
+        RenderedTile[][] view = new RenderedTile[viewSize][viewSize];
+        for (int row = 0; row < viewSize; row ++) {
+            for (int col = 0; col < viewSize; col ++) {
+                int mapRow = this.row - radius + row;
+                int mapCol = this.col - radius + col;
+                view[row][col] = renderedTile(mapView[row][col], mapRow, mapCol);
+            }
+        }
+        return view;
     }
 
-    public Tile tileAt(int x, int y) {
-        return map.at(x, y);
+    public RenderedTile tileAt(int row, int col) {
+        return renderedTile(map.at(row, col), row, col);
     }
 
     public void enter() {
-        map = maps.mapAt(x, y);
-        surfaceX = x;
-        surfaceY = y;
-        x = map.startX();
-        y = map.startY();
+        switchToMap(maps.mapAt(col, row));
+        surfaceCol = col;
+        surfaceRow = row;
+        col = map.startX();
+        row = map.startY();
     }
 
     public void returnToSurface() {
         map = maps.world();
-        x = surfaceX;
-        y = surfaceY;
+        col = surfaceCol;
+        row = surfaceRow;
+    }
+
+    public void movePeople() {
+        peopleTracker.movePeople(map.full(), row, col);
+    }
+
+    private void switchToMap(Map map) {
+        this.map = map;
+        peopleTracker.addPeople(map.id(), map.people());
+    }
+
+    private RenderedTile renderedTile(Tile tile, int row, int col) {
+        Person person = peopleTracker.personAt(map.id(), row, col).orElse(null);
+        return new RenderedTile(tile, person);
     }
 }

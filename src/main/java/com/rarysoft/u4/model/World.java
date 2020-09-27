@@ -2,6 +2,8 @@ package com.rarysoft.u4.model;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 public class World implements Map {
     private static final int MAP_WIDTH = 256;
@@ -33,6 +35,11 @@ public class World implements Map {
     }
 
     @Override
+    public int id() {
+        return 0;
+    }
+
+    @Override
     public MapType type() {
         return MapType.WORLD;
     }
@@ -58,6 +65,16 @@ public class World implements Map {
     }
 
     @Override
+    public List<Person> people() {
+        return new ArrayList<>();
+    }
+
+    @Override
+    public Tile[][] full() {
+        return data;
+    }
+
+    @Override
     public Tile[][] view(int centerX, int centerY, int radius) {
         int size = radius * 2 + 1;
         Tile[][] view = new Tile[size][size];
@@ -72,8 +89,8 @@ public class World implements Map {
     }
 
     @Override
-    public Tile at(int x, int y) {
-        return data[y][x];
+    public Tile at(int row, int col) {
+        return data[row][col];
     }
 
     private boolean isWithinMapRange(int x, int y) {

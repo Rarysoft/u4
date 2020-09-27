@@ -31,8 +31,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class VisibilityTest {
     private final static int VIEW_SIZE = 21;
     private final static int CENTER = (VIEW_SIZE - 1) / 2;
-    private final RenderedTile clear = new RenderedTile(Tile.GRASSLANDS);
-    private final RenderedTile solid = new RenderedTile(Tile.MOUNTAINS);
+    private final RenderedTile clear = new RenderedTile(Tile.GRASSLANDS, null);
+    private final RenderedTile solid = new RenderedTile(Tile.MOUNTAINS, null);
     private final RenderedTile[][] area = new RenderedTile[VIEW_SIZE][VIEW_SIZE];
 
     @Before

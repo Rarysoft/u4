@@ -1,30 +1,35 @@
 package com.rarysoft.u4.model;
 
 public class Person {
-    private final int tile;
-    private final int startX;
-    private final int startY;
+    private final Tile tile;
+    private final int startCol;
+    private final int startRow;
     private final int movementBehaviour;
     private final int conversationIndex;
 
-    public Person(int tile, int startX, int startY, int movementBehaviour, int conversationIndex) {
+    private int row;
+    private int col;
+
+    public Person(Tile tile, int startCol, int startRow, int movementBehaviour, int conversationIndex) {
         this.tile = tile;
-        this.startX = startX;
-        this.startY = startY;
+        this.startCol = startCol;
+        this.startRow = startRow;
         this.movementBehaviour = movementBehaviour;
         this.conversationIndex = conversationIndex;
+        col = startCol;
+        row = startRow;
     }
 
-    public int tile() {
+    public Tile tile() {
         return tile;
     }
 
-    public int startX() {
-        return startX;
+    public int startRow() {
+        return startRow;
     }
 
-    public int startY() {
-        return startY;
+    public int startCol() {
+        return startCol;
     }
 
     public int movementBehaviour() {
@@ -33,5 +38,18 @@ public class Person {
 
     public int conversationIndex() {
         return conversationIndex;
+    }
+
+    public int row() {
+        return row;
+    }
+
+    public int col() {
+        return col;
+    }
+
+    public void moveTo(int row, int col) {
+        this.row = row;
+        this.col = col;
     }
 }
