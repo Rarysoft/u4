@@ -64,15 +64,18 @@ public class Game {
         else {
             if (renderedTile.tile().walkability() == 0) {
                 moveBlocked();
+                afterPlayerMove();
                 return;
             }
             // Special case: don't allow northward exit from LB's castle
             if (gameState.tileAt(gameState.row(), gameState.col()).tile() == Tile.LORD_BRITISHS_CASTLE_ENTRANCE) {
                 moveBlocked();
+                afterPlayerMove();
                 return;
             }
             if (! allowWalkTo(renderedTile)) {
                 moveSlowed();
+                afterPlayerMove();
                 return;
             }
             gameState.decreaseRow();
@@ -81,6 +84,7 @@ public class Game {
             }
         }
         updateBackground();
+        afterPlayerMove();
     }
 
     public void onMoveDown() {
@@ -91,15 +95,18 @@ public class Game {
         else {
             if (renderedTile.tile().walkability() == 0) {
                 moveBlocked();
+                afterPlayerMove();
                 return;
             }
             // Special case: don't allow entry to LB's castle from the north
             if (renderedTile.tile() == Tile.LORD_BRITISHS_CASTLE_ENTRANCE) {
                 moveBlocked();
+                afterPlayerMove();
                 return;
             }
             if (! allowWalkTo(renderedTile)) {
                 moveSlowed();
+                afterPlayerMove();
                 return;
             }
             gameState.increaseRow();
@@ -108,6 +115,7 @@ public class Game {
             }
         }
         updateBackground();
+        afterPlayerMove();
     }
 
     public void onMoveLeft() {
@@ -118,10 +126,12 @@ public class Game {
         else {
             if (renderedTile.tile().walkability() == 0) {
                 moveBlocked();
+                afterPlayerMove();
                 return;
             }
             if (! allowWalkTo(renderedTile)) {
                 moveSlowed();
+                afterPlayerMove();
                 return;
             }
             gameState.decreaseCol();
@@ -130,6 +140,7 @@ public class Game {
             }
         }
         updateBackground();
+        afterPlayerMove();
     }
 
     public void onMoveRight() {
@@ -140,10 +151,12 @@ public class Game {
         else {
             if (renderedTile.tile().walkability() == 0) {
                 moveBlocked();
+                afterPlayerMove();
                 return;
             }
             if (! allowWalkTo(renderedTile)) {
                 moveSlowed();
+                afterPlayerMove();
                 return;
             }
             gameState.increaseCol();
@@ -152,6 +165,7 @@ public class Game {
             }
         }
         updateBackground();
+        afterPlayerMove();
     }
 
     private void initializeAnimation() {
@@ -238,5 +252,10 @@ public class Game {
             default:
                 return false;
         }
+    }
+
+    private void afterPlayerMove() {
+        gameState.movePeople();
+        updateBackground();
     }
 }

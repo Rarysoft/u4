@@ -93,23 +93,23 @@ public class Settlement implements Map {
     }
 
     @Override
-    public int worldX() {
-        return worldX;
-    }
-
-    @Override
-    public int worldY() {
+    public int worldRow() {
         return worldY;
     }
 
     @Override
-    public int startX() {
-        return startX;
+    public int worldCol() {
+        return worldX;
     }
 
     @Override
-    public int startY() {
+    public int startRow() {
         return startY;
+    }
+
+    @Override
+    public int startCol() {
+        return startX;
     }
 
     @Override
@@ -123,13 +123,13 @@ public class Settlement implements Map {
     }
 
     @Override
-    public Tile[][] view(int centerX, int centerY, int radius) {
+    public Tile[][] view(int centerRow, int centerCol, int radius) {
         int size = radius * 2 + 1;
         Tile[][] view = new Tile[size][size];
         for (int row = 0; row < size; row ++) {
             for (int col = 0; col < size; col ++) {
-                int mapRow = centerY - radius + row;
-                int mapCol = centerX - radius + col;
+                int mapRow = centerRow - radius + row;
+                int mapCol = centerCol - radius + col;
                 view[row][col] = isWithinMapRange(mapRow, mapCol) ? data[mapRow][mapCol] : areaTile;
             }
         }

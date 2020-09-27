@@ -45,23 +45,23 @@ public class World implements Map {
     }
 
     @Override
-    public int worldX() {
+    public int worldRow() {
         return 0;
     }
 
     @Override
-    public int worldY() {
+    public int worldCol() {
         return 0;
     }
 
     @Override
-    public int startX() {
-        return 78;
-    }
-
-    @Override
-    public int startY() {
+    public int startRow() {
         return 104;
+    }
+
+    @Override
+    public int startCol() {
+        return 78;
     }
 
     @Override
@@ -75,13 +75,13 @@ public class World implements Map {
     }
 
     @Override
-    public Tile[][] view(int centerX, int centerY, int radius) {
+    public Tile[][] view(int centerRow, int centerCol, int radius) {
         int size = radius * 2 + 1;
         Tile[][] view = new Tile[size][size];
         for (int row = 0; row < size; row ++) {
             for (int col = 0; col < size; col ++) {
-                int mapRow = centerY - radius + row;
-                int mapCol = centerX - radius + col;
+                int mapRow = centerRow - radius + row;
+                int mapCol = centerCol - radius + col;
                 view[row][col] = isWithinMapRange(mapCol, mapRow) ? data[mapRow][mapCol] : Tile.DEEP_WATER;
             }
         }

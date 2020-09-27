@@ -23,9 +23,6 @@
  */
 package com.rarysoft.u4.model;
 
-import java.sql.SQLOutput;
-import java.util.List;
-
 public class GameState {
     private final Maps maps;
     private final PeopleTracker peopleTracker;
@@ -40,8 +37,8 @@ public class GameState {
         this.maps = maps;
         this.peopleTracker = peopleTracker;
         this.map = map;
-        this.col = maps.world().startX();
-        this.row = maps.world().startY();
+        this.col = maps.world().startCol();
+        this.row = maps.world().startRow();
         switchToMap(this.map);
     }
 
@@ -70,7 +67,7 @@ public class GameState {
     }
 
     public RenderedTile[][] mapView(int radius) {
-        Tile[][] mapView = map.view(col, row, radius);
+        Tile[][] mapView = map.view(row, col, radius);
         int viewSize = radius * 2 + 1;
         RenderedTile[][] view = new RenderedTile[viewSize][viewSize];
         for (int row = 0; row < viewSize; row ++) {
@@ -91,8 +88,8 @@ public class GameState {
         switchToMap(maps.mapAt(col, row));
         surfaceCol = col;
         surfaceRow = row;
-        col = map.startX();
-        row = map.startY();
+        col = map.startCol();
+        row = map.startRow();
     }
 
     public void returnToSurface() {

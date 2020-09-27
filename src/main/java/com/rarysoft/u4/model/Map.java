@@ -7,19 +7,19 @@ public interface Map {
 
     MapType type();
 
-    int worldX();
+    int worldRow();
 
-    int worldY();
+    int worldCol();
 
-    int startX();
+    int startRow();
 
-    int startY();
+    int startCol();
 
     List<Person> people();
 
     Tile[][] full();
 
-    Tile[][] view(int centerX, int centerY, int radius);
+    Tile[][] view(int centerRow, int centerCol, int radius);
 
     Tile at(int row, int col);
 }

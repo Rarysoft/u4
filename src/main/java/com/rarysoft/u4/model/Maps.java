@@ -66,7 +66,7 @@ public class Maps {
     }
 
     public Map mapAt(int x, int y) {
-        return maps.stream().filter(map -> map.worldX() == x && map.worldY() == y).findAny().orElseThrow(RuntimeException::new);
+        return maps.stream().filter(map -> map.worldCol() == x && map.worldRow() == y).findAny().orElseThrow(RuntimeException::new);
     }
 
     private static Map loadMap(String mapFilename, int id, int worldX, int worldY, int startX, int startY, Tile areaTile) throws IOException {
