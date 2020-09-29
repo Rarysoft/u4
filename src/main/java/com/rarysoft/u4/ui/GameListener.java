@@ -21,26 +21,25 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.rarysoft.u4.i18n;
+package com.rarysoft.u4.ui;
 
-import java.util.ResourceBundle;
+import com.rarysoft.u4.model.DisplayListener;
+import com.rarysoft.u4.model.RenderedTile;
 
-public class Messages {
-    private final ResourceBundle resourceBundle;
+public class GameListener implements DisplayListener {
+    private final GameProvider gameProvider;
 
-    public Messages(String filename) {
-        resourceBundle = ResourceBundle.getBundle(filename);
+    public GameListener(GameProvider gameProvider) {
+        this.gameProvider = gameProvider;
     }
 
-    public String windowTitle() {
-        return resourceBundle.getString("window.title");
+    @Override
+    public void backgroundUpdated(RenderedTile[][] background, int animationCycle) {
+        gameProvider.showGameView(background, animationCycle);
     }
 
-    public String actionResponseBlocked() {
-        return resourceBundle.getString("action.response.blocked");
-    }
-
-    public String actionResponseSlowProgress() {
-        return resourceBundle.getString("action.response.slowProgress");
+    @Override
+    public void actionCompleted(String message) {
+        // nothing to update here
     }
 }

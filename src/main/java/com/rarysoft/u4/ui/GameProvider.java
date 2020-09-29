@@ -21,26 +21,10 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.rarysoft.u4.i18n;
+package com.rarysoft.u4.ui;
 
-import java.util.ResourceBundle;
+import com.rarysoft.u4.model.RenderedTile;
 
-public class Messages {
-    private final ResourceBundle resourceBundle;
-
-    public Messages(String filename) {
-        resourceBundle = ResourceBundle.getBundle(filename);
-    }
-
-    public String windowTitle() {
-        return resourceBundle.getString("window.title");
-    }
-
-    public String actionResponseBlocked() {
-        return resourceBundle.getString("action.response.blocked");
-    }
-
-    public String actionResponseSlowProgress() {
-        return resourceBundle.getString("action.response.slowProgress");
-    }
+public interface GameProvider {
+    void showGameView(RenderedTile[][] background, int animationCycle);
 }

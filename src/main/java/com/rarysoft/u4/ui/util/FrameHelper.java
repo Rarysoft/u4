@@ -33,6 +33,7 @@ public class FrameHelper {
      * @param frame The window to show.
      */
     public static void show(Window frame) {
+        frame.pack();
         frame.setVisible(true);
     }
 

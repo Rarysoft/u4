@@ -58,22 +58,6 @@ public class GameState {
         col += delta;
     }
 
-    public void increaseRow() {
-        row++;
-    }
-
-    public void decreaseRow() {
-        row--;
-    }
-
-    public void increaseCol() {
-        col++;
-    }
-
-    public void decreaseCol() {
-        col--;
-    }
-
     public RenderedTile[][] mapView(int radius) {
         Tile[][] mapView = map.view(row, col, radius);
         int viewSize = radius * 2 + 1;

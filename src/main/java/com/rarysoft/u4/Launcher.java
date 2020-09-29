@@ -30,12 +30,12 @@ import com.rarysoft.u4.ui.util.FrameHelper;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.MissingResourceException;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -62,25 +62,23 @@ public class Launcher {
      */
     public void run() throws IOException {
         initializeLogFile();
-        Messages messages = new Messages();
-        Tiles tiles = Tiles.fromStream(ClassLoader.getSystemClassLoader().getResourceAsStream("data/shapes.ega"));
-        Charset charset = Charset.fromStream(ClassLoader.getSystemClassLoader().getResourceAsStream("data/charset.ega"));
-        GamePanel gamePanel = new GamePanel(tiles, 3);
-        CommunicationPanel communicationPanel = new CommunicationPanel(charset, 3);
+        Messages messages = initializeMessages("i18n/messages");
+        Tiles tiles = initializeTiles("data/shapes.ega");
+        Charset charset = initializeCharset("data/charset.ega");
+        BufferedImage icon = initializeIcon("/images/ankh.png");
+        Maps maps = initializeMaps("data");
+        int scale = 3;
         UiBuilder uiBuilder = new UiBuilder();
-        JFrame gameWindow = uiBuilder.buildGameWindow(messages.windowTitle(), gamePanel, communicationPanel);
-        setGameWindowIcon(gameWindow);
-        Game game = new Game(messages);
-        game.addDisplayListener(gamePanel);
-        game.addDisplayListener(communicationPanel);
-        gameWindow.addKeyListener(new KeyboardListener(game));
+        JFrame gameWindow = uiBuilder.buildGameWindow(messages.windowTitle());
+        GameListener gameListener = uiBuilder.buildGamePanel(gameWindow, tiles, scale);
+        CommunicationListener communicationListener = uiBuilder.buildCommunicationPanel(gameWindow, charset, scale);
+        Game game = initializeGame(messages, gameWindow, gameListener, communicationListener);
+        gameWindow.setIconImage(icon);
         FrameHelper.enableExitOnClose(gameWindow);
         FrameHelper.center(gameWindow);
         FrameHelper.maximize(gameWindow);
         FrameHelper.show(gameWindow);
-        Maps maps = Maps.fromFiles("data/world.map");
         game.start(new GameState(maps, new PeopleTracker(), maps.world()));
-
     }
 
     private void initializeLogFile() {
@@ -98,12 +96,37 @@ public class Launcher {
         }
     }
 
-    private void setGameWindowIcon(JFrame gameWindow) {
+    private Messages initializeMessages(String filename) {
+        return new Messages(filename);
+    }
+
+    private Tiles initializeTiles(String filename) throws IOException {
+        return Tiles.fromStream(ClassLoader.getSystemClassLoader().getResourceAsStream(filename));
+    }
+
+    private Charset initializeCharset(String filename) throws IOException {
+        return Charset.fromStream(ClassLoader.getSystemClassLoader().getResourceAsStream(filename));
+    }
+
+    private Maps initializeMaps(String directory) throws IOException {
+        return Maps.fromFiles(directory);
+    }
+
+    private BufferedImage initializeIcon(String filename) {
         try {
-            gameWindow.setIconImage(ImageIO.read(Launcher.class.getResource("/images/ankh.png")));
+            return ImageIO.read(Launcher.class.getResource(filename));
         }
         catch (IOException e) {
             Logger.getGlobal().log(Level.SEVERE, null, e);
+            return null;
         }
+    }
+
+    private Game initializeGame(Messages messages, JFrame gameWindow, GameListener gameListener, CommunicationListener communicationListener) {
+        Game game = new Game(messages);
+        game.addDisplayListener(gameListener);
+        game.addDisplayListener(communicationListener);
+        gameWindow.addKeyListener(new KeyboardListener(game));
+        return game;
     }
 }

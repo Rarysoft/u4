@@ -23,17 +23,28 @@
  */
 package com.rarysoft.u4.ui;
 
+import com.rarysoft.u4.model.Charset;
+import com.rarysoft.u4.model.Tiles;
+
 import javax.swing.*;
 import java.awt.*;
 
 public class UiBuilder {
-    public JFrame buildGameWindow(String title, GamePanel gamePanel, CommunicationPanel communicationPanel) {
-        JFrame gameWindow = new JFrame(title);
+    public GameListener buildGamePanel(JFrame gameWindow, Tiles tiles, int scale) {
+        GamePanel gamePanel = new GamePanel(tiles, scale);
         gameWindow.add(gamePanel, BorderLayout.LINE_START);
+        return new GameListener(gamePanel);
+    }
+
+    public CommunicationListener buildCommunicationPanel(JFrame gameWindow, Charset charset, int scale) {
+        CommunicationPanel communicationPanel = new CommunicationPanel(charset, scale);
         JPanel panel = new JPanel(new BorderLayout());
         gameWindow.add(panel, BorderLayout.CENTER);
         panel.add(communicationPanel, BorderLayout.CENTER);
-        gameWindow.pack();
-        return gameWindow;
+        return new CommunicationListener(communicationPanel);
+    }
+
+    public JFrame buildGameWindow(String title) {
+        return new JFrame(title);
     }
 }

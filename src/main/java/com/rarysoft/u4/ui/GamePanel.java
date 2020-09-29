@@ -30,7 +30,7 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GamePanel extends JPanel implements DisplayListener {
+public class GamePanel extends JPanel implements GameProvider {
     private final Tiles tiles;
 
     private final int scale;
@@ -46,15 +46,10 @@ public class GamePanel extends JPanel implements DisplayListener {
     }
 
     @Override
-    public void backgroundUpdated(RenderedTile[][] background, int animationCycle) {
+    public void showGameView(RenderedTile[][] background, int animationCycle) {
         this.background = background;
         this.animationCycle = animationCycle;
         this.getParent().repaint();
-    }
-
-    @Override
-    public void actionCompleted(String message) {
-        // not handled here
     }
 
     @Override

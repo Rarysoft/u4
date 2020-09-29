@@ -28,13 +28,9 @@ import com.rarysoft.u4.model.*;
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
-public class CommunicationPanel extends JPanel implements DisplayListener {
-    private static final int LINE_LENGTH = 28;
-    private static final int MAX_LINES = 20;
+public class CommunicationPanel extends JPanel implements CommunicationProvider {
     private static final int OFFSET = 48;
 
     private final Charset charset;
@@ -48,72 +44,23 @@ public class CommunicationPanel extends JPanel implements DisplayListener {
     }
 
     @Override
-    public void backgroundUpdated(RenderedTile[][] background, int animationCycle) {
-        // nothing to update here
-    }
-
-    @Override
-    public void actionCompleted(String message) {
-        textLines.addAll(wrapText(message).stream().map(this::pad).collect(Collectors.toList()));
-        while (textLines.size() > MAX_LINES) {
-            textLines.remove(0);
-        }
+    public void showText(List<String> textLines) {
+        this.textLines.clear();
+        this.textLines.addAll(textLines);
+        this.getParent().repaint();
     }
 
     @Override
     public void paint(Graphics graphics) {
         super.paint(graphics);
-        for (int row = 0; row < MAX_LINES; row ++) {
-            String textLine;
-            if (row < textLines.size()) {
-                textLine = textLines.get(row);
-            }
-            else {
-                textLine = pad("");
-            }
-            for (int col = 0; col < LINE_LENGTH; col ++) {
+        for (int row = 0; row < textLines.size(); row ++) {
+            String textLine = textLines.get(row);
+            for (int col = 0; col < textLine.length(); col ++) {
                 int charCode = textLine.charAt(col);
                 int[][] character = charset.data()[charCode];
                 drawCharacter(graphics, character, row * Charset.CHAR_HEIGHT * scale, col * Charset.CHAR_WIDTH * scale);
             }
         }
-    }
-
-    private List<String> wrapText(String text) {
-        if (text.length() <= LINE_LENGTH) {
-            return Collections.singletonList(text);
-        }
-        List<String> lines = new ArrayList<>();
-        String textToWrap = text;
-        while (textToWrap.length() > LINE_LENGTH) {
-            int lastSpaceIndex = -1;
-            for (int index = 0; index < LINE_LENGTH; index ++) {
-                char character = textToWrap.charAt(index);
-                if (character == ' ') {
-                    lastSpaceIndex = index;
-                }
-            }
-            if (lastSpaceIndex == -1) {
-                // This shouldn't happen; just truncate the whole thing if it does
-                lines.add(textToWrap.substring(0, LINE_LENGTH));
-                textToWrap = "";
-                continue;
-            }
-            lines.add(textToWrap.substring(0, lastSpaceIndex));
-            textToWrap = textToWrap.substring(lastSpaceIndex + 1);
-        }
-        if (! textToWrap.isEmpty()) {
-            lines.add(textToWrap);
-        }
-        return lines;
-    }
-
-    private String pad(String text) {
-        StringBuilder stringBuilder = new StringBuilder(text);
-        for (int index = text.length(); index < LINE_LENGTH; index ++) {
-            stringBuilder.append(" ");
-        }
-        return stringBuilder.toString();
     }
 
     private void drawCharacter(Graphics graphics, int[][] character, int row, int col) {
