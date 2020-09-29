@@ -25,10 +25,7 @@ package com.rarysoft.u4;
 
 import com.rarysoft.u4.i18n.Messages;
 import com.rarysoft.u4.model.*;
-import com.rarysoft.u4.ui.CommunicationPanel;
-import com.rarysoft.u4.ui.GamePanel;
-import com.rarysoft.u4.ui.GameWindow;
-import com.rarysoft.u4.ui.KeyboardListener;
+import com.rarysoft.u4.ui.*;
 import com.rarysoft.u4.ui.util.FrameHelper;
 
 import javax.imageio.ImageIO;
@@ -70,7 +67,8 @@ public class Launcher {
         Charset charset = Charset.fromStream(ClassLoader.getSystemClassLoader().getResourceAsStream("data/charset.ega"));
         GamePanel gamePanel = new GamePanel(tiles, 3);
         CommunicationPanel communicationPanel = new CommunicationPanel(charset, 3);
-        GameWindow gameWindow = createGameWindow(messages, gamePanel, communicationPanel);
+        UiBuilder uiBuilder = new UiBuilder();
+        JFrame gameWindow = uiBuilder.buildGameWindow(messages.windowTitle(), gamePanel, communicationPanel);
         setGameWindowIcon(gameWindow);
         Game game = new Game(messages);
         game.addDisplayListener(gamePanel);
@@ -100,17 +98,7 @@ public class Launcher {
         }
     }
 
-    private GameWindow createGameWindow(Messages messages, GamePanel gamePanel, CommunicationPanel communicationPanel) {
-        try {
-            return new GameWindow(messages.windowTitle(), gamePanel, communicationPanel);
-        }
-        catch (MissingResourceException e) {
-            Logger.getGlobal().log(Level.SEVERE, null, e);
-            throw e;
-        }
-    }
-
-    private void setGameWindowIcon(GameWindow gameWindow) {
+    private void setGameWindowIcon(JFrame gameWindow) {
         try {
             gameWindow.setIconImage(ImageIO.read(Launcher.class.getResource("/images/ankh.png")));
         }

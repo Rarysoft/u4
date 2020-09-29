@@ -26,13 +26,14 @@ package com.rarysoft.u4.ui;
 import javax.swing.*;
 import java.awt.*;
 
-public class GameWindow extends JFrame {
-    public GameWindow(String title, GamePanel gamePanel, CommunicationPanel communicationPanel) {
-        super(title);
-        this.add(gamePanel, BorderLayout.LINE_START);
+public class UiBuilder {
+    public JFrame buildGameWindow(String title, GamePanel gamePanel, CommunicationPanel communicationPanel) {
+        JFrame gameWindow = new JFrame(title);
+        gameWindow.add(gamePanel, BorderLayout.LINE_START);
         JPanel panel = new JPanel(new BorderLayout());
-        this.add(panel, BorderLayout.CENTER);
+        gameWindow.add(panel, BorderLayout.CENTER);
         panel.add(communicationPanel, BorderLayout.CENTER);
-        pack();
+        gameWindow.pack();
+        return gameWindow;
     }
 }
