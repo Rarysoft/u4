@@ -26,7 +26,5 @@ package com.rarysoft.u4.model;
 public interface DisplayListener {
     void backgroundUpdated(RenderedTile[][] background, int animationCycle);
 
-    void moveBlocked();
-
-    void moveSlowed();
+    void actionCompleted(String message);
 }

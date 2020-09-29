@@ -25,6 +25,7 @@ package com.rarysoft.u4;
 
 import com.rarysoft.u4.i18n.Messages;
 import com.rarysoft.u4.model.*;
+import com.rarysoft.u4.ui.CommunicationPanel;
 import com.rarysoft.u4.ui.GamePanel;
 import com.rarysoft.u4.ui.GameWindow;
 import com.rarysoft.u4.ui.KeyboardListener;
@@ -64,12 +65,16 @@ public class Launcher {
      */
     public void run() throws IOException {
         initializeLogFile();
+        Messages messages = new Messages();
         Tiles tiles = Tiles.fromStream(ClassLoader.getSystemClassLoader().getResourceAsStream("data/shapes.ega"));
+        Charset charset = Charset.fromStream(ClassLoader.getSystemClassLoader().getResourceAsStream("data/charset.ega"));
         GamePanel gamePanel = new GamePanel(tiles, 3);
-        GameWindow gameWindow = createGameWindow(gamePanel);
+        CommunicationPanel communicationPanel = new CommunicationPanel(charset, 3);
+        GameWindow gameWindow = createGameWindow(messages, gamePanel, communicationPanel);
         setGameWindowIcon(gameWindow);
-        Game game = new Game();
+        Game game = new Game(messages);
         game.addDisplayListener(gamePanel);
+        game.addDisplayListener(communicationPanel);
         gameWindow.addKeyListener(new KeyboardListener(game));
         FrameHelper.enableExitOnClose(gameWindow);
         FrameHelper.center(gameWindow);
@@ -77,6 +82,7 @@ public class Launcher {
         FrameHelper.show(gameWindow);
         Maps maps = Maps.fromFiles("data/world.map");
         game.start(new GameState(maps, new PeopleTracker(), maps.world()));
+
     }
 
     private void initializeLogFile() {
@@ -94,10 +100,9 @@ public class Launcher {
         }
     }
 
-    private GameWindow createGameWindow(GamePanel gamePanel) {
+    private GameWindow createGameWindow(Messages messages, GamePanel gamePanel, CommunicationPanel communicationPanel) {
         try {
-            Messages messages = new Messages();
-            return new GameWindow(messages, gamePanel);
+            return new GameWindow(messages.windowTitle(), gamePanel, communicationPanel);
         }
         catch (MissingResourceException e) {
             Logger.getGlobal().log(Level.SEVERE, null, e);

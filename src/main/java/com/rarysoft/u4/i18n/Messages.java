@@ -35,4 +35,12 @@ public class Messages {
     public String windowTitle() {
         return resourceBundle.getString("window.title");
     }
+
+    public String actionResponseBlocked() {
+        return resourceBundle.getString("action.response.blocked");
+    }
+
+    public String actionResponseSlowProgress() {
+        return resourceBundle.getString("action.response.slowProgress");
+    }
 }

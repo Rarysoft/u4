@@ -23,18 +23,16 @@
  */
 package com.rarysoft.u4.ui;
 
-import com.rarysoft.u4.i18n.Messages;
-
 import javax.swing.*;
 import java.awt.*;
 
 public class GameWindow extends JFrame {
-    private final Messages messages;
-
-    public GameWindow(Messages messages, GamePanel gamePanel) {
-        super(messages.windowTitle());
-        this.messages = messages;
-        this.add(gamePanel, BorderLayout.CENTER);
+    public GameWindow(String title, GamePanel gamePanel, CommunicationPanel communicationPanel) {
+        super(title);
+        this.add(gamePanel, BorderLayout.LINE_START);
+        JPanel panel = new JPanel(new BorderLayout());
+        this.add(panel, BorderLayout.CENTER);
+        panel.add(communicationPanel, BorderLayout.CENTER);
         pack();
     }
 }

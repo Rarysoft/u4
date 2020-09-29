@@ -23,6 +23,8 @@
  */
 package com.rarysoft.u4.model;
 
+import com.rarysoft.u4.i18n.Messages;
+
 import javax.swing.*;
 import java.util.HashSet;
 import java.util.Random;
@@ -33,6 +35,8 @@ public class Game {
     // some necessary analysis on the tiles around each visible tile
     private static final int VIEW_RADIUS = 10;
 
+    private final Messages messages;
+
     private final Set<DisplayListener> displayListeners;
 
     private final Random random;
@@ -41,7 +45,8 @@ public class Game {
 
     private int animationCycle;
 
-    public Game() {
+    public Game(Messages messages) {
+        this.messages = messages;
         this.displayListeners = new HashSet<>();
         this.random = new Random();
     }
@@ -75,6 +80,11 @@ public class Game {
             }
             // Special case: don't allow entry to LB's castle from the north
             if (rowDelta == 1 && renderedTile.tile() == Tile.LORD_BRITISHS_CASTLE_ENTRANCE) {
+                moveBlocked();
+                afterPlayerMove();
+                return;
+            }
+            if (renderedTile.person().isPresent()) {
                 moveBlocked();
                 afterPlayerMove();
                 return;
@@ -140,17 +150,14 @@ public class Game {
     }
 
     private void moveBlocked() {
-        displayListeners.forEach(DisplayListener::moveBlocked);
+        displayListeners.forEach(displayListener -> displayListener.actionCompleted(messages.actionResponseBlocked()));
     }
 
     private void moveSlowed() {
-        displayListeners.forEach(DisplayListener::moveSlowed);
+        displayListeners.forEach(displayListener -> displayListener.actionCompleted(messages.actionResponseSlowProgress()));
     }
 
     private boolean allowWalkTo(RenderedTile renderedTile) {
-        if (renderedTile.person().isPresent()) {
-            return false;
-        }
         if (renderedTile.tile().walkability() == 100) {
             return true;
         }

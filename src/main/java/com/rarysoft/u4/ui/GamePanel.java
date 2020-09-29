@@ -42,6 +42,7 @@ public class GamePanel extends JPanel implements DisplayListener {
     public GamePanel(Tiles tiles, int scale) {
         this.tiles = tiles;
         this.scale = scale;
+        this.setPreferredSize(new Dimension(21 * Tiles.TILE_WIDTH * scale, 21 * Tiles.TILE_HEIGHT * scale));
     }
 
     @Override
@@ -52,13 +53,8 @@ public class GamePanel extends JPanel implements DisplayListener {
     }
 
     @Override
-    public void moveBlocked() {
-        // TODO: alert player
-    }
-
-    @Override
-    public void moveSlowed() {
-        // TODO: alert player
+    public void actionCompleted(String message) {
+        // not handled here
     }
 
     @Override

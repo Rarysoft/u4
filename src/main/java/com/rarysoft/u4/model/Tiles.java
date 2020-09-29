@@ -31,7 +31,7 @@ public class Tiles {
         this.data = data;
     }
 
-    public int[][][]data() {
+    public int[][][] data() {
         return data;
     }
 }
