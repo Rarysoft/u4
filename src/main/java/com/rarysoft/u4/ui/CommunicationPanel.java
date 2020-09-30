@@ -38,6 +38,9 @@ public class CommunicationPanel extends JPanel implements CommunicationProvider 
 
     private final List<String> textLines = new ArrayList<>();
 
+    private boolean allowInput = false;
+    private String inputLine = "";
+
     public CommunicationPanel(Charset charset, int scale) {
         this.charset = charset;
         this.scale = scale;
@@ -51,6 +54,19 @@ public class CommunicationPanel extends JPanel implements CommunicationProvider 
     }
 
     @Override
+    public void showTextAndAwaitResponse(List<String> textLines) {
+        this.textLines.clear();
+        this.textLines.addAll(textLines);
+        this.allowInput = true;
+        this.getParent().repaint();
+    }
+
+    @Override
+    public void showInput(String input) {
+        inputLine = input;
+    }
+
+    @Override
     public void paint(Graphics graphics) {
         super.paint(graphics);
         for (int row = 0; row < textLines.size(); row ++) {
@@ -58,18 +74,36 @@ public class CommunicationPanel extends JPanel implements CommunicationProvider 
             for (int col = 0; col < textLine.length(); col ++) {
                 int charCode = textLine.charAt(col);
                 int[][] character = charset.data()[charCode];
-                drawCharacter(graphics, character, row * Charset.CHAR_HEIGHT * scale, col * Charset.CHAR_WIDTH * scale);
+                drawCharacter(graphics, character, row, col);
             }
+        }
+        int inputRow = 20;
+        drawCharacter(graphics, charset.data()[16], inputRow, 0);
+        for (int index = 0; index < inputLine.length(); index ++) {
+            drawCharacter(graphics, charset.data()[inputLine.charAt(index)], inputRow, index + 1);
+        }
+        if (allowInput) {
+            // TODO: show animated cursor
         }
     }
 
     private void drawCharacter(Graphics graphics, int[][] character, int row, int col) {
-        for (int pixelRow = 0; pixelRow < Charset.CHAR_HEIGHT; pixelRow ++) {
-            for (int pixelCol = 0; pixelCol < Charset.CHAR_WIDTH; pixelCol ++) {
-                int code = character[pixelRow][pixelCol];
+        int y = yForRow(row);
+        int x = xForCol(col);
+        for (int pixelY = 0; pixelY < Charset.CHAR_HEIGHT; pixelY ++) {
+            for (int pixelX = 0; pixelX < Charset.CHAR_WIDTH; pixelX ++) {
+                int code = character[pixelY][pixelX];
                 graphics.setColor(Colours.BY_CODE[code]);
-                graphics.fillRect(col + pixelCol * scale, row + pixelRow * scale + OFFSET, scale, scale);
+                graphics.fillRect(x + pixelX * scale, y + pixelY * scale, scale, scale);
             }
         }
+    }
+
+    private int yForRow(int row) {
+        return OFFSET + row * Charset.CHAR_HEIGHT * scale;
+    }
+
+    private int xForCol(int col) {
+        return col * Charset.CHAR_WIDTH * scale;
     }
 }

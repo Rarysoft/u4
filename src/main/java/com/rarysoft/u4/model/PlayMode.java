@@ -21,14 +21,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.rarysoft.u4.ui;
+package com.rarysoft.u4.model;
 
-import java.util.List;
-
-public interface CommunicationProvider {
-    void showText(List<String> textLines);
-
-    void showTextAndAwaitResponse(List<String> textLines);
-
-    void showInput(String input);
+public enum PlayMode {
+    NORMAL,
+    CONVERSATION
 }

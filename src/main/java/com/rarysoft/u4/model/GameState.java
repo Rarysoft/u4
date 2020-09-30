@@ -32,6 +32,9 @@ public class GameState {
     private int surfaceCol;
     private int row;
     private int col;
+    private PlayMode playMode;
+    private Conversation conversation;
+    private String input;
 
     public GameState(Maps maps, PeopleTracker peopleTracker, Map map) {
         this.maps = maps;
@@ -39,6 +42,7 @@ public class GameState {
         this.map = map;
         this.col = maps.world().startCol();
         this.row = maps.world().startRow();
+        this.playMode = PlayMode.NORMAL;
         switchToMap(this.map);
     }
 
@@ -56,6 +60,26 @@ public class GameState {
 
     public void changeCol(int delta) {
         col += delta;
+    }
+
+    public boolean inNormalPlay() {
+        return playMode == PlayMode.NORMAL;
+    }
+
+    public boolean inConversation() {
+        return playMode == PlayMode.CONVERSATION;
+    }
+
+    public Conversation conversation() {
+        return conversation;
+    }
+
+    public String input() {
+        return input;
+    }
+
+    public int locationId() {
+        return map.id();
     }
 
     public RenderedTile[][] mapView(int radius) {
@@ -92,6 +116,26 @@ public class GameState {
 
     public void movePeople() {
         peopleTracker.movePeople(map.full(), row, col);
+    }
+
+    public void startConversation(Conversation conversation) {
+        playMode = PlayMode.CONVERSATION;
+        this.conversation = conversation;
+        input = "";
+    }
+
+    public void addToOngoingInput(char input) {
+        this.input += input;
+    }
+
+    public void resetInput() {
+        input = "";
+    }
+
+    public void endConversation() {
+        playMode = PlayMode.NORMAL;
+        this.conversation = null;
+        input = null;
     }
 
     private void switchToMap(Map map) {

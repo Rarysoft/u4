@@ -26,6 +26,8 @@ package com.rarysoft.u4.ui;
 import com.rarysoft.u4.model.DisplayListener;
 import com.rarysoft.u4.model.RenderedTile;
 
+import java.util.List;
+
 public class GameListener implements DisplayListener {
     private final GameProvider gameProvider;
 
@@ -40,6 +42,16 @@ public class GameListener implements DisplayListener {
 
     @Override
     public void actionCompleted(String message) {
+        // nothing to update here
+    }
+
+    @Override
+    public void responseRequested(List<String> messages) {
+        // nothing to update here
+    }
+
+    @Override
+    public void inputReceived(String input) {
         // nothing to update here
     }
 }

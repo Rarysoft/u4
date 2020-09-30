@@ -23,8 +23,14 @@
  */
 package com.rarysoft.u4.model;
 
+import java.util.List;
+
 public interface DisplayListener {
     void backgroundUpdated(RenderedTile[][] background, int animationCycle);
 
     void actionCompleted(String message);
+
+    void responseRequested(List<String> messages);
+
+    void inputReceived(String input);
 }

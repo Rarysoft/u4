@@ -40,31 +40,74 @@ public class KeyboardListener extends KeyAdapter {
         switch (event.getKeyCode()) {
             case KeyEvent.VK_UP:
             case KeyEvent.VK_NUMPAD8:
-                game.onMoveNorth();
+                game.onNorthPressed();
                 break;
             case KeyEvent.VK_NUMPAD9:
-                game.onMoveNortheast();
+                game.onNortheastPressed();
                 break;
             case KeyEvent.VK_RIGHT:
             case KeyEvent.VK_NUMPAD6:
-                game.onMoveEast();
+                game.onEastPressed();
                 break;
             case KeyEvent.VK_NUMPAD3:
-                game.onMoveSoutheast();
+                game.onSoutheastPressed();
                 break;
             case KeyEvent.VK_DOWN:
             case KeyEvent.VK_NUMPAD2:
-                game.onMoveSouth();
+                game.onSouthPressed();
                 break;
             case KeyEvent.VK_NUMPAD1:
-                game.onMoveSouthwest();
+                game.onSouthwestPressed();
                 break;
             case KeyEvent.VK_LEFT:
             case KeyEvent.VK_NUMPAD4:
-                game.onMoveWest();
+                game.onWestPressed();
                 break;
             case KeyEvent.VK_NUMPAD7:
-                game.onMoveNorthwest();
+                game.onNorthwestPressed();
+                break;
+            case KeyEvent.VK_BACK_SPACE:
+            case KeyEvent.VK_ENTER:
+            case KeyEvent.VK_SPACE:
+            case KeyEvent.VK_0:
+            case KeyEvent.VK_1:
+            case KeyEvent.VK_2:
+            case KeyEvent.VK_3:
+            case KeyEvent.VK_4:
+            case KeyEvent.VK_5:
+            case KeyEvent.VK_6:
+            case KeyEvent.VK_7:
+            case KeyEvent.VK_8:
+            case KeyEvent.VK_9:
+            case KeyEvent.VK_A:
+            case KeyEvent.VK_B:
+            case KeyEvent.VK_C:
+            case KeyEvent.VK_D:
+            case KeyEvent.VK_E:
+            case KeyEvent.VK_F:
+            case KeyEvent.VK_G:
+            case KeyEvent.VK_H:
+            case KeyEvent.VK_I:
+            case KeyEvent.VK_J:
+            case KeyEvent.VK_K:
+            case KeyEvent.VK_L:
+            case KeyEvent.VK_M:
+            case KeyEvent.VK_N:
+            case KeyEvent.VK_O:
+            case KeyEvent.VK_P:
+            case KeyEvent.VK_Q:
+            case KeyEvent.VK_R:
+            case KeyEvent.VK_S:
+            case KeyEvent.VK_T:
+            case KeyEvent.VK_U:
+            case KeyEvent.VK_V:
+            case KeyEvent.VK_W:
+            case KeyEvent.VK_X:
+            case KeyEvent.VK_Y:
+            case KeyEvent.VK_Z:
+                game.onUserInput(event.getKeyChar());
+                break;
+            default:
                 break;
         }
     }

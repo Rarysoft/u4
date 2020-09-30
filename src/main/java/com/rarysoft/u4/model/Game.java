@@ -25,10 +25,8 @@ package com.rarysoft.u4.model;
 
 import com.rarysoft.u4.i18n.Messages;
 
-import javax.swing.*;
-import java.util.HashSet;
-import java.util.Random;
-import java.util.Set;
+import javax.swing.Timer;
+import java.util.*;
 
 public class Game {
     // Note: view radius is one larger than what will actually be shown on screen, which allows the display to do
@@ -36,6 +34,8 @@ public class Game {
     private static final int VIEW_RADIUS = 10;
 
     private final Messages messages;
+
+    private final Conversations conversations;
 
     private final Set<DisplayListener> displayListeners;
 
@@ -45,8 +45,9 @@ public class Game {
 
     private int animationCycle;
 
-    public Game(Messages messages) {
+    public Game(Messages messages, Conversations conversations) {
         this.messages = messages;
+        this.conversations = conversations;
         this.displayListeners = new HashSet<>();
         this.random = new Random();
     }
@@ -59,33 +60,188 @@ public class Game {
         this.gameState = gameState;
         initializeAnimation();
         updateBackground();
+        spokenTo(Collections.singletonList(""));
+        type("");
     }
 
-    private void onMove(int rowDelta, int colDelta) {
+    public void onNorthPressed() {
+        if (gameState.inNormalPlay()) {
+            type("Go north");
+            attemptMove(-1, 0);
+        }
+    }
+
+    public void onNortheastPressed() {
+        if (gameState.inNormalPlay()) {
+            type("Go northeast");
+            attemptMove(-1, 1);
+        }
+    }
+
+    public void onEastPressed() {
+        if (gameState.inNormalPlay()) {
+            type("Go east");
+            attemptMove(0, 1);
+        }
+    }
+
+    public void onSoutheastPressed() {
+        if (gameState.inNormalPlay()) {
+            type("Go southeast");
+            attemptMove(1, 1);
+        }
+    }
+
+    public void onSouthPressed() {
+        if (gameState.inNormalPlay()) {
+            type("Go south");
+            attemptMove(1, 0);
+        }
+    }
+
+    public void onSouthwestPressed() {
+        if (gameState.inNormalPlay()) {
+            type("Go southwest");
+            attemptMove(1, -1);
+        }
+    }
+
+    public void onWestPressed() {
+        if (gameState.inNormalPlay()) {
+            type("Go west");
+            attemptMove(0, -1);
+        }
+    }
+
+    public void onNorthwestPressed() {
+        if (gameState.inNormalPlay()) {
+            type("Go northwest");
+            attemptMove(-1, -1);
+        }
+    }
+
+    public void onUserInput(char input) {
+        if (gameState.inConversation()) {
+            if (input == '\n') {
+                String playerInput = gameState.input().toUpperCase();
+                if (playerInput.length() > 4) {
+                    playerInput = playerInput.substring(0, 4);
+                }
+                Conversation conversation = gameState.conversation();
+                List<String> speech = new ArrayList<>();
+                switch (playerInput) {
+                    case "LOOK":
+                        speech.add(messages.speechCitizenIntro(conversation.getLookResponse()));
+                        speech.add("");
+                        speech.add(messages.speechCitizenPrompt());
+                        spokenTo(speech);
+                        break;
+
+                    case "NAME":
+                        speech.add(messages.speechCitizenSpeaking(conversation.getPronoun()) + " " + messages.speechCitizenName(conversation.getName()));
+                        speech.add("");
+                        speech.add(messages.speechCitizenPrompt());
+                        spokenTo(speech);
+                        break;
+
+                    case "JOB":
+                        speech.add(messages.speechCitizenSpeaking(conversation.getPronoun()) + " " + conversation.getJobResponse());
+                        speech.add("");
+                        speech.add(messages.speechCitizenPrompt());
+                        spokenTo(speech);
+                        break;
+
+                    case "HEAL":
+                        speech.add(messages.speechCitizenSpeaking(conversation.getPronoun()) + " " + conversation.getHealthResponse());
+                        speech.add("");
+                        speech.add(messages.speechCitizenPrompt());
+                        spokenTo(speech);
+                        break;
+
+                    case "JOIN":
+                        // TODO: deal with NPCs that can join the party
+                        speech.add(messages.speechCitizenSpeaking(conversation.getPronoun()) + " " + messages.speechCitizenNoJoin());
+                        speech.add("");
+                        speech.add(messages.speechCitizenPrompt());
+                        spokenTo(speech);
+                        break;
+
+                    case "BYE":
+                        // TODO: what do we say here?
+                        speech.add(messages.speechCitizenBye());
+                        gameState.endConversation();
+                        spokenTo(speech);
+                        break;
+
+                    default:
+                        if (playerInput.equals(conversation.getKeyword1())) {
+                            speech.add(messages.speechCitizenSpeaking(conversation.getPronoun()) + " " + conversation.getKeyword1Response());
+                            speech.add("");
+                            speech.add(messages.speechCitizenPrompt());
+                            spokenTo(speech);
+                        }
+                        else if (playerInput.equals(conversation.getKeyword2())) {
+                            speech.add(messages.speechCitizenSpeaking(conversation.getPronoun()) + " " + conversation.getKeyword2Response());
+                            speech.add("");
+                            speech.add(messages.speechCitizenPrompt());
+                            spokenTo(speech);
+                        }
+                        else {
+                            speech.add(messages.speechCitizenUnknown());
+                            speech.add("");
+                            speech.add(messages.speechCitizenPrompt());
+                            spokenTo(speech);
+                        }
+                        break;
+                }
+                gameState.resetInput();
+            }
+            else {
+                gameState.addToOngoingInput(input);
+            }
+            type(gameState.input());
+        }
+    }
+
+    private void initializeAnimation() {
+        animationCycle = 0;
+        new Timer(200, event -> {
+            animationCycle = animationCycle + 1 < 16 ? animationCycle + 1 : 0;
+            updateBackground();
+        }).start();
+    }
+
+    private void attemptMove(int rowDelta, int colDelta) {
         RenderedTile renderedTile = gameState.tileAt(gameState.row() + rowDelta, gameState.col() + colDelta);
         if (renderedTile.tile() == null) {
             gameState.returnToSurface();
         }
         else {
             if (renderedTile.tile().walkability() == 0) {
+                if (renderedTile.tile().canTalkAcross()) {
+                    RenderedTile adjacentTile = gameState.tileAt(gameState.row() + rowDelta + rowDelta, gameState.col() + colDelta + colDelta);
+                    if (adjacentTile.person().isPresent()) {
+                        attemptConversationWith(adjacentTile.person().get());
+                    }
+                }
                 moveBlocked();
                 afterPlayerMove();
                 return;
             }
             // Special case: don't allow northward exit from LB's castle
-            if (rowDelta == -1 && gameState.tileAt(gameState.row(), gameState.col()).tile() == Tile.LORD_BRITISHS_CASTLE_ENTRANCE) {
+            if (rowDelta == -1 && gameState.tileAt(gameState.row(), gameState.col()).tile() == Tile.CASTLE_BRITANNIA_ENTRANCE) {
                 moveBlocked();
                 afterPlayerMove();
                 return;
             }
             // Special case: don't allow entry to LB's castle from the north
-            if (rowDelta == 1 && renderedTile.tile() == Tile.LORD_BRITISHS_CASTLE_ENTRANCE) {
+            if (rowDelta == 1 && renderedTile.tile() == Tile.CASTLE_BRITANNIA_ENTRANCE) {
                 moveBlocked();
                 afterPlayerMove();
                 return;
             }
             if (renderedTile.person().isPresent()) {
-                moveBlocked();
+                attemptConversationWith(renderedTile.person().get());
                 afterPlayerMove();
                 return;
             }
@@ -104,44 +260,30 @@ public class Game {
         afterPlayerMove();
     }
 
-    public void onMoveNorth() {
-        onMove(-1, 0);
-    }
-
-    public void onMoveNortheast() {
-        onMove(-1, 1);
-    }
-
-    public void onMoveEast() {
-        onMove(0, 1);
-    }
-
-    public void onMoveSoutheast() {
-        onMove(1, 1);
-    }
-
-    public void onMoveSouth() {
-        onMove(1, 0);
-    }
-
-    public void onMoveSouthwest() {
-        onMove(1, -1);
-    }
-
-    public void onMoveWest() {
-        onMove(0, -1);
-    }
-
-    public void onMoveNorthwest() {
-        onMove(-1, -1);
-    }
-
-    private void initializeAnimation() {
-        animationCycle = 0;
-        new Timer(200, event -> {
-            animationCycle = animationCycle + 1 < 16 ? animationCycle + 1 : 0;
-            updateBackground();
-        }).start();
+    private void attemptConversationWith(Person person) {
+        Optional<Conversation> possibleConversation = conversations.findConversationFor(gameState.locationId(), person);
+        if (possibleConversation.isPresent()) {
+            Conversation conversation = possibleConversation.get();
+            if (random.nextInt(256) > 255 - conversation.getTurnAwayProbability()) {
+                conversationIgnored();
+                afterPlayerMove();
+                return;
+            }
+            gameState.startConversation(conversation);
+            List<String> speech = new ArrayList<>();
+            speech.add(messages.speechCitizenIntro(conversation.getLookResponse()));
+            speech.add("");
+            if (random.nextBoolean()) {
+                speech.add(messages.speechCitizenSpeaking(conversation.getPronoun()) + " " + messages.speechCitizenName(conversation.getName()));
+                speech.add("");
+            }
+            speech.add(messages.speechCitizenPrompt());
+            spokenTo(speech);
+            afterPlayerMove();
+            return;
+        }
+        moveBlocked();
+        afterPlayerMove();
     }
 
     private void updateBackground() {
@@ -155,6 +297,18 @@ public class Game {
 
     private void moveSlowed() {
         displayListeners.forEach(displayListener -> displayListener.actionCompleted(messages.actionResponseSlowProgress()));
+    }
+
+    private void conversationIgnored() {
+        displayListeners.forEach(displayListener -> displayListener.actionCompleted(messages.actionResponseIgnored()));
+    }
+
+    private void spokenTo(List<String> textLines) {
+        displayListeners.forEach(displayListener -> displayListener.responseRequested(textLines));
+    }
+
+    private void type(String input) {
+        displayListeners.forEach(displayListener -> displayListener.inputReceived(input));
     }
 
     private boolean allowWalkTo(RenderedTile renderedTile) {

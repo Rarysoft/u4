@@ -27,6 +27,7 @@ import com.rarysoft.u4.model.DisplayListener;
 import com.rarysoft.u4.model.RenderedTile;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -51,14 +52,20 @@ public class CommunicationListener implements DisplayListener {
     @Override
     public void actionCompleted(String message) {
         textLines.addAll(wrapText(message).stream().map(this::pad).collect(Collectors.toList()));
-        while(textLines.size() > MAX_LINES) {
-            textLines.remove(0);
-        }
-        List<String> displayedTextLines = new ArrayList<>(textLines);
-        while (displayedTextLines.size() < MAX_LINES) {
-            displayedTextLines.add(pad(""));
-        }
-        communicationProvider.showText(displayedTextLines);
+        scrollTextLinesIfNeeded();
+        communicationProvider.showText(getDisplayedTextLines());
+    }
+
+    @Override
+    public void responseRequested(List<String> messages) {
+        textLines.addAll(messages.stream().map(this::wrapText).flatMap(Collection::stream).map(this::pad).collect(Collectors.toList()));
+        scrollTextLinesIfNeeded();
+        communicationProvider.showTextAndAwaitResponse(getDisplayedTextLines());
+    }
+
+    @Override
+    public void inputReceived(String input) {
+        communicationProvider.showInput(pad(input, LINE_LENGTH - 1));
     }
 
     private List<String> wrapText(String text) {
@@ -91,10 +98,28 @@ public class CommunicationListener implements DisplayListener {
     }
 
     private String pad(String text) {
+        return pad(text, LINE_LENGTH);
+    }
+
+    private String pad(String text, int lineLength) {
         StringBuilder stringBuilder = new StringBuilder(text);
-        for (int index = text.length(); index < LINE_LENGTH; index ++) {
+        for (int index = text.length(); index < lineLength; index ++) {
             stringBuilder.append(" ");
         }
         return stringBuilder.toString();
+    }
+
+    private void scrollTextLinesIfNeeded() {
+        while(textLines.size() > MAX_LINES) {
+            textLines.remove(0);
+        }
+    }
+
+    private List<String> getDisplayedTextLines() {
+        List<String> displayedTextLines = new ArrayList<>(textLines);
+        while (displayedTextLines.size() < MAX_LINES) {
+            displayedTextLines.add(pad(""));
+        }
+        return displayedTextLines;
     }
 }

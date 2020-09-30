@@ -21,14 +21,24 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.rarysoft.u4.ui;
+package com.rarysoft.u4.model;
 
-import java.util.List;
-
-public interface CommunicationProvider {
-    void showText(List<String> textLines);
-
-    void showTextAndAwaitResponse(List<String> textLines);
-
-    void showInput(String input);
+public class LocationIds {
+    public static final int BRITAIN = 1;
+    public static final int COVE = 2;
+    public static final int BUCCANEERS_DEN = 3;
+    public static final int EMPATH_ABBEY = 4;
+    public static final int JHELOM = 5;
+    public static final int CASTLE_BRITANNIA_1 = 6;
+    public static final int CASTLE_BRITANNIA_2 = 7;
+    public static final int LYCAEUM = 8;
+    public static final int SERPENTS_HOLD = 9;
+    public static final int MAGINCIA = 10;
+    public static final int MINOC = 11;
+    public static final int MOONGLOW = 12;
+    public static final int PAWS = 13;
+    public static final int SKARA_BRAE = 14;
+    public static final int TRINSIC = 15;
+    public static final int VESPER = 16;
+    public static final int YEW = 17;
 }

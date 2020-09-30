@@ -204,7 +204,7 @@ public class GamePanel extends JPanel implements GameProvider {
                 }
                 return tiles.data()[tile.index()][row][col];
 
-            case LORD_BRITISHS_CASTLE_ENTRANCE:
+            case CASTLE_BRITANNIA_ENTRANCE:
                 if (! ((row == 1 || row == 2) && (col == 5 || col == 7))) {
                     return tiles.data()[tile.index()][row][col];
                 }

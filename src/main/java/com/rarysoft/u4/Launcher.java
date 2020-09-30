@@ -63,16 +63,17 @@ public class Launcher {
     public void run() throws IOException {
         initializeLogFile();
         Messages messages = initializeMessages("i18n/messages");
-        Tiles tiles = initializeTiles("data/shapes.ega");
-        Charset charset = initializeCharset("data/charset.ega");
+        Tiles tiles = initializeTiles("/data/shapes.ega");
+        Charset charset = initializeCharset("/data/charset.ega");
         BufferedImage icon = initializeIcon("/images/ankh.png");
-        Maps maps = initializeMaps("data");
+        Maps maps = initializeMaps("/data");
+        Conversations conversations = initializeConversations("/data");
         int scale = 3;
         UiBuilder uiBuilder = new UiBuilder();
         JFrame gameWindow = uiBuilder.buildGameWindow(messages.windowTitle());
         GameListener gameListener = uiBuilder.buildGamePanel(gameWindow, tiles, scale);
         CommunicationListener communicationListener = uiBuilder.buildCommunicationPanel(gameWindow, charset, scale);
-        Game game = initializeGame(messages, gameWindow, gameListener, communicationListener);
+        Game game = initializeGame(messages, gameWindow, gameListener, communicationListener, conversations);
         gameWindow.setIconImage(icon);
         FrameHelper.enableExitOnClose(gameWindow);
         FrameHelper.center(gameWindow);
@@ -101,15 +102,19 @@ public class Launcher {
     }
 
     private Tiles initializeTiles(String filename) throws IOException {
-        return Tiles.fromStream(ClassLoader.getSystemClassLoader().getResourceAsStream(filename));
+        return Tiles.fromStream(Launcher.class.getResourceAsStream(filename));
     }
 
     private Charset initializeCharset(String filename) throws IOException {
-        return Charset.fromStream(ClassLoader.getSystemClassLoader().getResourceAsStream(filename));
+        return Charset.fromStream(Launcher.class.getResourceAsStream(filename));
     }
 
     private Maps initializeMaps(String directory) throws IOException {
         return Maps.fromFiles(directory);
+    }
+
+    private Conversations initializeConversations(String directory) throws IOException {
+        return Conversations.fromFiles(directory);
     }
 
     private BufferedImage initializeIcon(String filename) {
@@ -122,8 +127,8 @@ public class Launcher {
         }
     }
 
-    private Game initializeGame(Messages messages, JFrame gameWindow, GameListener gameListener, CommunicationListener communicationListener) {
-        Game game = new Game(messages);
+    private Game initializeGame(Messages messages, JFrame gameWindow, GameListener gameListener, CommunicationListener communicationListener, Conversations conversations) {
+        Game game = new Game(messages, conversations);
         game.addDisplayListener(gameListener);
         game.addDisplayListener(communicationListener);
         gameWindow.addKeyListener(new KeyboardListener(game));

@@ -43,4 +43,36 @@ public class Messages {
     public String actionResponseSlowProgress() {
         return resourceBundle.getString("action.response.slowProgress");
     }
+
+    public String actionResponseIgnored() {
+        return resourceBundle.getString("action.response.ignored");
+    }
+
+    public String speechCitizenIntro(String who) {
+        return resourceBundle.getString("speech.citizen.intro").replace("{who}", who);
+    }
+
+    public String speechCitizenPrompt() {
+        return resourceBundle.getString("speech.citizen.prompt");
+    }
+
+    public String speechCitizenSpeaking(String pronoun) {
+        return resourceBundle.getString("speech.citizen.speaking").replace("{pronoun}", pronoun);
+    }
+
+    public String speechCitizenName(String name) {
+        return resourceBundle.getString("speech.citizen.name").replace("{name}", name);
+    }
+
+    public String speechCitizenUnknown() {
+        return resourceBundle.getString("speech.citizen.unknown");
+    }
+
+    public String speechCitizenNoJoin() {
+        return resourceBundle.getString("speech.citizen.noJoin");
+    }
+
+    public String speechCitizenBye() {
+        return resourceBundle.getString("speech.citizen.bye");
+    }
 }
