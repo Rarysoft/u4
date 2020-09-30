@@ -34,6 +34,7 @@ public class GameState {
     private int col;
     private PlayMode playMode;
     private Conversation conversation;
+    private Person conversingPerson;
     private String input;
 
     public GameState(Maps maps, PeopleTracker peopleTracker, Map map) {
@@ -115,17 +116,22 @@ public class GameState {
     }
 
     public void movePeople() {
-        peopleTracker.movePeople(map.full(), row, col);
+        peopleTracker.movePeople(map.full(), row, col, conversingPerson);
     }
 
-    public void startConversation(Conversation conversation) {
+    public void startConversation(Conversation conversation, Person person) {
         playMode = PlayMode.CONVERSATION;
         this.conversation = conversation;
+        this.conversingPerson = person;
         input = "";
     }
 
     public void addToOngoingInput(char input) {
         this.input += input;
+    }
+
+    public void revertLastInput() {
+        this.input = this.input.substring(0, this.input.length() - 1);
     }
 
     public void resetInput() {
@@ -135,6 +141,7 @@ public class GameState {
     public void endConversation() {
         playMode = PlayMode.NORMAL;
         this.conversation = null;
+        this.conversingPerson = null;
         input = null;
     }
 

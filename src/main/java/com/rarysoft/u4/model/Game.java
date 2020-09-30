@@ -60,64 +60,72 @@ public class Game {
         this.gameState = gameState;
         initializeAnimation();
         updateBackground();
-        spokenTo(Collections.singletonList(""));
+        spokenTo(new ArrayList<>());
         type("");
     }
 
     public void onNorthPressed() {
-        if (gameState.inNormalPlay()) {
-            type("Go north");
-            attemptMove(-1, 0);
+        if (gameState.inConversation()) {
+            endConversation();
         }
+        actionCompleted("Go north");
+        attemptMove(-1, 0);
     }
 
     public void onNortheastPressed() {
-        if (gameState.inNormalPlay()) {
-            type("Go northeast");
-            attemptMove(-1, 1);
+        if (gameState.inConversation()) {
+            endConversation();
         }
+        actionCompleted("Go northeast");
+        attemptMove(-1, 1);
     }
 
     public void onEastPressed() {
-        if (gameState.inNormalPlay()) {
-            type("Go east");
-            attemptMove(0, 1);
+        if (gameState.inConversation()) {
+            endConversation();
         }
+        actionCompleted("Go east");
+        attemptMove(0, 1);
     }
 
     public void onSoutheastPressed() {
-        if (gameState.inNormalPlay()) {
-            type("Go southeast");
-            attemptMove(1, 1);
+        if (gameState.inConversation()) {
+            endConversation();
         }
+        actionCompleted("Go southeast");
+        attemptMove(1, 1);
     }
 
     public void onSouthPressed() {
-        if (gameState.inNormalPlay()) {
-            type("Go south");
-            attemptMove(1, 0);
+        if (gameState.inConversation()) {
+            endConversation();
         }
+        actionCompleted("Go south");
+        attemptMove(1, 0);
     }
 
     public void onSouthwestPressed() {
-        if (gameState.inNormalPlay()) {
-            type("Go southwest");
-            attemptMove(1, -1);
+        if (gameState.inConversation()) {
+            endConversation();
         }
+        actionCompleted("Go southwest");
+        attemptMove(1, -1);
     }
 
     public void onWestPressed() {
-        if (gameState.inNormalPlay()) {
-            type("Go west");
-            attemptMove(0, -1);
+        if (gameState.inConversation()) {
+            endConversation();
         }
+        actionCompleted("Go west");
+        attemptMove(0, -1);
     }
 
     public void onNorthwestPressed() {
-        if (gameState.inNormalPlay()) {
-            type("Go northwest");
-            attemptMove(-1, -1);
+        if (gameState.inConversation()) {
+            endConversation();
         }
+        actionCompleted("Go northwest");
+        attemptMove(-1, -1);
     }
 
     public void onUserInput(char input) {
@@ -128,73 +136,81 @@ public class Game {
                     playerInput = playerInput.substring(0, 4);
                 }
                 Conversation conversation = gameState.conversation();
-                List<String> speech = new ArrayList<>();
                 switch (playerInput) {
                     case "LOOK":
-                        speech.add(messages.speechCitizenIntro(conversation.getLookResponse()));
-                        speech.add("");
-                        speech.add(messages.speechCitizenPrompt());
-                        spokenTo(speech);
+                        spokenTo(Arrays.asList(
+                                messages.speechCitizenIntro(conversation.getLookResponse()),
+                                "",
+                                messages.speechCitizenPrompt()
+                        ));
                         break;
 
                     case "NAME":
-                        speech.add(messages.speechCitizenSpeaking(conversation.getPronoun()) + " " + messages.speechCitizenName(conversation.getName()));
-                        speech.add("");
-                        speech.add(messages.speechCitizenPrompt());
-                        spokenTo(speech);
+                        spokenTo(Arrays.asList(
+                                messages.speechCitizenSpeaking(conversation.getPronoun()) + " " + messages.speechCitizenName(conversation.getName()),
+                                "",
+                                messages.speechCitizenPrompt()
+                        ));
                         break;
 
                     case "JOB":
-                        speech.add(messages.speechCitizenSpeaking(conversation.getPronoun()) + " " + conversation.getJobResponse());
-                        speech.add("");
-                        speech.add(messages.speechCitizenPrompt());
-                        spokenTo(speech);
+                        spokenTo(Arrays.asList(
+                                messages.speechCitizenSpeaking(conversation.getPronoun()) + " " + conversation.getJobResponse(),
+                                "",
+                                messages.speechCitizenPrompt()
+                        ));
                         break;
 
                     case "HEAL":
-                        speech.add(messages.speechCitizenSpeaking(conversation.getPronoun()) + " " + conversation.getHealthResponse());
-                        speech.add("");
-                        speech.add(messages.speechCitizenPrompt());
-                        spokenTo(speech);
+                        spokenTo(Arrays.asList(
+                                messages.speechCitizenSpeaking(conversation.getPronoun()) + " " + conversation.getHealthResponse(),
+                                "",
+                                messages.speechCitizenPrompt()
+                        ));
                         break;
 
                     case "JOIN":
                         // TODO: deal with NPCs that can join the party
-                        speech.add(messages.speechCitizenSpeaking(conversation.getPronoun()) + " " + messages.speechCitizenNoJoin());
-                        speech.add("");
-                        speech.add(messages.speechCitizenPrompt());
-                        spokenTo(speech);
+                        spokenTo(Arrays.asList(
+                                messages.speechCitizenSpeaking(conversation.getPronoun()) + " " + messages.speechCitizenNoJoin(),
+                                "",
+                                messages.speechCitizenPrompt()
+                        ));
                         break;
 
                     case "BYE":
-                        // TODO: what do we say here?
-                        speech.add(messages.speechCitizenBye());
-                        gameState.endConversation();
-                        spokenTo(speech);
+                        endConversation();
                         break;
 
                     default:
                         if (playerInput.equals(conversation.getKeyword1())) {
-                            speech.add(messages.speechCitizenSpeaking(conversation.getPronoun()) + " " + conversation.getKeyword1Response());
-                            speech.add("");
-                            speech.add(messages.speechCitizenPrompt());
-                            spokenTo(speech);
+                            spokenTo(Arrays.asList(
+                                    messages.speechCitizenSpeaking(conversation.getPronoun()) + " " + conversation.getKeyword1Response(),
+                                    "",
+                                    messages.speechCitizenPrompt()
+                            ));
                         }
                         else if (playerInput.equals(conversation.getKeyword2())) {
-                            speech.add(messages.speechCitizenSpeaking(conversation.getPronoun()) + " " + conversation.getKeyword2Response());
-                            speech.add("");
-                            speech.add(messages.speechCitizenPrompt());
-                            spokenTo(speech);
+                            spokenTo(Arrays.asList(
+                                    messages.speechCitizenSpeaking(conversation.getPronoun()) + " " + conversation.getKeyword2Response(),
+                                    "",
+                                    messages.speechCitizenPrompt()
+                            ));
                         }
                         else {
-                            speech.add(messages.speechCitizenUnknown());
-                            speech.add("");
-                            speech.add(messages.speechCitizenPrompt());
-                            spokenTo(speech);
+                            spokenTo(Arrays.asList(
+                                    messages.speechCitizenUnknown(),
+                                    "",
+                                    messages.speechCitizenPrompt()
+                            ));
                         }
                         break;
                 }
                 gameState.resetInput();
+                afterPlayerMove();
+            }
+            else if (input == '\b') {
+                gameState.revertLastInput();
             }
             else {
                 gameState.addToOngoingInput(input);
@@ -269,7 +285,7 @@ public class Game {
                 afterPlayerMove();
                 return;
             }
-            gameState.startConversation(conversation);
+            gameState.startConversation(conversation, person);
             List<String> speech = new ArrayList<>();
             speech.add(messages.speechCitizenIntro(conversation.getLookResponse()));
             speech.add("");
@@ -291,6 +307,10 @@ public class Game {
         displayListeners.forEach(displayListener -> displayListener.backgroundUpdated(playerView, animationCycle));
     }
 
+    private void actionCompleted(String message) {
+        displayListeners.forEach(displayListener -> displayListener.actionCompleted(message));
+    }
+
     private void moveBlocked() {
         displayListeners.forEach(displayListener -> displayListener.actionCompleted(messages.actionResponseBlocked()));
     }
@@ -309,6 +329,15 @@ public class Game {
 
     private void type(String input) {
         displayListeners.forEach(displayListener -> displayListener.inputReceived(input));
+    }
+
+    private void endConversation() {
+        Conversation conversation = gameState.conversation();
+        spokenTo(Arrays.asList(
+                messages.speechCitizenSpeaking(conversation.getPronoun()) + " " + messages.speechCitizenBye(),
+                ""
+        ));
+        gameState.endConversation();
     }
 
     private boolean allowWalkTo(RenderedTile renderedTile) {

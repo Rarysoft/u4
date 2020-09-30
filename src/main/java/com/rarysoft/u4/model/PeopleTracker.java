@@ -44,8 +44,11 @@ public class PeopleTracker {
                 .findAny();
     }
 
-    public void movePeople(Tile[][] area, int playerRow, int playerCol) {
+    public void movePeople(Tile[][] area, int playerRow, int playerCol, Person excluded) {
         people.forEach((id, regionalPeople) -> regionalPeople.forEach(person -> {
+            if (person == excluded) {
+                return;
+            }
             switch (person.movementBehaviour()) {
                 case 0x00:
                     // fixed
