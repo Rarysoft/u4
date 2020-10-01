@@ -32,20 +32,16 @@ public class RenderedTile {
 
     private final boolean render;
 
-    private final boolean transparent;
-
     public RenderedTile(Tile tile, Person person) {
         this.tile = tile;
         this.person = person;
         this.render = true;
-        this.transparent = false;
     }
 
-    private RenderedTile(Tile tile, Person person, boolean render, boolean transparent) {
+    private RenderedTile(Tile tile, Person person, boolean render) {
         this.tile = tile;
         this.person = person;
         this.render = render;
-        this.transparent = transparent;
     }
 
     public Tile tile() {
@@ -61,10 +57,6 @@ public class RenderedTile {
     }
 
     public RenderedTile hidden() {
-        return new RenderedTile(tile, person, false, false);
-    }
-
-    public RenderedTile transparent() {
-        return new RenderedTile(tile, person, render, true);
+        return new RenderedTile(tile, person, false);
     }
 }
