@@ -134,6 +134,10 @@ public class GameState {
         playMode = PlayMode.CONVERSATION_QUERIED;
     }
 
+    public void queryAnswered() {
+        playMode = PlayMode.CONVERSATION;
+    }
+
     public void addToOngoingInput(char input) {
         this.input += input;
     }

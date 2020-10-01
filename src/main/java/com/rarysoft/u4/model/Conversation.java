@@ -24,6 +24,11 @@
 package com.rarysoft.u4.model;
 
 public class Conversation {
+    public static final int QUESTION_FLAG_JOB = 3;
+    public static final int QUESTION_FLAG_HEALTH = 4;
+    public static final int QUESTION_FLAG_KEYWORD1 = 5;
+    public static final int QUESTION_FLAG_KEYWORD2 = 6;
+
     private final int questionFlag;
     private final boolean responseAffectsHumility;
     private final int turnAwayProbability;

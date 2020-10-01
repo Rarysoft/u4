@@ -138,64 +138,35 @@ public class Game {
                 Conversation conversation = gameState.conversation();
                 if (gameState.inConversationRespondingYesOrNo()) {
                     if (playerInput.startsWith("Y")) {
-                        spokenTo(Arrays.asList(
-                                messages.speechCitizenSpeaking(conversation.getPronoun()) + " " + conversation.getYesResponse(),
-                                "",
-                                messages.speechCitizenPrompt()
-                        ));
+                        sayAndPrompt(conversationYesResponse(conversation));
                     }
                     else {
-                        spokenTo(Arrays.asList(
-                                messages.speechCitizenSpeaking(conversation.getPronoun()) + " " + conversation.getNoResponse(),
-                                "",
-                                messages.speechCitizenPrompt()
-                        ));
+                        sayAndPrompt(conversationNoResponse(conversation));
                     }
+                    gameState.queryAnswered();
                 }
                 else {
                     boolean playerQueried = false;
                     switch (playerInput) {
                         case "LOOK":
-                            spokenTo(Arrays.asList(
-                                    messages.speechCitizenIntro(conversation.getLookResponse()),
-                                    "",
-                                    messages.speechCitizenPrompt()
-                            ));
+                            sayAndPrompt(conversationLookResponse(conversation));
                             break;
 
                         case "NAME":
-                            spokenTo(Arrays.asList(
-                                    messages.speechCitizenSpeaking(conversation.getPronoun()) + " " + messages.speechCitizenName(conversation.getName()),
-                                    "",
-                                    messages.speechCitizenPrompt()
-                            ));
+                            sayAndPrompt(conversationNameResponse(conversation));
                             break;
 
                         case "JOB":
-                            playerQueried = conversation.getQuestionFlag() == 3;
-                            spokenTo(Arrays.asList(
-                                    messages.speechCitizenSpeaking(conversation.getPronoun()) + " " + conversation.getJobResponse(),
-                                    "",
-                                    playerQueried ? conversation.getYesNoQuestion() : messages.speechCitizenPrompt()
-                            ));
+                            playerQueried = sayAndPrompt(conversationJobResponse(conversation), Conversation.QUESTION_FLAG_JOB, conversation);
                             break;
 
                         case "HEAL":
-                            playerQueried = conversation.getQuestionFlag() == 4;
-                            spokenTo(Arrays.asList(
-                                    messages.speechCitizenSpeaking(conversation.getPronoun()) + " " + conversation.getHealthResponse(),
-                                    "",
-                                    playerQueried ? conversation.getYesNoQuestion() : messages.speechCitizenPrompt()
-                            ));
+                            playerQueried = sayAndPrompt(conversationHealthResponse(conversation), Conversation.QUESTION_FLAG_HEALTH, conversation);
                             break;
 
                         case "JOIN":
                             // TODO: deal with NPCs that can join the party
-                            spokenTo(Arrays.asList(
-                                    messages.speechCitizenSpeaking(conversation.getPronoun()) + " " + messages.speechCitizenNoJoin(),
-                                    "",
-                                    messages.speechCitizenPrompt()
-                            ));
+                            sayAndPrompt(conversationNoJoinResponse(conversation));
                             break;
 
                         case "BYE":
@@ -204,27 +175,13 @@ public class Game {
 
                         default:
                             if (playerInput.equals(conversation.getKeyword1())) {
-                                playerQueried = conversation.getQuestionFlag() == 5;
-                                spokenTo(Arrays.asList(
-                                        messages.speechCitizenSpeaking(conversation.getPronoun()) + " " + conversation.getKeyword1Response(),
-                                        "",
-                                        playerQueried ? conversation.getYesNoQuestion() : messages.speechCitizenPrompt()
-                                ));
+                                playerQueried = sayAndPrompt(conversationKeyword1Response(conversation), Conversation.QUESTION_FLAG_KEYWORD1, conversation);
                             }
                             else if (playerInput.equals(conversation.getKeyword2())) {
-                                playerQueried = conversation.getQuestionFlag() == 6;
-                                spokenTo(Arrays.asList(
-                                        messages.speechCitizenSpeaking(conversation.getPronoun()) + " " + conversation.getKeyword2Response(),
-                                        "",
-                                        playerQueried ? conversation.getYesNoQuestion() : messages.speechCitizenPrompt()
-                                ));
+                                playerQueried = sayAndPrompt(conversationKeyword2Response(conversation), Conversation.QUESTION_FLAG_KEYWORD2, conversation);
                             }
                             else {
-                                spokenTo(Arrays.asList(
-                                        messages.speechCitizenUnknown(),
-                                        "",
-                                        messages.speechCitizenPrompt()
-                                ));
+                                sayAndPrompt(conversationUnknownResponse(conversation));
                             }
                             break;
                     }
@@ -313,10 +270,10 @@ public class Game {
             }
             gameState.startConversation(conversation, person);
             List<String> speech = new ArrayList<>();
-            speech.add(messages.speechCitizenIntro(conversation.getLookResponse()));
+            speech.add(conversationIntro(conversation));
             speech.add("");
             if (random.nextBoolean()) {
-                speech.add(messages.speechCitizenSpeaking(conversation.getPronoun()) + " " + messages.speechCitizenName(conversation.getName()));
+                speech.add(conversationNameResponse(conversation));
                 speech.add("");
             }
             speech.add(messages.speechCitizenPrompt());
@@ -355,6 +312,81 @@ public class Game {
 
     private void type(String input) {
         displayListeners.forEach(displayListener -> displayListener.inputReceived(input));
+    }
+
+    private void sayAndPrompt(String message) {
+        spokenTo(Arrays.asList(
+                "",
+                message,
+                "",
+                messages.speechCitizenPrompt()
+        ));
+    }
+
+    private boolean sayAndPrompt(String message, int questionFlag, Conversation conversation) {
+        boolean playerQueried = conversation.getQuestionFlag() == questionFlag;
+        spokenTo(Arrays.asList(
+                "",
+                message,
+                "",
+                playerQueried ? conversation.getYesNoQuestion() : messages.speechCitizenPrompt()
+        ));
+        return playerQueried;
+    }
+
+    private String conversationIntro(Conversation conversation) {
+        return messages.speechCitizenIntro(withinSentence(conversation.getLookResponse()));
+    }
+
+    private String conversationLookResponse(Conversation conversation) {
+        return messages.speechCitizenDescribe(withinSentence(conversation.getLookResponse()));
+    }
+
+    private String conversationNameResponse(Conversation conversation) {
+        return conversationResponse(messages.speechCitizenName(conversation.getName()), conversation);
+    }
+
+    private String conversationJobResponse(Conversation conversation) {
+        return conversationResponse(conversation.getJobResponse(), conversation);
+    }
+
+    private String conversationHealthResponse(Conversation conversation) {
+        return conversationResponse(conversation.getHealthResponse(), conversation);
+    }
+
+    private String conversationNoJoinResponse(Conversation conversation) {
+        return conversationResponse(messages.speechCitizenNoJoin(), conversation);
+    }
+
+    private String conversationKeyword1Response(Conversation conversation) {
+        return conversationResponse(conversation.getKeyword1Response(), conversation);
+    }
+
+    private String conversationKeyword2Response(Conversation conversation) {
+        return conversationResponse(conversation.getKeyword2Response(), conversation);
+    }
+
+    private String conversationYesResponse(Conversation conversation) {
+        return conversationResponse(conversation.getYesResponse(), conversation);
+    }
+
+    private String conversationNoResponse(Conversation conversation) {
+        return conversationResponse(conversation.getNoResponse(), conversation);
+    }
+
+    private String conversationUnknownResponse(Conversation conversation) {
+        return conversationResponse(messages.speechCitizenUnknown(), conversation);
+    }
+
+    private String conversationResponse(String message, Conversation conversation) {
+        return messages.speechCitizenSpeaking(conversation.getPronoun()) + " " + message;
+    }
+
+    private String withinSentence(String message) {
+        if (message.length() <= 1) {
+            return message.toLowerCase();
+        }
+        return message.substring(0, 1).toLowerCase() + message.substring(1);
     }
 
     private void endConversation() {

@@ -52,6 +52,10 @@ public class Messages {
         return resourceBundle.getString("speech.citizen.intro").replace("{who}", who);
     }
 
+    public String speechCitizenDescribe(String who) {
+        return resourceBundle.getString("speech.citizen.describe").replace("{who}", who);
+    }
+
     public String speechCitizenPrompt() {
         return resourceBundle.getString("speech.citizen.prompt");
     }
