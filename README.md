@@ -38,4 +38,5 @@ files from their own original Ultima IV game disk into the `src/main/resources/d
 * Let other non-player characters continue to move around while player converses
 * Leave conversation with non-player character by just walking away
 * Open doors by bumping into them
+* Climb ladders by walking onto the tile
 * more to come...

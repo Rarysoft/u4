@@ -112,11 +112,18 @@ public class GameState {
     }
 
     public void enter() {
-        switchToMap(maps.mapAt(col, row));
-        surfaceCol = col;
-        surfaceRow = row;
-        col = map.startCol();
-        row = map.startRow();
+        if (map.id() == 0) {
+            switchToMap(maps.mapAt(row, col));
+            surfaceCol = col;
+            surfaceRow = row;
+            col = map.startCol();
+            row = map.startRow();
+        }
+        else if (map.id() == LocationIds.CASTLE_BRITANNIA_1 || map.id() == LocationIds.CASTLE_BRITANNIA_2) {
+            if (row == 3 && (col == 3 || col == 27)) {
+                switchToMap(maps.map(map.id() == LocationIds.CASTLE_BRITANNIA_1 ? LocationIds.CASTLE_BRITANNIA_2 : LocationIds.CASTLE_BRITANNIA_1));
+            }
+        }
     }
 
     public void returnToSurface() {

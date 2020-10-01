@@ -37,23 +37,23 @@ public class Maps {
     public static Maps fromFiles(String directory) throws IOException {
         World world = World.fromStream(Maps.class.getResourceAsStream(path(directory, "world.map")));
         Set<Map> maps = new HashSet<>();
-        maps.add(loadMap(path(directory, "britain.ult"), LocationIds.BRITAIN, 82, 106, 1, 15, Tile.GRASSLANDS));
-        maps.add(loadMap(path(directory, "cove.ult"), LocationIds.COVE, 136, 90, 1, 15, Tile.GRASSLANDS));
-        maps.add(loadMap(path(directory, "den.ult"), LocationIds.BUCCANEERS_DEN, 136, 158, 1, 15, Tile.GRASSLANDS));
-        maps.add(loadMap(path(directory, "empath.ult"), LocationIds.EMPATH_ABBEY, 28, 50, 15, 30, Tile.GRASSLANDS));
-        maps.add(loadMap(path(directory, "jhelom.ult"), LocationIds.JHELOM, 36, 222, 1, 15, Tile.GRASSLANDS));
-        maps.add(loadMap(path(directory, "lcb_1.ult"), LocationIds.CASTLE_BRITANNIA_1, 86, 107, 15, 30, Tile.GRASSLANDS));
-        maps.add(loadMap(path(directory, "lcb_2.ult"), LocationIds.CASTLE_BRITANNIA_2, -1, -1, 15, 30, Tile.GRASSLANDS));
-        maps.add(loadMap(path(directory, "lycaeum.ult"), LocationIds.LYCAEUM, 218, 107, 15, 30, Tile.GRASSLANDS));
-        maps.add(loadMap(path(directory, "serpent.ult"), LocationIds.SERPENTS_HOLD, 146, 241, 15, 30, Tile.GRASSLANDS));
-        maps.add(loadMap(path(directory, "magincia.ult"), LocationIds.MAGINCIA, 187, 169, 1, 15, Tile.GRASSLANDS));
-        maps.add(loadMap(path(directory, "minoc.ult"), LocationIds.MINOC, 159, 20, 1, 15, Tile.GRASSLANDS));
-        maps.add(loadMap(path(directory, "moonglow.ult"), LocationIds.MOONGLOW, 232, 135, 1, 15, Tile.GRASSLANDS));
-        maps.add(loadMap(path(directory, "paws.ult"), LocationIds.PAWS, 98, 145, 1, 15, Tile.GRASSLANDS));
-        maps.add(loadMap(path(directory, "skara.ult"), LocationIds.SKARA_BRAE, 22, 128, 1, 15, Tile.GRASSLANDS));
-        maps.add(loadMap(path(directory, "trinsic.ult"), LocationIds.TRINSIC, 106, 184, 1, 15, Tile.GRASSLANDS));
-        maps.add(loadMap(path(directory, "vesper.ult"), LocationIds.VESPER, 201, 59, 1, 15, Tile.GRASSLANDS));
-        maps.add(loadMap(path(directory, "yew.ult"), LocationIds.YEW, 58, 43, 1, 15, Tile.GRASSLANDS));
+        maps.add(loadMap(path(directory, "britain.ult"), LocationIds.BRITAIN, 106, 82, 15, 1, Tile.GRASSLANDS));
+        maps.add(loadMap(path(directory, "cove.ult"), LocationIds.COVE, 90, 136, 15, 1, Tile.GRASSLANDS));
+        maps.add(loadMap(path(directory, "den.ult"), LocationIds.BUCCANEERS_DEN, 158, 136, 15, 1, Tile.GRASSLANDS));
+        maps.add(loadMap(path(directory, "empath.ult"), LocationIds.EMPATH_ABBEY, 50, 28, 30, 15, Tile.GRASSLANDS));
+        maps.add(loadMap(path(directory, "jhelom.ult"), LocationIds.JHELOM, 222, 36, 15, 1, Tile.GRASSLANDS));
+        maps.add(loadMap(path(directory, "lcb_1.ult"), LocationIds.CASTLE_BRITANNIA_1, 107, 86, 30, 15, Tile.GRASSLANDS));
+        maps.add(loadMap(path(directory, "lcb_2.ult"), LocationIds.CASTLE_BRITANNIA_2, -1, -1, 30, 15, Tile.GRASSLANDS));
+        maps.add(loadMap(path(directory, "lycaeum.ult"), LocationIds.LYCAEUM, 107, 218, 30, 15, Tile.GRASSLANDS));
+        maps.add(loadMap(path(directory, "serpent.ult"), LocationIds.SERPENTS_HOLD, 241, 146, 30, 15, Tile.GRASSLANDS));
+        maps.add(loadMap(path(directory, "magincia.ult"), LocationIds.MAGINCIA, 169, 187, 15, 1, Tile.GRASSLANDS));
+        maps.add(loadMap(path(directory, "minoc.ult"), LocationIds.MINOC, 20, 159, 15, 1, Tile.GRASSLANDS));
+        maps.add(loadMap(path(directory, "moonglow.ult"), LocationIds.MOONGLOW, 135, 232, 15, 1, Tile.GRASSLANDS));
+        maps.add(loadMap(path(directory, "paws.ult"), LocationIds.PAWS, 145, 98, 15, 1, Tile.GRASSLANDS));
+        maps.add(loadMap(path(directory, "skara.ult"), LocationIds.SKARA_BRAE, 128, 22, 15, 1, Tile.GRASSLANDS));
+        maps.add(loadMap(path(directory, "trinsic.ult"), LocationIds.TRINSIC, 184, 106, 15, 1, Tile.GRASSLANDS));
+        maps.add(loadMap(path(directory, "vesper.ult"), LocationIds.VESPER, 59, 201, 15, 1, Tile.GRASSLANDS));
+        maps.add(loadMap(path(directory, "yew.ult"), LocationIds.YEW, 43, 58, 15, 1, Tile.GRASSLANDS));
         return new Maps(world, maps);
     }
 
@@ -70,12 +70,16 @@ public class Maps {
         return world;
     }
 
-    public Map mapAt(int x, int y) {
-        return maps.stream().filter(map -> map.worldCol() == x && map.worldRow() == y).findAny().orElseThrow(RuntimeException::new);
+    public Map mapAt(int row, int col) {
+        return maps.stream().filter(map -> map.worldCol() == col && map.worldRow() == row).findAny().orElseThrow(RuntimeException::new);
     }
 
-    private static Map loadMap(String mapFilename, int id, int worldX, int worldY, int startX, int startY, Tile areaTile) throws IOException {
+    public Map map(int id) {
+        return maps.stream().filter(map -> map.id() == id).findAny().orElseThrow(RuntimeException::new);
+    }
+
+    private static Map loadMap(String mapFilename, int id, int worldRow, int worldCol, int startRow, int startCol, Tile areaTile) throws IOException {
         InputStream stream = Maps.class.getResourceAsStream(mapFilename);
-        return Settlement.fromStream(stream, id, worldX, worldY, startX, startY, areaTile);
+        return Settlement.fromStream(stream, id, worldCol, worldRow, startCol, startRow, areaTile);
     }
 }
