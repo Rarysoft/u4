@@ -25,5 +25,6 @@ package com.rarysoft.u4.model;
 
 public enum PlayMode {
     NORMAL,
-    CONVERSATION
+    CONVERSATION,
+    CONVERSATION_QUERIED
 }

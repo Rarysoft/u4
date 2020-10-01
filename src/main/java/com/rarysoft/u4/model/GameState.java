@@ -68,7 +68,11 @@ public class GameState {
     }
 
     public boolean inConversation() {
-        return playMode == PlayMode.CONVERSATION;
+        return playMode == PlayMode.CONVERSATION || playMode == PlayMode.CONVERSATION_QUERIED;
+    }
+
+    public boolean inConversationRespondingYesOrNo() {
+        return playMode == PlayMode.CONVERSATION_QUERIED;
     }
 
     public Conversation conversation() {
@@ -124,6 +128,10 @@ public class GameState {
         this.conversation = conversation;
         this.conversingPerson = person;
         input = "";
+    }
+
+    public void playerQueried() {
+        playMode = PlayMode.CONVERSATION_QUERIED;
     }
 
     public void addToOngoingInput(char input) {
