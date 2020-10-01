@@ -217,6 +217,9 @@ public class Game {
         }
         else {
             if (renderedTile.tile().walkability() == 0) {
+                if (renderedTile.tile() == Tile.UNLOCKED_DOOR) {
+                    gameState.openDoor(gameState.row() + rowDelta, gameState.col() + colDelta);
+                }
                 if (renderedTile.tile().canTalkAcross()) {
                     RenderedTile adjacentTile = gameState.tileAt(gameState.row() + rowDelta + rowDelta, gameState.col() + colDelta + colDelta);
                     if (adjacentTile.person().isPresent()) {
@@ -461,7 +464,7 @@ public class Game {
     }
 
     private void afterPlayerMove() {
-        gameState.movePeople();
+        gameState.postTurnUpdates();
         updateBackground();
     }
 }

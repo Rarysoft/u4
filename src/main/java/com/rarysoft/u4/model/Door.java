@@ -23,48 +23,53 @@
  */
 package com.rarysoft.u4.model;
 
-import java.util.Optional;
+public class Door {
+    private final int row;
+    private final int col;
 
-public class RenderedTile {
-    private final Tile tile;
+    private boolean closed;
+    private boolean locked;
 
-    private final Person person;
+    private int closeTurnCounter;
 
-    private final boolean render;
-
-    private final boolean transparent;
-
-    public RenderedTile(Tile tile, Person person) {
-        this.tile = tile;
-        this.person = person;
-        this.render = true;
-        this.transparent = false;
+    public Door(int row, int col, boolean closed, boolean locked) {
+        this.row = row;
+        this.col = col;
+        this.closed = closed;
+        this.locked = locked;
     }
 
-    private RenderedTile(Tile tile, Person person, boolean render, boolean transparent) {
-        this.tile = tile;
-        this.person = person;
-        this.render = render;
-        this.transparent = transparent;
+    public int getRow() {
+        return row;
     }
 
-    public Tile tile() {
-        return tile;
+    public int getCol() {
+        return col;
     }
 
-    public Optional<Person> person() {
-        return Optional.ofNullable(person);
+    public boolean isClosed() {
+        return closed;
     }
 
-    public boolean render() {
-        return render;
+    public boolean isLocked() {
+        return locked;
     }
 
-    public RenderedTile hidden() {
-        return new RenderedTile(tile, person, false, false);
+    public void open(int turns) {
+        closed = false;
+        closeTurnCounter = turns;
     }
 
-    public RenderedTile transparent() {
-        return new RenderedTile(tile, person, render, true);
+    public void unlock() {
+        locked = false;
+    }
+
+    public void turnCompleted() {
+        if (closeTurnCounter > 0) {
+            closeTurnCounter --;
+            if (closeTurnCounter == 0) {
+                closed = true;
+            }
+        }
     }
 }

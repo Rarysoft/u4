@@ -23,6 +23,9 @@
  */
 package com.rarysoft.u4.model;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public class GameState {
     private final Maps maps;
     private final PeopleTracker peopleTracker;
@@ -36,6 +39,8 @@ public class GameState {
     private Conversation conversation;
     private Person conversingPerson;
     private String input;
+
+    private Set<Door> doors;
 
     public GameState(Maps maps, PeopleTracker peopleTracker, Map map) {
         this.maps = maps;
@@ -95,7 +100,8 @@ public class GameState {
             for (int col = 0; col < viewSize; col ++) {
                 int mapRow = this.row - radius + row;
                 int mapCol = this.col - radius + col;
-                view[row][col] = renderedTile(mapView[row][col], mapRow, mapCol);
+                RenderedTile renderedTile = renderedTile(mapView[row][col], mapRow, mapCol);
+                view[row][col] = renderedTile;
             }
         }
         return view;
@@ -119,8 +125,9 @@ public class GameState {
         row = surfaceRow;
     }
 
-    public void movePeople() {
+    public void postTurnUpdates() {
         peopleTracker.movePeople(map.full(), row, col, conversingPerson);
+        doors.forEach(Door::turnCompleted);
     }
 
     public void startConversation(Conversation conversation, Person person) {
@@ -157,13 +164,46 @@ public class GameState {
         input = null;
     }
 
+    public void openDoor(int row, int col) {
+        doors.stream().filter(door -> door.getRow() == row && door.getCol() == col).findAny().ifPresent(door -> door.open(5));
+    }
+
     private void switchToMap(Map map) {
         this.map = map;
         peopleTracker.addPeople(map.id(), map.people());
+        prepareDoors(map);
     }
 
     private RenderedTile renderedTile(Tile tile, int row, int col) {
+        Tile tileToRender = tile;
+        if (tile == Tile.UNLOCKED_DOOR || tile == Tile.LOCKED_DOOR) {
+            if (isDoorOpen(row, col)) {
+                tileToRender = Tile.BRICK_FLOOR;
+            }
+        }
         Person person = peopleTracker.personAt(map.id(), row, col).orElse(null);
-        return new RenderedTile(tile, person);
+        return new RenderedTile(tileToRender, person);
+    }
+
+    private void prepareDoors(Map map) {
+        doors = new HashSet<>();
+        if (map.id() == 0) {
+            // there are no doors in the world map
+            return;
+        }
+        Tile[][] tiles = map.full();
+        for (int row = 0; row < tiles.length; row ++) {
+            for (int col = 0; col < tiles[row].length; col ++) {
+                Tile tile = tiles[row][col];
+                if (tile == Tile.UNLOCKED_DOOR || tile == Tile.LOCKED_DOOR) {
+                    Door door = new Door(row, col, true, tile == Tile.LOCKED_DOOR);
+                    doors.add(door);
+                }
+            }
+        }
+    }
+
+    private boolean isDoorOpen(int row, int col) {
+        return doors.stream().filter(door -> door.getRow() == row && door.getCol() == col).map(Door::isClosed).anyMatch(doorIsClosed -> ! doorIsClosed);
     }
 }

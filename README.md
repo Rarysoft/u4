@@ -37,4 +37,5 @@ files from their own original Ultima IV game disk into the `src/main/resources/d
 * Add "$pronoun says:" before all non-player character speech
 * Let other non-player characters continue to move around while player converses
 * Leave conversation with non-player character by just walking away
+* Open doors by bumping into them
 * more to come...
