@@ -33,16 +33,13 @@ import java.util.List;
 public class GamePanel extends JPanel implements GameProvider {
     private final Tiles tiles;
 
-    private final int scale;
-
     private RenderedTile[][] background;
 
     private int animationCycle;
 
-    public GamePanel(Tiles tiles, int scale) {
+    public GamePanel(Tiles tiles) {
         this.tiles = tiles;
-        this.scale = scale;
-        this.setPreferredSize(new Dimension(21 * Tiles.TILE_WIDTH * scale, 21 * Tiles.TILE_HEIGHT * scale));
+        this.setPreferredSize(new Dimension(21 * Tiles.TILE_WIDTH * 3, 21 * Tiles.TILE_HEIGHT * 3));
     }
 
     @Override
@@ -55,12 +52,14 @@ public class GamePanel extends JPanel implements GameProvider {
     @Override
     public void paint(Graphics graphics) {
         super.paint(graphics);
+        Dimension windowSize = this.getParent().getSize();
+        int scale = new Scale(windowSize.width, windowSize.height).multiplier();
         if (background != null) {
-            drawBackground(graphics);
+            drawBackground(graphics, scale);
         }
     }
 
-    private void drawBackground(Graphics graphics) {
+    private void drawBackground(Graphics graphics, int scale) {
         // Note: the background map provided has a radius that is one larger than what we actually show, which allows
         // us to look at all of the surrounding tiles of each visible tile, so we crop the first and last row and
         // column here
@@ -70,40 +69,40 @@ public class GamePanel extends JPanel implements GameProvider {
             for (int col = 1; col < background[row].length - 1; col ++) {
                 RenderedTile renderedTile = background[row][col];
                 Tile backgroundTile = renderedTile.render() ? renderedTile.tile() : null;
-                if (! handledAsSpecialCase(graphics, backgroundTile, row, col)) {
-                    drawTile(graphics, backgroundTile, row * Tiles.TILE_HEIGHT * scale, col * Tiles.TILE_WIDTH * scale, false);
+                if (! handledAsSpecialCase(graphics, backgroundTile, row, col, scale)) {
+                    drawTile(graphics, backgroundTile, row * Tiles.TILE_HEIGHT * scale, col * Tiles.TILE_WIDTH * scale, scale, false);
                     if (renderedTile.render()) {
                         int currentRow = row;
                         int currentCol = col;
                         renderedTile.person().ifPresent(person ->
-                                drawTile(graphics, person.tile(), currentRow * Tiles.TILE_HEIGHT * scale, currentCol * Tiles.TILE_WIDTH * scale, true)
+                                drawTile(graphics, person.tile(), currentRow * Tiles.TILE_HEIGHT * scale, currentCol * Tiles.TILE_WIDTH * scale, scale, true)
                         );
                     }
                 }
             }
         }
-        drawTile(graphics, Tile.AVATAR, centerRow * Tiles.TILE_HEIGHT * scale, centerCol * Tiles.TILE_WIDTH * scale, true);
+        drawTile(graphics, Tile.AVATAR, centerRow * Tiles.TILE_HEIGHT * scale, centerCol * Tiles.TILE_WIDTH * scale, scale, true);
     }
 
-    private boolean handledAsSpecialCase(Graphics graphics, Tile tile, int row, int col) {
+    private boolean handledAsSpecialCase(Graphics graphics, Tile tile, int row, int col, int scale) {
         if (tile == Tile.LYIN_DOWN) {
             Tile groundTile = guessGroundTile(row, col);
             if (groundTile != null) {
-                drawTile(graphics, groundTile, row * Tiles.TILE_HEIGHT * scale, col * Tiles.TILE_WIDTH * scale, false);
-                drawTile(graphics, tile, row * Tiles.TILE_HEIGHT * scale, col * Tiles.TILE_WIDTH * scale, true);
+                drawTile(graphics, groundTile, row * Tiles.TILE_HEIGHT * scale, col * Tiles.TILE_WIDTH * scale, scale, false);
+                drawTile(graphics, tile, row * Tiles.TILE_HEIGHT * scale, col * Tiles.TILE_WIDTH * scale, scale, true);
                 return true;
             }
         }
         if (tile == Tile.WHITE_SW || tile == Tile.WHITE_SE || tile == Tile.WHITE_NW || tile == Tile.WHITE_NE) {
-            drawTile(graphics, Tile.SHALLOW_WATER, row * Tiles.TILE_HEIGHT * scale, col * Tiles.TILE_WIDTH * scale, false);
-            drawPartialTile(graphics, tile, Colours.COLOUR_BRIGHT_WHITE, row * Tiles.TILE_HEIGHT * scale, col * Tiles.TILE_WIDTH * scale);
+            drawTile(graphics, Tile.SHALLOW_WATER, row * Tiles.TILE_HEIGHT * scale, col * Tiles.TILE_WIDTH * scale, scale, false);
+            drawPartialTile(graphics, tile, Colours.COLOUR_BRIGHT_WHITE, row * Tiles.TILE_HEIGHT * scale, col * Tiles.TILE_WIDTH * scale, scale);
             return true;
         }
         if (tile == Tile.ANKH) {
             Tile groundTile = guessGroundTile(row, col);
             if (groundTile != null) {
-                drawTile(graphics, groundTile, row * Tiles.TILE_HEIGHT * scale, col * Tiles.TILE_WIDTH * scale, false);
-                drawTile(graphics, tile, row * Tiles.TILE_HEIGHT * scale, col * Tiles.TILE_WIDTH * scale, true);
+                drawTile(graphics, groundTile, row * Tiles.TILE_HEIGHT * scale, col * Tiles.TILE_WIDTH * scale, scale, false);
+                drawTile(graphics, tile, row * Tiles.TILE_HEIGHT * scale, col * Tiles.TILE_WIDTH * scale, scale, true);
                 return true;
             }
         }
@@ -112,14 +111,14 @@ public class GamePanel extends JPanel implements GameProvider {
             if (groundTile == null) {
                 groundTile = Tile.BRICK_FLOOR;
             }
-            drawTile(graphics, groundTile, row * Tiles.TILE_HEIGHT * scale, col * Tiles.TILE_WIDTH * scale, false);
-            drawTile(graphics, tile, row * Tiles.TILE_HEIGHT * scale, col * Tiles.TILE_WIDTH * scale, true);
+            drawTile(graphics, groundTile, row * Tiles.TILE_HEIGHT * scale, col * Tiles.TILE_WIDTH * scale, scale, false);
+            drawTile(graphics, tile, row * Tiles.TILE_HEIGHT * scale, col * Tiles.TILE_WIDTH * scale, scale, true);
             return true;
         }
         return false;
     }
 
-    private void drawTile(Graphics graphics, Tile tile, int row, int col, boolean drawInForeground) {
+    private void drawTile(Graphics graphics, Tile tile, int row, int col, int scale, boolean drawInForeground) {
         for (int pixelRow = 0; pixelRow < Tiles.TILE_HEIGHT; pixelRow ++) {
             for (int pixelCol = 0; pixelCol < Tiles.TILE_WIDTH; pixelCol ++) {
                 int code = codeWithOffsetApplied(tile, pixelRow, pixelCol, drawInForeground);
@@ -131,7 +130,7 @@ public class GamePanel extends JPanel implements GameProvider {
         }
     }
 
-    private void drawPartialTile(Graphics graphics, Tile tile, int colour, int row, int col) {
+    private void drawPartialTile(Graphics graphics, Tile tile, int colour, int row, int col, int scale) {
         for (int pixelRow = 0; pixelRow < Tiles.TILE_HEIGHT; pixelRow ++) {
             for (int pixelCol = 0; pixelCol < Tiles.TILE_WIDTH; pixelCol ++) {
                 int code = tiles.data()[tile.index()][pixelRow][pixelCol];

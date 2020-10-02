@@ -26,25 +26,36 @@ package com.rarysoft.u4.ui;
 import com.rarysoft.u4.model.Charset;
 import com.rarysoft.u4.model.Tiles;
 
-import javax.swing.*;
-import java.awt.*;
+public class Scale {
+    private final int multiplier;
 
-public class UiBuilder {
-    public GameListener buildGamePanel(JFrame gameWindow, Tiles tiles) {
-        GamePanel gamePanel = new GamePanel(tiles);
-        gameWindow.add(gamePanel, BorderLayout.LINE_START);
-        return new GameListener(gamePanel);
+    public Scale(int width, int height) {
+        int widthScale = determineAppropriateScaleForWidth(width);
+        int heightScale = determineAppropriateScaleForHeight(height);
+        this.multiplier = Math.min(widthScale, heightScale);
     }
 
-    public CommunicationListener buildCommunicationPanel(JFrame gameWindow, Charset charset, int scale) {
-        CommunicationPanel communicationPanel = new CommunicationPanel(charset, scale);
-        JPanel panel = new JPanel(new BorderLayout());
-        gameWindow.add(panel, BorderLayout.CENTER);
-        panel.add(communicationPanel, BorderLayout.CENTER);
-        return new CommunicationListener(communicationPanel);
+    public int multiplier() {
+        return multiplier;
     }
 
-    public JFrame buildGameWindow(String title) {
-        return new JFrame(title);
+    private int determineAppropriateScaleForWidth(int width) {
+        if (width < 21 * Tiles.TILE_WIDTH * 2 + 20 * Charset.CHAR_WIDTH * 2) {
+            return 1;
+        }
+        if (width < 21 * Tiles.TILE_WIDTH * 3 + 20 * Charset.CHAR_WIDTH * 3) {
+            return 2;
+        }
+        return 3;
+    }
+
+    private int determineAppropriateScaleForHeight(int height) {
+        if (height < 21 * Tiles.TILE_HEIGHT * 2) {
+            return 1;
+        }
+        if (height < 21 * Tiles.TILE_HEIGHT * 3) {
+            return 2;
+        }
+        return 3;
     }
 }

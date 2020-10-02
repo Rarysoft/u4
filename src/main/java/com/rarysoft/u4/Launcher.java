@@ -71,7 +71,7 @@ public class Launcher {
         int scale = 3;
         UiBuilder uiBuilder = new UiBuilder();
         JFrame gameWindow = uiBuilder.buildGameWindow(messages.windowTitle());
-        GameListener gameListener = uiBuilder.buildGamePanel(gameWindow, tiles, scale);
+        GameListener gameListener = uiBuilder.buildGamePanel(gameWindow, tiles);
         CommunicationListener communicationListener = uiBuilder.buildCommunicationPanel(gameWindow, charset, scale);
         Game game = initializeGame(messages, gameWindow, gameListener, communicationListener, conversations);
         gameWindow.setIconImage(icon);
