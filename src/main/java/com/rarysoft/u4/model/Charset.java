@@ -15,6 +15,9 @@ public class Charset {
             for (int row = 0; row < CHAR_HEIGHT; row ++) {
                 for (int col = 0; col < CHAR_WIDTH; col +=2) {
                     int value = stream.read();
+                    if (value < 0) {
+                        throw new IOException("Unexpected end of stream");
+                    }
                     int leftCode = value >>> 4;
                     int rightCode = ((value << 4) & 0xFF) >>> 4;
                     data[tile][row][col] = leftCode;

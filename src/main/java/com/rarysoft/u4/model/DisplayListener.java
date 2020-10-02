@@ -26,6 +26,8 @@ package com.rarysoft.u4.model;
 import java.util.List;
 
 public interface DisplayListener {
+    void initialize();
+
     void backgroundUpdated(RenderedTile[][] background, int animationCycle);
 
     void actionCompleted(String message);

@@ -36,6 +36,11 @@ public class GameListener implements DisplayListener {
     }
 
     @Override
+    public void initialize() {
+        // nothing to update here
+    }
+
+    @Override
     public void backgroundUpdated(RenderedTile[][] background, int animationCycle) {
         gameProvider.showGameView(background, animationCycle);
     }

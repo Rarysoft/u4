@@ -60,8 +60,6 @@ public class Game {
         this.gameState = gameState;
         initializeAnimation();
         updateBackground();
-        spokenTo(new ArrayList<>());
-        type("");
     }
 
     public void onNorthPressed() {
@@ -286,6 +284,10 @@ public class Game {
         }
         moveBlocked();
         afterPlayerMove();
+    }
+
+    private void initializeDisplay() {
+        displayListeners.forEach(displayListener -> displayListener.initialize());
     }
 
     private void updateBackground() {

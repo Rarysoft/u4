@@ -45,6 +45,11 @@ public class CommunicationListener implements DisplayListener {
     }
 
     @Override
+    public void initialize() {
+        communicationProvider.showText(getDisplayedTextLines());
+    }
+
+    @Override
     public void backgroundUpdated(RenderedTile[][] background, int animationCycle) {
         // nothing to update here
     }
