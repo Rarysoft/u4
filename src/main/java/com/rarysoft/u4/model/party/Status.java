@@ -21,26 +21,36 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.rarysoft.u4.ui;
+package com.rarysoft.u4.model.party;
 
-import com.rarysoft.u4.model.Charset;
-import com.rarysoft.u4.model.DisplayListener;
-import com.rarysoft.u4.model.Tiles;
+public enum Status {
+    GOOD("G"),
+    POISONED("P"),
+    SLEEPING("S"),
+    DEAD("D");
 
-import javax.swing.*;
-import java.awt.*;
-import java.util.Arrays;
-import java.util.List;
+    private final String displayName;
 
-public class UiBuilder {
-    public List<DisplayListener> buildGamePanel(JFrame gameWindow, Tiles tiles, Charset charset) {
-        GameViewRenderer gameViewRenderer = new GameViewRenderer(tiles, charset);
-        GamePanel gamePanel = new GamePanel(gameViewRenderer);
-        gameWindow.add(gamePanel, BorderLayout.CENTER);
-        return Arrays.asList(new GameListener(gamePanel), new CommunicationListener(gamePanel));
+    public static Status forCode(String code) {
+        switch (code) {
+            case "G":
+                return GOOD;
+            case "P":
+                return POISONED;
+            case "S":
+                return SLEEPING;
+            case "D":
+                return DEAD;
+            default:
+                throw new RuntimeException("Unknown status: " + code);
+        }
     }
 
-    public JFrame buildGameWindow(String title) {
-        return new JFrame(title);
+    Status(String displayName) {
+        this.displayName = displayName;
+    }
+
+    public String displayName() {
+        return displayName;
     }
 }

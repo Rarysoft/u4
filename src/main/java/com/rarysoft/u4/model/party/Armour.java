@@ -21,26 +21,48 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.rarysoft.u4.ui;
+package com.rarysoft.u4.model.party;
 
-import com.rarysoft.u4.model.Charset;
-import com.rarysoft.u4.model.DisplayListener;
-import com.rarysoft.u4.model.Tiles;
+public enum Armour {
+    SKIN("Skin"),
+    CLOTH("Cloth"),
+    LEATHER("Leather"),
+    CHAIN_MAIL("Chain Mail"),
+    PLATE_MAIL("Plate Mail"),
+    MAGIC_CHAIN("Magic Chain"),
+    MAGIC_PLATE("Magic Plate"),
+    MYSTIC_ROBE("Mystic Robe");
 
-import javax.swing.*;
-import java.awt.*;
-import java.util.Arrays;
-import java.util.List;
+    private final String displayName;
 
-public class UiBuilder {
-    public List<DisplayListener> buildGamePanel(JFrame gameWindow, Tiles tiles, Charset charset) {
-        GameViewRenderer gameViewRenderer = new GameViewRenderer(tiles, charset);
-        GamePanel gamePanel = new GamePanel(gameViewRenderer);
-        gameWindow.add(gamePanel, BorderLayout.CENTER);
-        return Arrays.asList(new GameListener(gamePanel), new CommunicationListener(gamePanel));
+    public static Armour forCode(int code) {
+        switch (code) {
+            case 0:
+                return SKIN;
+            case 1:
+                return CLOTH;
+            case 2:
+                return LEATHER;
+            case 3:
+                return CHAIN_MAIL;
+            case 4:
+                return PLATE_MAIL;
+            case 5:
+                return MAGIC_CHAIN;
+            case 6:
+                return MAGIC_PLATE;
+            case 7:
+                return MYSTIC_ROBE;
+            default:
+                throw new RuntimeException("Unknown armour: " + code);
+        }
     }
 
-    public JFrame buildGameWindow(String title) {
-        return new JFrame(title);
+    Armour(String displayName) {
+        this.displayName = displayName;
+    }
+
+    public String displayName() {
+        return displayName;
     }
 }

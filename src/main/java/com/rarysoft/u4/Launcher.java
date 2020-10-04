@@ -36,6 +36,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -71,9 +72,8 @@ public class Launcher {
         int scale = 3;
         UiBuilder uiBuilder = new UiBuilder();
         JFrame gameWindow = uiBuilder.buildGameWindow(messages.windowTitle());
-        GameListener gameListener = uiBuilder.buildGamePanel(gameWindow, tiles);
-        CommunicationListener communicationListener = uiBuilder.buildCommunicationPanel(gameWindow, charset, scale);
-        Game game = initializeGame(messages, gameWindow, gameListener, communicationListener, conversations);
+        List<DisplayListener> displayListeners = uiBuilder.buildGamePanel(gameWindow, tiles, charset);
+        Game game = initializeGame(messages, gameWindow, displayListeners, conversations);
         gameWindow.setIconImage(icon);
         FrameHelper.enableExitOnClose(gameWindow);
         FrameHelper.center(gameWindow);
@@ -127,10 +127,9 @@ public class Launcher {
         }
     }
 
-    private Game initializeGame(Messages messages, JFrame gameWindow, GameListener gameListener, CommunicationListener communicationListener, Conversations conversations) {
+    private Game initializeGame(Messages messages, JFrame gameWindow, List<DisplayListener> displayListeners, Conversations conversations) {
         Game game = new Game(messages, conversations);
-        game.addDisplayListener(gameListener);
-        game.addDisplayListener(communicationListener);
+        displayListeners.forEach(game::addDisplayListener);
         gameWindow.addKeyListener(new KeyboardListener(game));
         return game;
     }

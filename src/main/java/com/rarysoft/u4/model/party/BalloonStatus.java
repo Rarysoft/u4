@@ -21,26 +21,20 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.rarysoft.u4.ui;
+package com.rarysoft.u4.model.party;
 
-import com.rarysoft.u4.model.Charset;
-import com.rarysoft.u4.model.DisplayListener;
-import com.rarysoft.u4.model.Tiles;
+public enum BalloonStatus {
+    ON_GROUND,
+    FLYING;
 
-import javax.swing.*;
-import java.awt.*;
-import java.util.Arrays;
-import java.util.List;
-
-public class UiBuilder {
-    public List<DisplayListener> buildGamePanel(JFrame gameWindow, Tiles tiles, Charset charset) {
-        GameViewRenderer gameViewRenderer = new GameViewRenderer(tiles, charset);
-        GamePanel gamePanel = new GamePanel(gameViewRenderer);
-        gameWindow.add(gamePanel, BorderLayout.CENTER);
-        return Arrays.asList(new GameListener(gamePanel), new CommunicationListener(gamePanel));
-    }
-
-    public JFrame buildGameWindow(String title) {
-        return new JFrame(title);
+    public static BalloonStatus forCode(int code) {
+        switch (code) {
+            case 0:
+                return ON_GROUND;
+            case 1:
+                return FLYING;
+            default:
+                throw new RuntimeException("Unknown balloon status: " + code);
+        }
     }
 }

@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
 
 public class CommunicationListener implements DisplayListener {
     private static final int LINE_LENGTH = 28;
-    private static final int MAX_LINES = 20;
+    private static final int MAX_LINES = 19;
 
     private final CommunicationProvider communicationProvider;
 

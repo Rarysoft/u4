@@ -56,9 +56,15 @@ public class Game {
         displayListeners.add(displayListener);
     }
 
+    @Override
+    public String toString() {
+        return super.toString();
+    }
+
     public void start(GameState gameState) {
         this.gameState = gameState;
         initializeAnimation();
+        initializeDisplay();
         updateBackground();
     }
 
