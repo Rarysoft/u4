@@ -23,8 +23,8 @@
  */
 package com.rarysoft.u4.ui;
 
-import com.rarysoft.u4.model.Charset;
-import com.rarysoft.u4.model.Tiles;
+import com.rarysoft.u4.model.graphics.Charset;
+import com.rarysoft.u4.model.graphics.Tiles;
 
 public class Scale {
     private final int multiplier;

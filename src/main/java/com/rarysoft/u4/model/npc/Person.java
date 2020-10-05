@@ -1,4 +1,6 @@
-package com.rarysoft.u4.model;
+package com.rarysoft.u4.model.npc;
+
+import com.rarysoft.u4.model.graphics.Tile;
 
 public class Person {
     private final Tile tile;

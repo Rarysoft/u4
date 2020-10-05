@@ -21,9 +21,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.rarysoft.u4.model;
+package com.rarysoft.u4.model.graphics;
 
-import static com.rarysoft.u4.model.Colours.*;
+import static com.rarysoft.u4.model.graphics.Colours.*;
 
 public class ExtendedCharset {
     private static final int[] GRAY_HORIZONTAL_LINE = {

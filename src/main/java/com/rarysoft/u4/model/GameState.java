@@ -23,18 +23,24 @@
  */
 package com.rarysoft.u4.model;
 
+import com.rarysoft.u4.model.npc.Conversation;
+import com.rarysoft.u4.model.npc.PeopleTracker;
+import com.rarysoft.u4.model.npc.Person;
+import com.rarysoft.u4.model.graphics.Tile;
+import com.rarysoft.u4.model.party.Location;
+import com.rarysoft.u4.model.party.Party;
+
 import java.util.HashSet;
 import java.util.Set;
 
 public class GameState {
     private final Maps maps;
     private final PeopleTracker peopleTracker;
+    private final Party party;
 
     private Map map;
     private int surfaceRow;
     private int surfaceCol;
-    private int row;
-    private int col;
     private PlayMode playMode;
     private Conversation conversation;
     private Person conversingPerson;
@@ -42,30 +48,29 @@ public class GameState {
 
     private Set<Door> doors;
 
-    public GameState(Maps maps, PeopleTracker peopleTracker, Map map) {
+    public GameState(Maps maps, PeopleTracker peopleTracker, Party party) {
         this.maps = maps;
         this.peopleTracker = peopleTracker;
-        this.map = map;
-        this.col = maps.world().startCol();
-        this.row = maps.world().startRow();
+        this.map = maps.map(party.getCurrentPartyLocation().code(), party.getDungeonLevel());
+        this.party = party;
         this.playMode = PlayMode.NORMAL;
         switchToMap(this.map);
     }
 
     public int row() {
-        return row;
+        return party.getRow();
     }
 
     public int col() {
-        return col;
+        return party.getCol();
     }
 
     public void changeRow(int delta) {
-        row += delta;
+        party.setRow(party.getRow() + delta);
     }
 
     public void changeCol(int delta) {
-        col += delta;
+        party.setCol(party.getCol() + delta);
     }
 
     public boolean inNormalPlay() {
@@ -88,20 +93,22 @@ public class GameState {
         return input;
     }
 
-    public int locationId() {
-        return map.id();
+    public Location location() {
+        return Location.forCode(map.locationId());
     }
 
     public RenderedTile[][] mapView(int radius) {
+        int row = party.getRow();
+        int col = party.getCol();
         Tile[][] mapView = map.view(row, col, radius);
         int viewSize = radius * 2 + 1;
         RenderedTile[][] view = new RenderedTile[viewSize][viewSize];
-        for (int row = 0; row < viewSize; row ++) {
-            for (int col = 0; col < viewSize; col ++) {
-                int mapRow = this.row - radius + row;
-                int mapCol = this.col - radius + col;
-                RenderedTile renderedTile = renderedTile(mapView[row][col], mapRow, mapCol);
-                view[row][col] = renderedTile;
+        for (int viewRow = 0; viewRow < viewSize; viewRow ++) {
+            for (int viewCol = 0; viewCol < viewSize; viewCol ++) {
+                int mapRow = row - radius + viewRow;
+                int mapCol = col - radius + viewCol;
+                RenderedTile renderedTile = renderedTile(mapView[viewRow][viewCol], mapRow, mapCol);
+                view[viewRow][viewCol] = renderedTile;
             }
         }
         return view;
@@ -112,28 +119,34 @@ public class GameState {
     }
 
     public void enter() {
-        if (map.id() == 0) {
-            switchToMap(maps.mapAt(row, col));
+        int row = party.getRow();
+        int col = party.getCol();
+        if (map.locationId() == 0) {
+            Map map = maps.mapAt(row, col);
+            switchToMap(map);
             surfaceCol = col;
             surfaceRow = row;
-            col = map.startCol();
-            row = map.startRow();
+            party.setCurrentPartyLocation(Location.forCode(map.locationId()));
+            party.setDungeonLevel(map.level()); // Using this in all locations, not just dungeons
+            party.setRow(map.startRow());
+            party.setCol(map.startCol());
         }
-        else if (map.id() == LocationIds.CASTLE_BRITANNIA_1 || map.id() == LocationIds.CASTLE_BRITANNIA_2) {
+        else if (map.locationId() == Location.CASTLE_BRITANNIA.code()) {
             if (row == 3 && (col == 3 || col == 27)) {
-                switchToMap(maps.map(map.id() == LocationIds.CASTLE_BRITANNIA_1 ? LocationIds.CASTLE_BRITANNIA_2 : LocationIds.CASTLE_BRITANNIA_1));
+                switchToMap(maps.map(Location.CASTLE_BRITANNIA.code(), map.level() == 1 ? 2 : 1));
             }
         }
     }
 
     public void returnToSurface() {
         map = maps.world();
-        col = surfaceCol;
-        row = surfaceRow;
+        party.setCurrentPartyLocation(Location.SURFACE);
+        party.setRow(surfaceRow);
+        party.setCol(surfaceCol);
     }
 
     public void postTurnUpdates() {
-        peopleTracker.movePeople(map.full(), row, col, conversingPerson);
+        peopleTracker.movePeople(map.full(), party.getRow(), party.getCol(), conversingPerson);
         doors.forEach(Door::turnCompleted);
     }
 
@@ -177,7 +190,7 @@ public class GameState {
 
     private void switchToMap(Map map) {
         this.map = map;
-        peopleTracker.addPeople(map.id(), map.people());
+        peopleTracker.addPeople(map.locationId(), map.people());
         prepareDoors(map);
     }
 
@@ -188,13 +201,13 @@ public class GameState {
                 tileToRender = Tile.BRICK_FLOOR;
             }
         }
-        Person person = peopleTracker.personAt(map.id(), row, col).orElse(null);
+        Person person = peopleTracker.personAt(map.locationId(), row, col).orElse(null);
         return new RenderedTile(tileToRender, person);
     }
 
     private void prepareDoors(Map map) {
         doors = new HashSet<>();
-        if (map.id() == 0) {
+        if (map.locationId() == 0) {
             // there are no doors in the world map
             return;
         }

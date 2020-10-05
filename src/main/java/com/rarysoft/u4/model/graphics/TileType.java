@@ -1,4 +1,4 @@
-package com.rarysoft.u4.model;
+package com.rarysoft.u4.model.graphics;
 
 public enum TileType {
     PLAYER,

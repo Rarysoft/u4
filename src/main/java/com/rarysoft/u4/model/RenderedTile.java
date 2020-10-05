@@ -23,6 +23,9 @@
  */
 package com.rarysoft.u4.model;
 
+import com.rarysoft.u4.model.npc.Person;
+import com.rarysoft.u4.model.graphics.Tile;
+
 import java.util.Optional;
 
 public class RenderedTile {

@@ -23,10 +23,10 @@
  */
 package com.rarysoft.u4.ui;
 
-import com.rarysoft.u4.model.Charset;
+import com.rarysoft.u4.model.graphics.Charset;
 import com.rarysoft.u4.model.DisplayListener;
-import com.rarysoft.u4.model.ExtendedCharset;
-import com.rarysoft.u4.model.Tiles;
+import com.rarysoft.u4.model.graphics.ExtendedCharset;
+import com.rarysoft.u4.model.graphics.Tiles;
 
 import javax.swing.*;
 import java.awt.*;

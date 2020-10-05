@@ -24,6 +24,10 @@
 package com.rarysoft.u4.model;
 
 import com.rarysoft.u4.i18n.Messages;
+import com.rarysoft.u4.model.npc.Conversation;
+import com.rarysoft.u4.model.npc.Conversations;
+import com.rarysoft.u4.model.npc.Person;
+import com.rarysoft.u4.model.graphics.*;
 
 import javax.swing.Timer;
 import java.util.*;
@@ -267,7 +271,7 @@ public class Game {
     }
 
     private void attemptConversationWith(Person person) {
-        Optional<Conversation> possibleConversation = conversations.findConversationFor(gameState.locationId(), person);
+        Optional<Conversation> possibleConversation = conversations.findConversationFor(gameState.location(), person);
         if (possibleConversation.isPresent()) {
             Conversation conversation = possibleConversation.get();
             if (random.nextInt(256) > 255 - conversation.getTurnAwayProbability()) {

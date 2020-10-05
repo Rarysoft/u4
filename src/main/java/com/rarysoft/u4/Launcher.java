@@ -25,6 +25,13 @@ package com.rarysoft.u4;
 
 import com.rarysoft.u4.i18n.Messages;
 import com.rarysoft.u4.model.*;
+import com.rarysoft.u4.model.npc.Conversations;
+import com.rarysoft.u4.model.npc.PeopleTracker;
+import com.rarysoft.u4.model.graphics.Charset;
+import com.rarysoft.u4.model.DisplayListener;
+import com.rarysoft.u4.model.graphics.Tiles;
+import com.rarysoft.u4.model.party.Location;
+import com.rarysoft.u4.model.party.Party;
 import com.rarysoft.u4.ui.*;
 import com.rarysoft.u4.ui.util.FrameHelper;
 
@@ -69,7 +76,6 @@ public class Launcher {
         BufferedImage icon = initializeIcon("/images/ankh.png");
         Maps maps = initializeMaps("/data");
         Conversations conversations = initializeConversations("/data");
-        int scale = 3;
         UiBuilder uiBuilder = new UiBuilder();
         JFrame gameWindow = uiBuilder.buildGameWindow(messages.windowTitle());
         List<DisplayListener> displayListeners = uiBuilder.buildGamePanel(gameWindow, tiles, charset);
@@ -79,7 +85,12 @@ public class Launcher {
         FrameHelper.center(gameWindow);
         FrameHelper.maximize(gameWindow);
         FrameHelper.show(gameWindow);
-        game.start(new GameState(maps, new PeopleTracker(), maps.world()));
+        Party party = new Party();
+        party.setCurrentPartyLocation(Location.SURFACE);
+        party.setDungeonLevel(1);
+        party.setRow(maps.world().startRow());
+        party.setCol(maps.world().startCol());
+        game.start(new GameState(maps, new PeopleTracker(), party));
     }
 
     private void initializeLogFile() {

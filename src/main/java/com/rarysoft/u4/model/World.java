@@ -1,5 +1,8 @@
 package com.rarysoft.u4.model;
 
+import com.rarysoft.u4.model.graphics.Tile;
+import com.rarysoft.u4.model.npc.Person;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -35,8 +38,13 @@ public class World implements Map {
     }
 
     @Override
-    public int id() {
+    public int locationId() {
         return 0;
+    }
+
+    @Override
+    public int level() {
+        return 1;
     }
 
     @Override

@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.rarysoft.u4.model;
+package com.rarysoft.u4.model.npc;
 
 public class Conversation {
     public static final int QUESTION_FLAG_JOB = 3;

@@ -23,111 +23,54 @@
  */
 package com.rarysoft.u4.model.party;
 
+import java.util.stream.Stream;
+
 public enum Location {
-    SURFACE,
-    CASTLE_BRITANNIA,
-    THE_LYCAEUM,
-    EMPATH_ABBEY,
-    SERPENTS_HOLD,
-    MOONGLOW,
-    BRITAIN,
-    JHELOM,
-    YEW,
-    MINOC,
-    TRINSIC,
-    SKARA_BRAE,
-    MAGINCIA,
-    PAWS,
-    BUCCANEERS_DEN,
-    VESPER,
-    COVE,
-    DECEIT,
-    DESPISE,
-    DESTARD,
-    WRONG,
-    COVETOUS,
-    SHAME,
-    HYTHLOTH,
-    ABYSS,
-    SHRINE_OF_HONESTY,
-    SHRINE_OF_COMPASSION,
-    SHRINE_OF_VALOUR,
-    SHRINE_OF_JUSTICE,
-    SHRINE_OF_SACRIFICE,
-    SHRINE_OF_HONOUR,
-    SHRINE_OF_SPIRITUALTIY,
-    SHRINE_OF_HUMILITY;
+    SURFACE(0x00),
+    CASTLE_BRITANNIA(0x01),
+    THE_LYCAEUM(0x02),
+    EMPATH_ABBEY(0x03),
+    SERPENTS_HOLD(0x04),
+    MOONGLOW(0x05),
+    BRITAIN(0x06),
+    JHELOM(0x07),
+    YEW(0x08),
+    MINOC(0x09),
+    TRINSIC(0x0A),
+    SKARA_BRAE(0x0B),
+    MAGINCIA(0x0C),
+    PAWS(0x0D),
+    BUCCANEERS_DEN(0x0E),
+    VESPER(0x0F),
+    COVE(0x10),
+    DECEIT(0x11),
+    DESPISE(0x12),
+    DESTARD(0x13),
+    WRONG(0x14),
+    COVETOUS(0x15),
+    SHAME(0x16),
+    HYTHLOTH(0x17),
+    ABYSS(0x18),
+    SHRINE_OF_HONESTY(0x19),
+    SHRINE_OF_COMPASSION(0x1A),
+    SHRINE_OF_VALOUR(0x1B),
+    SHRINE_OF_JUSTICE(0x1C),
+    SHRINE_OF_SACRIFICE(0x1D),
+    SHRINE_OF_HONOUR(0x1E),
+    SHRINE_OF_SPIRITUALTIY(0x1F),
+    SHRINE_OF_HUMILITY(0x20);
+
+    private final int code;
+
+    Location(int code) {
+        this.code = code;
+    }
 
     public static Location forCode(int code) {
-        switch (code) {
-            case 0x00:
-                return SURFACE;
-            case 0x01:
-                return CASTLE_BRITANNIA;
-            case 0x02:
-                return THE_LYCAEUM;
-            case 0x03:
-                return EMPATH_ABBEY;
-            case 0x04:
-                return SERPENTS_HOLD;
-            case 0x05:
-                return MOONGLOW;
-            case 0x06:
-                return BRITAIN;
-            case 0x07:
-                return JHELOM;
-            case 0x08:
-                return YEW;
-            case 0x09:
-                return MINOC;
-            case 0x0A:
-                return TRINSIC;
-            case 0x0B:
-                return SKARA_BRAE;
-            case 0x0C:
-                return MAGINCIA;
-            case 0x0D:
-                return PAWS;
-            case 0x0E:
-                return BUCCANEERS_DEN;
-            case 0x0F:
-                return VESPER;
-            case 0x10:
-                return COVE;
-            case 0x11:
-                return DECEIT;
-            case 0x12:
-                return DESPISE;
-            case 0x13:
-                return DESTARD;
-            case 0x14:
-                return WRONG;
-            case 0x15:
-                return COVETOUS;
-            case 0x16:
-                return SHAME;
-            case 0x17:
-                return HYTHLOTH;
-            case 0x18:
-                return ABYSS;
-            case 0x19:
-                return SHRINE_OF_HONESTY;
-            case 0x1A:
-                return SHRINE_OF_COMPASSION;
-            case 0x1B:
-                return SHRINE_OF_VALOUR;
-            case 0x1C:
-                return SHRINE_OF_JUSTICE;
-            case 0x1D:
-                return SHRINE_OF_SACRIFICE;
-            case 0x1E:
-                return SHRINE_OF_HONOUR;
-            case 0x1F:
-                return SHRINE_OF_SPIRITUALTIY;
-            case 0x20:
-                return SHRINE_OF_HUMILITY;
-            default:
-                throw new RuntimeException("Unknown location: " + code);
-        }
+        return Stream.of(values()).filter(tile -> tile.code() == code).findAny().orElseThrow(() -> new RuntimeException("Unknown location: " + code));
+    }
+
+    public int code() {
+        return code;
     }
 }

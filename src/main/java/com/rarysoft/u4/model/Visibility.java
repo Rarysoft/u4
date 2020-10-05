@@ -23,6 +23,8 @@
  */
 package com.rarysoft.u4.model;
 
+import com.rarysoft.u4.model.graphics.Coordinate;
+
 import java.math.BigDecimal;
 
 public class Visibility {

@@ -21,7 +21,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.rarysoft.u4.model;
+package com.rarysoft.u4.model.npc;
+
+import com.rarysoft.u4.model.party.Location;
 
 import java.io.File;
 import java.io.IOException;
@@ -30,27 +32,26 @@ import java.util.*;
 import java.util.Map;
 
 public class Conversations {
-    private final Map<Integer, List<Conversation>> locationConversations;
+    private final Map<Location, List<Conversation>> locationConversations;
 
     public static Conversations fromFiles(String directory) throws IOException {
-        Map<Integer, List<Conversation>> locationConversations = new HashMap<>();
-        locationConversations.put(LocationIds.BRITAIN, loadConversations(path(directory, "britain.tlk")));
-        locationConversations.put(LocationIds.COVE, loadConversations(path(directory, "cove.tlk")));
-        locationConversations.put(LocationIds.BUCCANEERS_DEN, loadConversations(path(directory, "den.tlk")));
-        locationConversations.put(LocationIds.EMPATH_ABBEY, loadConversations(path(directory, "empath.tlk")));
-        locationConversations.put(LocationIds.JHELOM, loadConversations(path(directory, "jhelom.tlk")));
-        locationConversations.put(LocationIds.CASTLE_BRITANNIA_1, loadConversations(path(directory, "lcb.tlk")));
-        locationConversations.put(LocationIds.CASTLE_BRITANNIA_2, loadConversations(path(directory, "lcb.tlk")));
-        locationConversations.put(LocationIds.LYCAEUM, loadConversations(path(directory, "lycaeum.tlk")));
-        locationConversations.put(LocationIds.SERPENTS_HOLD, loadConversations(path(directory, "serpent.tlk")));
-        locationConversations.put(LocationIds.MAGINCIA, loadConversations(path(directory, "magincia.tlk")));
-        locationConversations.put(LocationIds.MINOC, loadConversations(path(directory, "minoc.tlk")));
-        locationConversations.put(LocationIds.MOONGLOW, loadConversations(path(directory, "moonglow.tlk")));
-        locationConversations.put(LocationIds.PAWS, loadConversations(path(directory, "paws.tlk")));
-        locationConversations.put(LocationIds.SKARA_BRAE, loadConversations(path(directory, "skara.tlk")));
-        locationConversations.put(LocationIds.TRINSIC, loadConversations(path(directory, "trinsic.tlk")));
-        locationConversations.put(LocationIds.VESPER, loadConversations(path(directory, "vesper.tlk")));
-        locationConversations.put(LocationIds.YEW, loadConversations(path(directory, "yew.tlk")));
+        Map<Location, List<Conversation>> locationConversations = new HashMap<>();
+        locationConversations.put(Location.BRITAIN, loadConversations(path(directory, "britain.tlk")));
+        locationConversations.put(Location.COVE, loadConversations(path(directory, "cove.tlk")));
+        locationConversations.put(Location.BUCCANEERS_DEN, loadConversations(path(directory, "den.tlk")));
+        locationConversations.put(Location.EMPATH_ABBEY, loadConversations(path(directory, "empath.tlk")));
+        locationConversations.put(Location.JHELOM, loadConversations(path(directory, "jhelom.tlk")));
+        locationConversations.put(Location.CASTLE_BRITANNIA, loadConversations(path(directory, "lcb.tlk")));
+        locationConversations.put(Location.THE_LYCAEUM, loadConversations(path(directory, "lycaeum.tlk")));
+        locationConversations.put(Location.SERPENTS_HOLD, loadConversations(path(directory, "serpent.tlk")));
+        locationConversations.put(Location.MAGINCIA, loadConversations(path(directory, "magincia.tlk")));
+        locationConversations.put(Location.MINOC, loadConversations(path(directory, "minoc.tlk")));
+        locationConversations.put(Location.MOONGLOW, loadConversations(path(directory, "moonglow.tlk")));
+        locationConversations.put(Location.PAWS, loadConversations(path(directory, "paws.tlk")));
+        locationConversations.put(Location.SKARA_BRAE, loadConversations(path(directory, "skara.tlk")));
+        locationConversations.put(Location.TRINSIC, loadConversations(path(directory, "trinsic.tlk")));
+        locationConversations.put(Location.VESPER, loadConversations(path(directory, "vesper.tlk")));
+        locationConversations.put(Location.YEW, loadConversations(path(directory, "yew.tlk")));
         return new Conversations(locationConversations);
     }
 
@@ -133,15 +134,15 @@ public class Conversations {
         return stringBuilder.toString();
     }
 
-    public Conversations(Map<Integer, List<Conversation>> locationConversations) {
+    public Conversations(Map<Location, List<Conversation>> locationConversations) {
         this.locationConversations = locationConversations;
     }
 
-    public Optional<Conversation> findConversationFor(int locationId, Person person) {
-        if (! locationConversations.containsKey(locationId)) {
+    public Optional<Conversation> findConversationFor(Location location, Person person) {
+        if (! locationConversations.containsKey(location)) {
             return Optional.empty();
         }
-        List<Conversation> conversations = locationConversations.get(locationId);
+        List<Conversation> conversations = locationConversations.get(location);
         return Optional.of(conversations.get(person.conversationIndex() - 1));
     }
 }

@@ -1,8 +1,8 @@
-package com.rarysoft.u4.model;
+package com.rarysoft.u4.model.graphics;
 
 import java.util.stream.Stream;
 
-import static com.rarysoft.u4.model.TileType.*;
+import static com.rarysoft.u4.model.graphics.TileType.*;
 
 public enum Tile {
     DEEP_WATER(0, GROUND, 0, false, false),
