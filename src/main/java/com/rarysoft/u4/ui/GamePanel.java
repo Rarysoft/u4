@@ -29,7 +29,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.List;
 
-public class GamePanel extends JPanel implements GameProvider, CommunicationProvider {
+public class GamePanel extends JPanel implements BorderProvider, GameProvider, CommunicationProvider {
     private final GameViewRenderer gameViewRenderer;
 
     public GamePanel(GameViewRenderer gameViewRenderer) {
@@ -70,5 +70,10 @@ public class GamePanel extends JPanel implements GameProvider, CommunicationProv
         Dimension windowSize = this.getParent().getSize();
         int scale = new Scale(windowSize.width, windowSize.height).multiplier();
         gameViewRenderer.drawGameView(graphics, scale);
+    }
+
+    @Override
+    public void drawBorder() {
+        this.getParent().repaint();
     }
 }

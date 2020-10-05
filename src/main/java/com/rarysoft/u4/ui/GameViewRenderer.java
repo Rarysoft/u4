@@ -30,61 +30,66 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GameViewRenderer {
-    private static final int BACKGROUND_START_ROW = Charset.CHAR_HEIGHT;
-    private static final int BACKGROUND_START_COL = Charset.CHAR_WIDTH;
+    private static final int BACKGROUND_OFFSET_X = Charset.CHAR_WIDTH;
+    private static final int BACKGROUND_OFFSET_Y = Charset.CHAR_HEIGHT;
 
-    private static final int TEXT_AREA_START_ROW = 9 * Tiles.TILE_HEIGHT + Charset.CHAR_HEIGHT;
-    private static final int TEXT_AREA_START_COL = 19 * Tiles.TILE_WIDTH + Charset.CHAR_WIDTH * 2;
+    private static final int TEXT_AREA_OFFSET_X = Charset.CHAR_WIDTH + 19 * Tiles.TILE_WIDTH + Charset.CHAR_WIDTH;
+    private static final int TEXT_AREA_OFFSET_Y = Charset.CHAR_HEIGHT * 19;
 
     private final Tiles tiles;
     private final Charset charset;
+    private final ExtendedCharset extendedCharset;
 
     private RenderedTile[][] background;
     private int animationCycle;
-    private boolean backgroundToBePainted = false;
 
     private List<String> textLines = new ArrayList<>();
     private boolean allowInput = false;
     private String inputLine = "                           ";
-    private boolean textAreaToBePainted = false;
 
-    public GameViewRenderer(Tiles tiles, Charset charset) {
+    public GameViewRenderer(Tiles tiles, Charset charset, ExtendedCharset extendedCharset) {
         this.tiles = tiles;
         this.charset = charset;
+        this.extendedCharset = extendedCharset;
     }
 
     public void setBackground(RenderedTile[][] background) {
         this.background = background;
-        backgroundToBePainted = true;
     }
 
     public void setAnimationCycle(int animationCycle) {
         this.animationCycle = animationCycle;
-        backgroundToBePainted = true;
     }
 
     public void setTextLines(List<String> textLines) {
         this.textLines = textLines;
-        textAreaToBePainted = true;
     }
 
     public void setAllowInput(boolean allowInput) {
         this.allowInput = allowInput;
-        textAreaToBePainted = true;
     }
 
     public void setInputLine(String inputLine) {
         this.inputLine = inputLine;
-        textAreaToBePainted = true;
     }
 
     public void drawGameView(Graphics graphics, int scale) {
-        if (backgroundToBePainted) {
-            drawBackground(graphics, scale);
+        drawBorder(graphics, scale);
+        drawBackground(graphics, scale);
+        drawTextArea(graphics, scale);
+    }
+
+    private void drawBorder(Graphics graphics, int scale) {
+        drawCharacter(graphics, extendedCharset.borderCornerNorthwest(), 0, 0, scale, false);
+        drawCharacter(graphics, extendedCharset.borderCornerSouthwest(), 39, 0, scale, false);
+        for (int index = 1; index < 39; index ++) {
+            drawCharacter(graphics, extendedCharset.borderHorizontal(), 0, index, scale, false);
+            drawCharacter(graphics, extendedCharset.borderHorizontal(), 39, index, scale, false);
+            drawCharacter(graphics, extendedCharset.getBorderVertical(), index, 0, scale, false);
+            drawCharacter(graphics, index == 38 ? extendedCharset.getBorderVerticalJunctionEast() : extendedCharset.getBorderVertical(), index, 39, scale, false);
         }
-        if (textAreaToBePainted) {
-            drawTextArea(graphics, scale);
-        }
+        drawCharacter(graphics, extendedCharset.borderCornerNortheast(), 0, 39, scale, false);
+        drawCharacter(graphics, extendedCharset.borderCornerSoutheast(), 39, 39, scale, false);
     }
 
     private void drawBackground(Graphics graphics, int scale) {
@@ -93,7 +98,7 @@ public class GameViewRenderer {
         }
         // Note: the background map provided has a radius that is one larger than what we actually show, which allows
         // us to look at all of the surrounding tiles of each visible tile, so we crop the first and last row and
-        // column here
+        // column here and then adjust when drawing to treat received row/col 1 as actual row/col 0
         int centerRow = (background.length - 1) / 2;
         int centerCol = (background[centerRow].length - 1) / 2;
         for (int row = 1; row < background.length - 1; row ++) {
@@ -106,7 +111,7 @@ public class GameViewRenderer {
                         int currentRow = row;
                         int currentCol = col;
                         renderedTile.person().ifPresent(person ->
-                                drawTile(graphics, person.tile(), currentRow, currentCol, scale, true)
+                                drawTile(graphics, person.tile(), currentRow - 1, currentCol - 1, scale, true)
                         );
                     }
                 }
@@ -155,8 +160,8 @@ public class GameViewRenderer {
                 int code = codeWithOffsetApplied(tile, pixelRow, pixelCol, drawInForeground);
                 if (code != -1) {
                     graphics.setColor(Colours.BY_CODE[code]);
-                    graphics.fillRect(BACKGROUND_START_COL * scale + col * Tiles.TILE_WIDTH * scale + pixelCol * scale,
-                            BACKGROUND_START_ROW * scale + row * Tiles.TILE_HEIGHT * scale + pixelRow * scale, scale, scale);
+                    graphics.fillRect(BACKGROUND_OFFSET_X * scale + col * Tiles.TILE_WIDTH * scale + pixelCol * scale,
+                            BACKGROUND_OFFSET_Y * scale + row * Tiles.TILE_HEIGHT * scale + pixelRow * scale, scale, scale);
                 }
             }
         }
@@ -168,7 +173,8 @@ public class GameViewRenderer {
                 int code = tiles.data()[tile.index()][pixelRow][pixelCol];
                 if (code == colour) {
                     graphics.setColor(Colours.BY_CODE[code]);
-                    graphics.fillRect(col + pixelCol * scale, row + pixelRow * scale, scale, scale);
+                    graphics.fillRect(BACKGROUND_OFFSET_X * scale + col + pixelCol * scale,
+                            BACKGROUND_OFFSET_Y * scale + row + pixelRow * scale, scale, scale);
                 }
             }
         }
@@ -508,22 +514,31 @@ public class GameViewRenderer {
             for (int col = 0; col < textLine.length(); col ++) {
                 int charCode = textLine.charAt(col);
                 int[][] character = charset.data()[charCode];
-                drawCharacter(graphics, character, row, col, scale);
+                drawCharacter(graphics, character, row, col, scale, true);
             }
         }
         int inputRow = 19;
-        drawCharacter(graphics, charset.data()[16], inputRow, 0, scale);
+        drawCharacter(graphics, charset.data()[16], inputRow, 0, scale, true);
         for (int index = 0; index < inputLine.length(); index ++) {
-            drawCharacter(graphics, charset.data()[inputLine.charAt(index)], inputRow, index + 1, scale);
+            drawCharacter(graphics, charset.data()[inputLine.charAt(index)], inputRow, index + 1, scale, true);
         }
         if (allowInput) {
-            // TODO: show animated cursor
+            int index = inputLine.indexOf(" ");
+            if (index < 0) {
+                return;
+            }
+
+            drawCharacter(graphics, charset.data()[31 - animationCycle % 4], inputRow, index + 1, scale, true);
         }
     }
 
-    private void drawCharacter(Graphics graphics, int[][] character, int row, int col, int scale) {
-        int y = yForRow(row, scale);
-        int x = xForCol(col, scale);
+    private void drawCharacter(Graphics graphics, int[][] character, int row, int col, int scale, boolean applyOffset) {
+        int x = col * Charset.CHAR_WIDTH * scale;
+        int y = row * Charset.CHAR_HEIGHT * scale;
+        if (applyOffset) {
+            y += TEXT_AREA_OFFSET_Y * scale;
+            x += TEXT_AREA_OFFSET_X * scale;
+        }
         for (int pixelY = 0; pixelY < Charset.CHAR_HEIGHT; pixelY ++) {
             for (int pixelX = 0; pixelX < Charset.CHAR_WIDTH; pixelX ++) {
                 int code = character[pixelY][pixelX];
@@ -531,13 +546,5 @@ public class GameViewRenderer {
                 graphics.fillRect(x + pixelX * scale, y + pixelY * scale, scale, scale);
             }
         }
-    }
-
-    private int yForRow(int row, int scale) {
-        return TEXT_AREA_START_ROW * scale + row * Charset.CHAR_HEIGHT * scale;
-    }
-
-    private int xForCol(int col, int scale) {
-        return TEXT_AREA_START_COL * scale + col * Charset.CHAR_WIDTH * scale;
     }
 }

@@ -23,29 +23,6 @@
  */
 package com.rarysoft.u4.ui;
 
-import com.rarysoft.u4.model.Charset;
-import com.rarysoft.u4.model.DisplayListener;
-import com.rarysoft.u4.model.ExtendedCharset;
-import com.rarysoft.u4.model.Tiles;
-
-import javax.swing.*;
-import java.awt.*;
-import java.util.Arrays;
-import java.util.List;
-
-public class UiBuilder {
-    public List<DisplayListener> buildGamePanel(JFrame gameWindow, Tiles tiles, Charset charset) {
-        GameViewRenderer gameViewRenderer = new GameViewRenderer(tiles, charset, new ExtendedCharset());
-        GamePanel gamePanel = new GamePanel(gameViewRenderer);
-        gameWindow.add(gamePanel, BorderLayout.CENTER);
-        return Arrays.asList(
-                new BorderListener(gamePanel),
-                new GameListener(gamePanel),
-                new CommunicationListener(gamePanel)
-        );
-    }
-
-    public JFrame buildGameWindow(String title) {
-        return new JFrame(title);
-    }
+public interface BorderProvider {
+    void drawBorder();
 }
