@@ -21,10 +21,40 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.rarysoft.u4.ui;
+package com.rarysoft.u4.model;
 
-import com.rarysoft.u4.model.RenderedTile;
+import com.rarysoft.u4.model.party.Location;
 
-public interface GameProvider {
-    void showGameView(RenderedTile[][] background, int animationCycle);
+import java.util.Objects;
+
+public class LocationLevel {
+    public static LocationLevel from(Location location, int level) {
+        return new LocationLevel(location, level);
+    }
+
+    private final Location location;
+    private final int level;
+
+    private LocationLevel(Location location, int level) {
+        this.location = location;
+        this.level = level;
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if (this == other) {
+            return true;
+        }
+        if (other == null || getClass() != other.getClass()) {
+            return false;
+        }
+        LocationLevel that = (LocationLevel) other;
+        return this.location == that.location &&
+                this.level == that.level;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(location, level);
+    }
 }

@@ -2,6 +2,7 @@ package com.rarysoft.u4.model;
 
 import com.rarysoft.u4.model.graphics.Tile;
 import com.rarysoft.u4.model.npc.Person;
+import com.rarysoft.u4.model.party.Location;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -14,7 +15,7 @@ public class Settlement implements Map {
 
     private static final int NPC_COUNT = 32;
 
-    private final int id;
+    private final Location location;
     private final int level;
     private final int worldX;
     private final int worldY;
@@ -22,7 +23,7 @@ public class Settlement implements Map {
     private final int startY;
     private final Tile areaTile;
 
-    public static Settlement fromStream(InputStream stream, int id, int level, int worldX, int worldY, int startX, int startY, Tile areaTile) throws IOException {
+    public static Settlement fromStream(InputStream stream, Location location, int level, int worldX, int worldY, int startX, int startY, Tile areaTile) throws IOException {
         Tile[][] data = new Tile[MAP_HEIGHT][MAP_WIDTH];
         for (int row = 0; row < MAP_HEIGHT; row ++) {
             for (int col = 0; col < MAP_WIDTH; col ++) {
@@ -68,15 +69,15 @@ public class Settlement implements Map {
                 people.add(new Person(Tile.forIndex(npcTiles[npc]), npcStartXs[npc], npcStartYs[npc], npcMovementBehaviours[npc], npcConversationIndexes[npc]));
             }
         }
-        return new Settlement(id, level, data, people, worldX, worldY, startX, startY, areaTile);
+        return new Settlement(location, level, data, people, worldX, worldY, startX, startY, areaTile);
     }
 
     private final Tile[][] data;
 
     private final List<Person> people;
 
-    private Settlement(int id, int level, Tile[][] data, List<Person> people, int worldX, int worldY, int startX, int startY, Tile areaTile) {
-        this.id = id;
+    private Settlement(Location location, int level, Tile[][] data, List<Person> people, int worldX, int worldY, int startX, int startY, Tile areaTile) {
+        this.location = location;
         this.level = level;
         this.data = data;
         this.people = people;
@@ -88,8 +89,8 @@ public class Settlement implements Map {
     }
 
     @Override
-    public int locationId() {
-        return id;
+    public Location location() {
+        return location;
     }
 
     @Override

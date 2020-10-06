@@ -29,63 +29,56 @@ import com.rarysoft.u4.model.party.Location;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 public class Maps {
-    private final World world;
-
-    private final Set<Map> maps;
+    private final HashMap<LocationLevel, Map> maps;
 
     public static Maps fromFiles(String directory) throws IOException {
-        World world = World.fromStream(Maps.class.getResourceAsStream(path(directory, "world.map")));
-        Set<Map> maps = new HashSet<>();
-        maps.add(loadMap(path(directory, "britain.ult"), Location.BRITAIN, 1, 106, 82, 15, 1));
-        maps.add(loadMap(path(directory, "cove.ult"), Location.COVE, 1, 90, 136, 15, 1));
-        maps.add(loadMap(path(directory, "den.ult"), Location.BUCCANEERS_DEN, 1, 158, 136, 15, 1));
-        maps.add(loadMap(path(directory, "empath.ult"), Location.EMPATH_ABBEY, 1, 50, 28, 30, 15));
-        maps.add(loadMap(path(directory, "jhelom.ult"), Location.JHELOM, 1, 222, 36, 15, 1));
-        maps.add(loadMap(path(directory, "lcb_1.ult"), Location.CASTLE_BRITANNIA, 1, 107, 86, 30, 15));
-        maps.add(loadMap(path(directory, "lcb_2.ult"), Location.CASTLE_BRITANNIA, 2, -1, -1, 30, 15));
-        maps.add(loadMap(path(directory, "lycaeum.ult"), Location.THE_LYCAEUM, 1, 107, 218, 30, 15));
-        maps.add(loadMap(path(directory, "serpent.ult"), Location.SERPENTS_HOLD, 1, 241, 146, 30, 15));
-        maps.add(loadMap(path(directory, "magincia.ult"), Location.MAGINCIA, 1, 169, 187, 15, 1));
-        maps.add(loadMap(path(directory, "minoc.ult"), Location.MINOC, 1, 20, 159, 15, 1));
-        maps.add(loadMap(path(directory, "moonglow.ult"), Location.MOONGLOW, 1, 135, 232, 15, 1));
-        maps.add(loadMap(path(directory, "paws.ult"), Location.PAWS, 1, 145, 98, 15, 1));
-        maps.add(loadMap(path(directory, "skara.ult"), Location.SKARA_BRAE, 1, 128, 22, 15, 1));
-        maps.add(loadMap(path(directory, "trinsic.ult"), Location.TRINSIC, 1, 184, 106, 15, 1));
-        maps.add(loadMap(path(directory, "vesper.ult"), Location.VESPER, 1, 59, 201, 15, 1));
-        maps.add(loadMap(path(directory, "yew.ult"), Location.YEW, 1, 43, 58, 15, 1));
-        return new Maps(world, maps);
+        HashMap<LocationLevel, Map> maps = new HashMap<>();
+        maps.put(LocationLevel.from(Location.SURFACE, 1), World.fromStream(Maps.class.getResourceAsStream(path(directory, "world.map"))));
+        maps.put(LocationLevel.from(Location.BRITAIN, 1), loadMap(path(directory, "britain.ult"), Location.BRITAIN, 1, 106, 82, 15, 1));
+        maps.put(LocationLevel.from(Location.COVE, 1), loadMap(path(directory, "cove.ult"), Location.COVE, 1, 90, 136, 15, 1));
+        maps.put(LocationLevel.from(Location.BUCCANEERS_DEN, 1), loadMap(path(directory, "den.ult"), Location.BUCCANEERS_DEN, 1, 158, 136, 15, 1));
+        maps.put(LocationLevel.from(Location.EMPATH_ABBEY, 1), loadMap(path(directory, "empath.ult"), Location.EMPATH_ABBEY, 1, 50, 28, 30, 15));
+        maps.put(LocationLevel.from(Location.JHELOM, 1), loadMap(path(directory, "jhelom.ult"), Location.JHELOM, 1, 222, 36, 15, 1));
+        maps.put(LocationLevel.from(Location.CASTLE_BRITANNIA, 1), loadMap(path(directory, "lcb_1.ult"), Location.CASTLE_BRITANNIA, 1, 107, 86, 30, 15));
+        maps.put(LocationLevel.from(Location.CASTLE_BRITANNIA, 2), loadMap(path(directory, "lcb_2.ult"), Location.CASTLE_BRITANNIA, 2, 107, 86, 30, 15));
+        maps.put(LocationLevel.from(Location.THE_LYCAEUM, 1), loadMap(path(directory, "lycaeum.ult"), Location.THE_LYCAEUM, 1, 107, 218, 30, 15));
+        maps.put(LocationLevel.from(Location.SERPENTS_HOLD, 1), loadMap(path(directory, "serpent.ult"), Location.SERPENTS_HOLD, 1, 241, 146, 30, 15));
+        maps.put(LocationLevel.from(Location.MAGINCIA, 1), loadMap(path(directory, "magincia.ult"), Location.MAGINCIA, 1, 169, 187, 15, 1));
+        maps.put(LocationLevel.from(Location.MINOC, 1), loadMap(path(directory, "minoc.ult"), Location.MINOC, 1, 20, 159, 15, 1));
+        maps.put(LocationLevel.from(Location.MOONGLOW, 1), loadMap(path(directory, "moonglow.ult"), Location.MOONGLOW, 1, 135, 232, 15, 1));
+        maps.put(LocationLevel.from(Location.PAWS, 1), loadMap(path(directory, "paws.ult"), Location.PAWS, 1, 145, 98, 15, 1));
+        maps.put(LocationLevel.from(Location.SKARA_BRAE, 1), loadMap(path(directory, "skara.ult"), Location.SKARA_BRAE, 1, 128, 22, 15, 1));
+        maps.put(LocationLevel.from(Location.TRINSIC, 1), loadMap(path(directory, "trinsic.ult"), Location.TRINSIC, 1, 184, 106, 15, 1));
+        maps.put(LocationLevel.from(Location.VESPER, 1), loadMap(path(directory, "vesper.ult"), Location.VESPER, 1, 59, 201, 15, 1));
+        maps.put(LocationLevel.from(Location.YEW, 1), loadMap(path(directory, "yew.ult"), Location.YEW, 1, 43, 58, 15, 1));
+        return new Maps(maps);
     }
 
     private static String path(String directory, String filename) {
         return String.format("%s%s%s", directory, File.separator, filename);
     }
 
-    private Maps(World world, Set<Map> maps) {
-        this.world = world;
+    private Maps(HashMap<LocationLevel, Map> maps) {
         this.maps = maps;
     }
 
-    public World world() {
-        return world;
+    public Map surface() {
+        return maps.get(LocationLevel.from(Location.SURFACE, 1));
     }
 
     public Map mapAt(int row, int col) {
-        return maps.stream().filter(map -> map.worldCol() == col && map.worldRow() == row && map.level() == 1).findAny().orElseThrow(RuntimeException::new);
+        return maps.values().stream().filter(map -> map.worldCol() == col && map.worldRow() == row && map.level() == 1).findAny().orElseThrow(RuntimeException::new);
     }
 
-    public Map map(int id, int level) {
-        if (id == Location.SURFACE.code()) {
-            return world;
-        }
-        return maps.stream().filter(map -> map.locationId() == id && map.level() == level).findAny().orElseThrow(RuntimeException::new);
+    public Map map(Location location, int level) {
+        return maps.get(LocationLevel.from(location, level));
     }
 
     private static Map loadMap(String mapFilename, Location id, int level, int worldRow, int worldCol, int startRow, int startCol) throws IOException {
         InputStream stream = Maps.class.getResourceAsStream(mapFilename);
-        return Settlement.fromStream(stream, id.code(), level, worldCol, worldRow, startCol, startRow, Tile.GRASSLANDS);
+        return Settlement.fromStream(stream, id, level, worldCol, worldRow, startCol, startRow, Tile.GRASSLANDS);
     }
 }

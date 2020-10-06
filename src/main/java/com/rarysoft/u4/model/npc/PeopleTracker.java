@@ -23,7 +23,9 @@
  */
 package com.rarysoft.u4.model.npc;
 
+import com.rarysoft.u4.model.LocationLevel;
 import com.rarysoft.u4.model.graphics.Tile;
+import com.rarysoft.u4.model.party.Location;
 
 import java.util.*;
 import java.util.Map;
@@ -31,23 +33,24 @@ import java.util.Map;
 public class PeopleTracker {
     private static final Random RANDOM = new Random();
 
-    private final Map<Integer, List<Person>> people = new HashMap<>();
+    private final Map<LocationLevel, List<Person>> people = new HashMap<>();
 
-    public void addPeople(Integer id, List<Person> people) {
-        if (! this.people.containsKey(id)) {
-            this.people.put(id, people);
+    public void addPeople(Location location, int level, List<Person> people) {
+        if (! this.people.containsKey(LocationLevel.from(location, level))) {
+            this.people.put(LocationLevel.from(location, level), people);
         }
     }
 
-    public Optional<Person> personAt(int id, int row, int col) {
-        return people.get(id)
+    public Optional<Person> personAt(Location location, int level, int row, int col) {
+        return people.get(LocationLevel.from(location, level))
                 .stream()
                 .filter(person -> person.row() == row && person.col() == col)
                 .findAny();
     }
 
-    public void movePeople(Tile[][] area, int playerRow, int playerCol, Person excluded) {
-        people.forEach((id, regionalPeople) -> regionalPeople.forEach(person -> {
+    public void movePeople(Tile[][] area, Location location, int level, int playerRow, int playerCol, Person excluded) {
+        LocationLevel locationLevel = LocationLevel.from(location, level);
+        people.get(locationLevel).forEach(person -> {
             if (person == excluded) {
                 return;
             }
@@ -70,7 +73,7 @@ public class PeopleTracker {
                     // 8 = SE
                     if (direction > 0) {
                         attemptToMoveTo(
-                                id,
+                                locationLevel,
                                 person,
                                 direction < 4 ? person.row() - 1 : direction > 5 ? person.row() + 1 : person.row(),
                                 direction == 1 || direction == 4 || direction == 6 ? person.col() - 1 : direction == 3 || direction == 5 || direction == 8 ? person.col() + 1 : person.col(),
@@ -83,7 +86,7 @@ public class PeopleTracker {
                 case 0x80:
                     // follow
                     attemptToMoveTo(
-                            id,
+                            locationLevel,
                             person,
                             person.row() > playerRow ? person.row() - 1 : person.row() < playerRow ? person.row() + 1 : person.row(),
                             person.col() > playerCol ? person.col() - 1 : person.col() < playerCol ? person.col() + 1 : person.col(),
@@ -95,7 +98,7 @@ public class PeopleTracker {
                 case 0xFF:
                     // attack
                     attemptToMoveTo(
-                            id,
+                            locationLevel,
                             person,
                             person.row() > playerRow ? person.row() - 1 : person.row() < playerRow ? person.row() + 1 : person.row(),
                             person.col() > playerCol ? person.col() - 1 : person.col() < playerCol ? person.col() + 1 : person.col(),
@@ -108,10 +111,10 @@ public class PeopleTracker {
                 default:
                     break;
             }
-        }));
+        });
     }
 
-    private void attemptToMoveTo(int id, Person person, int row, int col, int playerRow, int playerCol, Tile[][] area) {
+    private void attemptToMoveTo(LocationLevel locationLevel, Person person, int row, int col, int playerRow, int playerCol, Tile[][] area) {
         if (row < 0 || row >= area.length || col < 0 || col >= area[row].length) {
             return;
         }
@@ -122,7 +125,7 @@ public class PeopleTracker {
         if (walkability < 100 && RANDOM.nextInt(100) >= walkability) {
             return;
         }
-        if (people.get(id).stream().anyMatch(otherPerson -> otherPerson.row() == row && otherPerson.col() == col)) {
+        if (people.get(locationLevel).stream().anyMatch(otherPerson -> otherPerson.row() == row && otherPerson.col() == col)) {
             return;
         }
         person.moveTo(row, col);

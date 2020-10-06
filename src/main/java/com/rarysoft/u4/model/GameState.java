@@ -51,7 +51,7 @@ public class GameState {
     public GameState(Maps maps, PeopleTracker peopleTracker, Party party) {
         this.maps = maps;
         this.peopleTracker = peopleTracker;
-        this.map = maps.map(party.getCurrentPartyLocation().code(), party.getDungeonLevel());
+        this.map = maps.map(party.getCurrentPartyLocation(), party.getDungeonLevel());
         this.party = party;
         this.playMode = PlayMode.NORMAL;
         switchToMap(this.map);
@@ -94,7 +94,7 @@ public class GameState {
     }
 
     public Location location() {
-        return Location.forCode(map.locationId());
+        return party.getCurrentPartyLocation();
     }
 
     public RenderedTile[][] mapView(int radius) {
@@ -121,32 +121,32 @@ public class GameState {
     public void enter() {
         int row = party.getRow();
         int col = party.getCol();
-        if (map.locationId() == 0) {
+        if (map.location() == Location.SURFACE) {
             Map map = maps.mapAt(row, col);
             switchToMap(map);
             surfaceCol = col;
             surfaceRow = row;
-            party.setCurrentPartyLocation(Location.forCode(map.locationId()));
+            party.setCurrentPartyLocation(map.location());
             party.setDungeonLevel(map.level()); // Using this in all locations, not just dungeons
             party.setRow(map.startRow());
             party.setCol(map.startCol());
         }
-        else if (map.locationId() == Location.CASTLE_BRITANNIA.code()) {
+        else if (map.location() == Location.CASTLE_BRITANNIA) {
             if (row == 3 && (col == 3 || col == 27)) {
-                switchToMap(maps.map(Location.CASTLE_BRITANNIA.code(), map.level() == 1 ? 2 : 1));
+                switchToMap(maps.map(Location.CASTLE_BRITANNIA, map.level() == 1 ? 2 : 1));
             }
         }
     }
 
     public void returnToSurface() {
-        map = maps.world();
+        map = maps.surface();
         party.setCurrentPartyLocation(Location.SURFACE);
         party.setRow(surfaceRow);
         party.setCol(surfaceCol);
     }
 
     public void postTurnUpdates() {
-        peopleTracker.movePeople(map.full(), party.getRow(), party.getCol(), conversingPerson);
+        peopleTracker.movePeople(map.full(), party.getCurrentPartyLocation(), party.getDungeonLevel(), party.getRow(), party.getCol(), conversingPerson);
         doors.forEach(Door::turnCompleted);
     }
 
@@ -190,7 +190,9 @@ public class GameState {
 
     private void switchToMap(Map map) {
         this.map = map;
-        peopleTracker.addPeople(map.locationId(), map.people());
+        party.setCurrentPartyLocation(map.location());
+        party.setDungeonLevel(map.level());
+        peopleTracker.addPeople(map.location(), map.level(), map.people());
         prepareDoors(map);
     }
 
@@ -201,14 +203,14 @@ public class GameState {
                 tileToRender = Tile.BRICK_FLOOR;
             }
         }
-        Person person = peopleTracker.personAt(map.locationId(), row, col).orElse(null);
+        Person person = peopleTracker.personAt(party.getCurrentPartyLocation(), party.getDungeonLevel(), row, col).orElse(null);
         return new RenderedTile(tileToRender, person);
     }
 
     private void prepareDoors(Map map) {
         doors = new HashSet<>();
-        if (map.locationId() == 0) {
-            // there are no doors in the world map
+        if (map.location() == Location.SURFACE) {
+            // there are no doors in the surface map
             return;
         }
         Tile[][] tiles = map.full();

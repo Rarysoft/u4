@@ -88,8 +88,8 @@ public class Launcher {
         Party party = new Party();
         party.setCurrentPartyLocation(Location.SURFACE);
         party.setDungeonLevel(1);
-        party.setRow(maps.world().startRow());
-        party.setCol(maps.world().startCol());
+        party.setRow(maps.surface().startRow());
+        party.setCol(maps.surface().startCol());
         game.start(new GameState(maps, new PeopleTracker(), party));
     }
 

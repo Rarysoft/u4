@@ -100,25 +100,25 @@ public class GameViewRenderer {
         // Note: the background map provided has a radius that is one larger than what we actually show, which allows
         // us to look at all of the surrounding tiles of each visible tile, so we crop the first and last row and
         // column here and then adjust when drawing to treat received row/col 1 as actual row/col 0
-        int centerRow = (background.length - 1) / 2;
-        int centerCol = (background[centerRow].length - 1) / 2;
+        int centerRow = (background.length - 1) / 2 - 1;
+        int centerCol = (background[centerRow].length - 1) / 2 - 1;
         for (int row = 1; row < background.length - 1; row ++) {
             for (int col = 1; col < background[row].length - 1; col ++) {
                 RenderedTile renderedTile = background[row][col];
                 Tile backgroundTile = renderedTile.render() ? renderedTile.tile() : null;
-                if (! handledAsSpecialCase(graphics, backgroundTile, row, col, scale)) {
-                    drawTile(graphics, backgroundTile, row - 1, col - 1, scale, false);
+                int viewRow = row - 1;
+                int viewCol = col - 1;
+                if (! handledAsSpecialCase(graphics, backgroundTile, viewRow, viewCol, scale)) {
+                    drawTile(graphics, backgroundTile, viewRow, viewCol, scale, false);
                     if (renderedTile.render()) {
-                        int currentRow = row;
-                        int currentCol = col;
                         renderedTile.person().ifPresent(person ->
-                                drawTile(graphics, person.tile(), currentRow - 1, currentCol - 1, scale, true)
+                                drawTile(graphics, person.tile(), viewRow, viewCol, scale, true)
                         );
                     }
                 }
             }
         }
-        drawTile(graphics, Tile.AVATAR, centerRow - 1, centerCol - 1, scale, true);
+        drawTile(graphics, Tile.AVATAR, centerRow, centerCol, scale, true);
     }
 
     private boolean handledAsSpecialCase(Graphics graphics, Tile tile, int row, int col, int scale) {
