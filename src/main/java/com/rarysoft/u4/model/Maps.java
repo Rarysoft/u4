@@ -36,7 +36,7 @@ public class Maps {
 
     public static Maps fromFiles(String directory) throws IOException {
         HashMap<LocationLevel, Map> maps = new HashMap<>();
-        maps.put(LocationLevel.from(Location.SURFACE, 1), World.fromStream(Maps.class.getResourceAsStream(path(directory, "world.map"))));
+        maps.put(LocationLevel.from(Location.SURFACE, 1), Surface.fromStream(Maps.class.getResourceAsStream(path(directory, "world.map"))));
         maps.put(LocationLevel.from(Location.BRITAIN, 1), loadMap(path(directory, "britain.ult"), Location.BRITAIN, 1, 106, 82, 15, 1));
         maps.put(LocationLevel.from(Location.COVE, 1), loadMap(path(directory, "cove.ult"), Location.COVE, 1, 90, 136, 15, 1));
         maps.put(LocationLevel.from(Location.BUCCANEERS_DEN, 1), loadMap(path(directory, "den.ult"), Location.BUCCANEERS_DEN, 1, 158, 136, 15, 1));

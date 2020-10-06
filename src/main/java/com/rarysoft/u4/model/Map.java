@@ -5,6 +5,7 @@ import com.rarysoft.u4.model.npc.Person;
 import com.rarysoft.u4.model.party.Location;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface Map {
     Location location();
@@ -22,6 +23,10 @@ public interface Map {
     int startCol();
 
     List<Person> people();
+
+    Optional<Person> personAt(int row, int col);
+
+    void movePeople(PeopleMover peopleMover, int playerRow, int playerCol, Person excludedPerson);
 
     Tile[][] full();
 

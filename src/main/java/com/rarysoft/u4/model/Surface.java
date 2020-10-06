@@ -8,8 +8,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
-public class World implements Map {
+public class Surface implements Map {
     private static final int MAP_WIDTH = 256;
     private static final int MAP_HEIGHT = 256;
     private static final int CHUNK_COLUMNS = 8;
@@ -17,7 +18,7 @@ public class World implements Map {
     private static final int CHUNK_WIDTH = 32;
     private static final int CHUNK_HEIGHT = 32;
 
-    public static World fromStream(InputStream stream) throws IOException {
+    public static Surface fromStream(InputStream stream) throws IOException {
         Tile[][] data = new Tile[MAP_HEIGHT][MAP_WIDTH];
         for (int chunkRow = 0; chunkRow < CHUNK_ROWS; chunkRow ++) {
             for (int chunk = 0; chunk < CHUNK_COLUMNS; chunk ++) {
@@ -29,12 +30,12 @@ public class World implements Map {
                 }
             }
         }
-        return new World(data);
+        return new Surface(data);
     }
 
     private final Tile[][] data;
 
-    private World(Tile[][] data) {
+    private Surface(Tile[][] data) {
         this.data = data;
     }
 
@@ -76,6 +77,16 @@ public class World implements Map {
     @Override
     public List<Person> people() {
         return new ArrayList<>();
+    }
+
+    @Override
+    public Optional<Person> personAt(int row, int col) {
+        return Optional.empty();
+    }
+
+    @Override
+    public void movePeople(PeopleMover peopleMover, int playerRow, int playerCol, Person excludedPerson) {
+        // TODO: no creatures on the surface yet
     }
 
     @Override

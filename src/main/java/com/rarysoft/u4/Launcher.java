@@ -26,7 +26,6 @@ package com.rarysoft.u4;
 import com.rarysoft.u4.i18n.Messages;
 import com.rarysoft.u4.model.*;
 import com.rarysoft.u4.model.npc.Conversations;
-import com.rarysoft.u4.model.npc.PeopleTracker;
 import com.rarysoft.u4.model.graphics.Charset;
 import com.rarysoft.u4.model.DisplayListener;
 import com.rarysoft.u4.model.graphics.Tiles;
@@ -90,7 +89,7 @@ public class Launcher {
         party.setDungeonLevel(1);
         party.setRow(maps.surface().startRow());
         party.setCol(maps.surface().startCol());
-        game.start(new GameState(maps, new PeopleTracker(), party));
+        game.start(new GameState(maps, party));
     }
 
     private void initializeLogFile() {

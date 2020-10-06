@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class Settlement implements Map {
     public static final int MAP_WIDTH = 32;
@@ -126,6 +127,19 @@ public class Settlement implements Map {
     @Override
     public List<Person> people() {
         return people;
+    }
+
+    @Override
+    public Optional<Person> personAt(int row, int col) {
+        return people
+                .stream()
+                .filter(person -> person.row() == row && person.col() == col)
+                .findAny();
+    }
+
+    @Override
+    public void movePeople(PeopleMover peopleMover, int playerRow, int playerCol, Person excludedPerson) {
+        peopleMover.movePeople(data, people, playerRow, playerCol, excludedPerson);
     }
 
     @Override

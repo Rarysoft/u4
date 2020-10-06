@@ -24,7 +24,6 @@
 package com.rarysoft.u4.model;
 
 import com.rarysoft.u4.model.npc.Conversation;
-import com.rarysoft.u4.model.npc.PeopleTracker;
 import com.rarysoft.u4.model.npc.Person;
 import com.rarysoft.u4.model.graphics.Tile;
 import com.rarysoft.u4.model.party.Location;
@@ -35,7 +34,6 @@ import java.util.Set;
 
 public class GameState {
     private final Maps maps;
-    private final PeopleTracker peopleTracker;
     private final Party party;
 
     private Map map;
@@ -48,9 +46,8 @@ public class GameState {
 
     private Set<Door> doors;
 
-    public GameState(Maps maps, PeopleTracker peopleTracker, Party party) {
+    public GameState(Maps maps, Party party) {
         this.maps = maps;
-        this.peopleTracker = peopleTracker;
         this.map = maps.map(party.getCurrentPartyLocation(), party.getDungeonLevel());
         this.party = party;
         this.playMode = PlayMode.NORMAL;
@@ -146,7 +143,7 @@ public class GameState {
     }
 
     public void postTurnUpdates() {
-        peopleTracker.movePeople(map.full(), party.getCurrentPartyLocation(), party.getDungeonLevel(), party.getRow(), party.getCol(), conversingPerson);
+        map.movePeople(new NpcMover(), party.getRow(), party.getCol(), conversingPerson);
         doors.forEach(Door::turnCompleted);
     }
 
@@ -192,7 +189,6 @@ public class GameState {
         this.map = map;
         party.setCurrentPartyLocation(map.location());
         party.setDungeonLevel(map.level());
-        peopleTracker.addPeople(map.location(), map.level(), map.people());
         prepareDoors(map);
     }
 
@@ -203,7 +199,7 @@ public class GameState {
                 tileToRender = Tile.BRICK_FLOOR;
             }
         }
-        Person person = peopleTracker.personAt(party.getCurrentPartyLocation(), party.getDungeonLevel(), row, col).orElse(null);
+        Person person = map.personAt(row, col).orElse(null);
         return new RenderedTile(tileToRender, person);
     }
 
