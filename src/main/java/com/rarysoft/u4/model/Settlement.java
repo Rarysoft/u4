@@ -1,6 +1,7 @@
 package com.rarysoft.u4.model;
 
 import com.rarysoft.u4.model.graphics.Tile;
+import com.rarysoft.u4.model.npc.MovementBehaviour;
 import com.rarysoft.u4.model.npc.Person;
 import com.rarysoft.u4.model.party.Location;
 
@@ -67,7 +68,7 @@ public class Settlement implements Map {
         List<Person> people = new ArrayList<>();
         for (int npc = 0; npc < NPC_COUNT; npc ++) {
             if (npcTiles[npc] > 0) {
-                people.add(new Person(Tile.forIndex(npcTiles[npc]), npcStartXs[npc], npcStartYs[npc], npcMovementBehaviours[npc], npcConversationIndexes[npc]));
+                people.add(new Person(Tile.forIndex(npcTiles[npc]), npcStartYs[npc], npcStartXs[npc], MovementBehaviour.forCode(npcMovementBehaviours[npc]), npcConversationIndexes[npc]));
             }
         }
         return new Settlement(location, level, data, people, worldX, worldY, startX, startY, areaTile);

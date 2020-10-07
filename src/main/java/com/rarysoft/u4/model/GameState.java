@@ -24,12 +24,14 @@
 package com.rarysoft.u4.model;
 
 import com.rarysoft.u4.model.npc.Conversation;
+import com.rarysoft.u4.model.npc.NpcMover;
 import com.rarysoft.u4.model.npc.Person;
 import com.rarysoft.u4.model.graphics.Tile;
 import com.rarysoft.u4.model.party.Location;
 import com.rarysoft.u4.model.party.Party;
 
 import java.util.HashSet;
+import java.util.Random;
 import java.util.Set;
 
 public class GameState {
@@ -142,8 +144,8 @@ public class GameState {
         party.setCol(surfaceCol);
     }
 
-    public void postTurnUpdates() {
-        map.movePeople(new NpcMover(), party.getRow(), party.getCol(), conversingPerson);
+    public void postTurnUpdates(Random random) {
+        map.movePeople(new NpcMover(random), party.getRow(), party.getCol(), conversingPerson);
         doors.forEach(Door::turnCompleted);
     }
 

@@ -6,13 +6,13 @@ public class Person {
     private final Tile tile;
     private final int startCol;
     private final int startRow;
-    private final int movementBehaviour;
+    private final MovementBehaviour movementBehaviour;
     private final int conversationIndex;
 
     private int row;
     private int col;
 
-    public Person(Tile tile, int startCol, int startRow, int movementBehaviour, int conversationIndex) {
+    public Person(Tile tile, int startRow, int startCol, MovementBehaviour movementBehaviour, int conversationIndex) {
         this.tile = tile;
         this.startCol = startCol;
         this.startRow = startRow;
@@ -34,7 +34,7 @@ public class Person {
         return startCol;
     }
 
-    public int movementBehaviour() {
+    public MovementBehaviour movementBehaviour() {
         return movementBehaviour;
     }
 

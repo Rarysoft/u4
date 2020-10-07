@@ -476,7 +476,7 @@ public class Game {
     }
 
     private void afterPlayerMove() {
-        gameState.postTurnUpdates();
+        gameState.postTurnUpdates(random);
         updateBackground();
     }
 }

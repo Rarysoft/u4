@@ -21,16 +21,20 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.rarysoft.u4.model;
+package com.rarysoft.u4.model.npc;
 
+import com.rarysoft.u4.model.PeopleMover;
 import com.rarysoft.u4.model.graphics.Tile;
-import com.rarysoft.u4.model.npc.Person;
 
 import java.util.List;
 import java.util.Random;
 
 public class NpcMover implements PeopleMover {
-    private static final Random RANDOM = new Random();
+    private final Random random;
+
+    public NpcMover(Random random) {
+        this.random = random;
+    }
 
     public void movePeople(Tile[][] area, List<Person> people, int playerRow, int playerCol, Person excluded) {
         people.forEach(person -> {
@@ -38,13 +42,11 @@ public class NpcMover implements PeopleMover {
                 return;
             }
             switch (person.movementBehaviour()) {
-                case 0x00:
-                    // fixed
+                case FIXED:
                     break;
 
-                case 0x01:
-                    // wander
-                    int direction = RANDOM.nextInt(9);
+                case WANDER:
+                    int direction = random.nextInt(9);
                     // 0 = stay still
                     // 1 = NW
                     // 2 = N
@@ -66,8 +68,7 @@ public class NpcMover implements PeopleMover {
                     }
                     break;
 
-                case 0x80:
-                    // follow
+                case FOLLOW:
                     attemptToMoveTo(
                             people,
                             person,
@@ -78,8 +79,7 @@ public class NpcMover implements PeopleMover {
                             area);
                     break;
 
-                case 0xFF:
-                    // attack
+                case ATTACK:
                     attemptToMoveTo(
                             people,
                             person,
@@ -105,7 +105,7 @@ public class NpcMover implements PeopleMover {
             return;
         }
         int walkability = area[row][col].walkability();
-        if (walkability < 100 && RANDOM.nextInt(100) >= walkability) {
+        if (walkability < 100 && random.nextInt(100) >= walkability) {
             return;
         }
         if (people.stream().anyMatch(otherPerson -> otherPerson.row() == row && otherPerson.col() == col)) {
