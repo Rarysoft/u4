@@ -228,7 +228,7 @@ public class Game {
                 if (renderedTile.tile() == Tile.UNLOCKED_DOOR) {
                     gameState.openDoor(gameState.row() + rowDelta, gameState.col() + colDelta);
                 }
-                if (renderedTile.tile().canTalkAcross()) {
+                if (renderedTile.tile().canTalkThrough()) {
                     RenderedTile adjacentTile = gameState.tileAt(gameState.row() + rowDelta + rowDelta, gameState.col() + colDelta + colDelta);
                     if (adjacentTile.person().isPresent()) {
                         attemptConversationWith(adjacentTile.person().get());
@@ -262,7 +262,7 @@ public class Game {
             }
             gameState.changeRow(rowDelta);
             gameState.changeCol(colDelta);
-            if (renderedTile.tile().type() == TileType.PORTAL) {
+            if (renderedTile.tile().isPortal()) {
                 gameState.enter();
             }
         }

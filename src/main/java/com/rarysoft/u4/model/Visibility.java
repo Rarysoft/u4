@@ -48,7 +48,7 @@ public class Visibility {
             case NORTH:
                 // Check for opaque tiles southward toward the player
                 for (int checkRow = coordinate.row() + 1; checkRow < playerCoordinate.row(); checkRow ++) {
-                    if (area[checkRow][coordinate.col()].tile().opaque()) {
+                    if (area[checkRow][coordinate.col()].tile().isOpaque()) {
                         return false;
                     }
                 }
@@ -56,7 +56,7 @@ public class Visibility {
             case EAST:
                 // Check for opaque tiles westward toward the player
                 for (int checkCol = coordinate.col() - 1; checkCol > playerCoordinate.col(); checkCol --) {
-                    if (area[coordinate.row()][checkCol].tile().opaque()) {
+                    if (area[coordinate.row()][checkCol].tile().isOpaque()) {
                         return false;
                     }
                 }
@@ -64,7 +64,7 @@ public class Visibility {
             case SOUTH:
                 // Check for opaque tiles northward toward the player
                 for (int checkRow = coordinate.row() - 1; checkRow > playerCoordinate.row(); checkRow --) {
-                    if (area[checkRow][coordinate.col()].tile().opaque()) {
+                    if (area[checkRow][coordinate.col()].tile().isOpaque()) {
                         return false;
                     }
                 }
@@ -72,7 +72,7 @@ public class Visibility {
             case WEST:
                 // Check for opaque tiles eastward toward the player
                 for (int checkCol = coordinate.col() + 1; checkCol < playerCoordinate.col(); checkCol ++) {
-                    if (area[coordinate.row()][checkCol].tile().opaque()) {
+                    if (area[coordinate.row()][checkCol].tile().isOpaque()) {
                         return false;
                     }
                 }
@@ -168,9 +168,9 @@ public class Visibility {
     private Coordinate[] findAlternativeTargetCoordinates(Coordinate colAdjacentCoordinate, Coordinate rowAdjacentCoordinate, Coordinate cornerAdjacentCoordinate) {
         // Special case: if the two adjacent on the visible side are opaque but the corner one is not, this will be
         // visible if one of the adjacent tiles is visible, determined by whichever is not center-aligned
-        if (area[colAdjacentCoordinate.row()][colAdjacentCoordinate.col()].tile().opaque() &&
-                area[rowAdjacentCoordinate.row()][rowAdjacentCoordinate.col()].tile().opaque() &&
-                ! area[cornerAdjacentCoordinate.row()][cornerAdjacentCoordinate.col()].tile().opaque()) {
+        if (area[colAdjacentCoordinate.row()][colAdjacentCoordinate.col()].tile().isOpaque() &&
+                area[rowAdjacentCoordinate.row()][rowAdjacentCoordinate.col()].tile().isOpaque() &&
+                ! area[cornerAdjacentCoordinate.row()][cornerAdjacentCoordinate.col()].tile().isOpaque()) {
             return new Coordinate[] { rowAdjacentCoordinate.isCenterRow() ? colAdjacentCoordinate.atSideFacingCenterRow() : rowAdjacentCoordinate.atSideFacingCenterCol() };
         }
         return new Coordinate[] {};
@@ -190,7 +190,7 @@ public class Visibility {
             // The tile can't be blocked by the player or by itself
             return false;
         }
-        if (area[passingThroughCoordinate.row()][passingThroughCoordinate.col()].tile().opaque()) {
+        if (area[passingThroughCoordinate.row()][passingThroughCoordinate.col()].tile().isOpaque()) {
             return true;
         }
         return false;

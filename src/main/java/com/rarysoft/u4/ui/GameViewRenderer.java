@@ -106,9 +106,9 @@ public class GameViewRenderer {
             for (int col = 1; col < background[row].length - 1; col ++) {
                 RenderedTile renderedTile = background[row][col];
                 Tile backgroundTile = renderedTile.render() ? renderedTile.tile() : null;
-                int viewRow = row - 1;
-                int viewCol = col - 1;
-                if (! handledAsSpecialCase(graphics, backgroundTile, viewRow, viewCol, scale)) {
+                if (! handledAsSpecialCase(graphics, backgroundTile, row, col, scale)) {
+                    int viewRow = row - 1;
+                    int viewCol = col - 1;
                     drawTile(graphics, backgroundTile, viewRow, viewCol, scale, false);
                     if (renderedTile.render()) {
                         renderedTile.person().ifPresent(person ->
@@ -122,24 +122,26 @@ public class GameViewRenderer {
     }
 
     private boolean handledAsSpecialCase(Graphics graphics, Tile tile, int row, int col, int scale) {
+        int viewRow = row - 1;
+        int viewCol = col - 1;
         if (tile == Tile.LYIN_DOWN) {
             Tile groundTile = guessGroundTile(row, col);
             if (groundTile != null) {
-                drawTile(graphics, groundTile, row, col, scale, false);
-                drawTile(graphics, tile, row, col, scale, true);
+                drawTile(graphics, groundTile, viewRow, viewCol, scale, false);
+                drawTile(graphics, tile, viewRow, viewCol, scale, true);
                 return true;
             }
         }
         if (tile == Tile.WHITE_SW || tile == Tile.WHITE_SE || tile == Tile.WHITE_NW || tile == Tile.WHITE_NE) {
-            drawTile(graphics, Tile.SHALLOW_WATER, row, col, scale, false);
-            drawPartialTile(graphics, tile, Colours.COLOUR_BRIGHT_WHITE, row * Tiles.TILE_HEIGHT * scale, col * Tiles.TILE_WIDTH * scale, scale);
+            drawTile(graphics, Tile.SHALLOW_WATER, viewRow, viewCol, scale, false);
+            drawPartialTile(graphics, tile, viewRow, viewCol, scale);
             return true;
         }
         if (tile == Tile.ANKH) {
             Tile groundTile = guessGroundTile(row, col);
             if (groundTile != null) {
-                drawTile(graphics, groundTile, row, col, scale, false);
-                drawTile(graphics, tile, row, col, scale, true);
+                drawTile(graphics, groundTile, viewRow, viewCol, scale, false);
+                drawTile(graphics, tile, viewRow, viewCol, scale, true);
                 return true;
             }
         }
@@ -148,8 +150,8 @@ public class GameViewRenderer {
             if (groundTile == null) {
                 groundTile = Tile.BRICK_FLOOR;
             }
-            drawTile(graphics, groundTile, row, col, scale, false);
-            drawTile(graphics, tile, row, col, scale, true);
+            drawTile(graphics, groundTile, viewRow, viewCol, scale, false);
+            drawTile(graphics, tile, viewRow, viewCol, scale, true);
             return true;
         }
         return false;
@@ -168,14 +170,14 @@ public class GameViewRenderer {
         }
     }
 
-    private void drawPartialTile(Graphics graphics, Tile tile, int colour, int row, int col, int scale) {
+    private void drawPartialTile(Graphics graphics, Tile tile, int row, int col, int scale) {
         for (int pixelRow = 0; pixelRow < Tiles.TILE_HEIGHT; pixelRow ++) {
             for (int pixelCol = 0; pixelCol < Tiles.TILE_WIDTH; pixelCol ++) {
                 int code = tiles.data()[tile.index()][pixelRow][pixelCol];
-                if (code == colour) {
+                if (code == Colours.COLOUR_BRIGHT_WHITE) {
                     graphics.setColor(Colours.BY_CODE[code]);
-                    graphics.fillRect(BACKGROUND_OFFSET_X * scale + col + pixelCol * scale,
-                            BACKGROUND_OFFSET_Y * scale + row + pixelRow * scale, scale, scale);
+                    graphics.fillRect(BACKGROUND_OFFSET_X * scale + col * Tiles.TILE_WIDTH * scale + pixelCol * scale,
+                            BACKGROUND_OFFSET_Y * scale + row * Tiles.TILE_HEIGHT * scale + pixelRow * scale, scale, scale);
                 }
             }
         }
@@ -187,7 +189,7 @@ public class GameViewRenderer {
         for (int surroundingRow = (row >= 0 ? row - 1 : row); surroundingRow < (row + 1 < background.length ? row + 1 : row) + 1; surroundingRow ++) {
             for (int surroundingCol = (col >= 0 ? col - 1 : col); surroundingCol < (col + 1 < background[surroundingRow].length ? col + 1 : col) + 1; surroundingCol ++) {
                 Tile tile = background[surroundingRow][surroundingCol].tile();
-                if (tile.type() == TileType.GROUND) {
+                if (tile.isGroundTile()) {
                     int tileIndex = groundTiles.indexOf(tile);
                     if (tileIndex > -1) {
                         counts.set(tileIndex, counts.get(tileIndex) + 1);
