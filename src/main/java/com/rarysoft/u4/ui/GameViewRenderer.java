@@ -27,6 +27,7 @@ import com.rarysoft.u4.model.RenderedTile;
 import com.rarysoft.u4.model.graphics.*;
 
 import java.awt.*;
+import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -74,26 +75,43 @@ public class GameViewRenderer {
         this.inputLine = inputLine;
     }
 
-    public void drawGameView(Graphics graphics, int scale) {
-        drawBorder(graphics, scale);
-        drawBackground(graphics, scale);
-        drawTextArea(graphics, scale);
+    public void drawGameView(Graphics graphics, int windowWidth, int windowHeight) {
+        AffineTransform originalTransform = scaleToWindowSize(graphics, windowWidth, windowHeight);
+        drawBorder(graphics);
+        drawBackground(graphics);
+        drawTextArea(graphics);
+        restoreOriginalTransform(graphics, originalTransform);
     }
 
-    private void drawBorder(Graphics graphics, int scale) {
-        drawCharacter(graphics, extendedCharset.borderCornerNorthwest(), 0, 0, scale, false);
-        drawCharacter(graphics, extendedCharset.borderCornerSouthwest(), 39, 0, scale, false);
+    private AffineTransform scaleToWindowSize(Graphics graphics, int windowWidth, int windowHeight) {
+        double xScale = windowWidth / 544.0;
+        double yScale = windowHeight / 320.0;
+        Graphics2D graphics2D = (Graphics2D) graphics;
+        AffineTransform originalTransform = graphics2D.getTransform();
+        AffineTransform transform = graphics2D.getTransform();
+        transform.scale(xScale, yScale);
+        graphics2D.setTransform(transform);
+        return originalTransform;
+    }
+
+    private void restoreOriginalTransform(Graphics graphics, AffineTransform originalTransform) {
+        ((Graphics2D) graphics).setTransform(originalTransform);
+    }
+
+    private void drawBorder(Graphics graphics) {
+        drawCharacter(graphics, extendedCharset.borderCornerNorthwest(), 0, 0, false);
+        drawCharacter(graphics, extendedCharset.borderCornerSouthwest(), 39, 0, false);
         for (int index = 1; index < 39; index ++) {
-            drawCharacter(graphics, extendedCharset.borderHorizontal(), 0, index, scale, false);
-            drawCharacter(graphics, extendedCharset.borderHorizontal(), 39, index, scale, false);
-            drawCharacter(graphics, extendedCharset.getBorderVertical(), index, 0, scale, false);
-            drawCharacter(graphics, index == 38 ? extendedCharset.getBorderVerticalJunctionEast() : extendedCharset.getBorderVertical(), index, 39, scale, false);
+            drawCharacter(graphics, extendedCharset.borderHorizontal(), 0, index, false);
+            drawCharacter(graphics, extendedCharset.borderHorizontal(), 39, index, false);
+            drawCharacter(graphics, extendedCharset.getBorderVertical(), index, 0, false);
+            drawCharacter(graphics, extendedCharset.getBorderVertical(), index, 39, false);
         }
-        drawCharacter(graphics, extendedCharset.borderCornerNortheast(), 0, 39, scale, false);
-        drawCharacter(graphics, extendedCharset.borderCornerSoutheast(), 39, 39, scale, false);
+        drawCharacter(graphics, extendedCharset.borderCornerNortheast(), 0, 39, false);
+        drawCharacter(graphics, extendedCharset.borderCornerSoutheast(), 39, 39, false);
     }
 
-    private void drawBackground(Graphics graphics, int scale) {
+    private void drawBackground(Graphics graphics) {
         if (background == null) {
             return;
         }
@@ -106,42 +124,42 @@ public class GameViewRenderer {
             for (int col = 1; col < background[row].length - 1; col ++) {
                 RenderedTile renderedTile = background[row][col];
                 Tile backgroundTile = renderedTile.render() ? renderedTile.tile() : null;
-                if (! handledAsSpecialCase(graphics, backgroundTile, row, col, scale)) {
+                if (! handledAsSpecialCase(graphics, backgroundTile, row, col)) {
                     int viewRow = row - 1;
                     int viewCol = col - 1;
-                    drawTile(graphics, backgroundTile, viewRow, viewCol, scale, false);
+                    drawTile(graphics, backgroundTile, viewRow, viewCol, false);
                     if (renderedTile.render()) {
                         renderedTile.person().ifPresent(person ->
-                                drawTile(graphics, person.tile(), viewRow, viewCol, scale, true)
+                                drawTile(graphics, person.tile(), viewRow, viewCol, true)
                         );
                     }
                 }
             }
         }
-        drawTile(graphics, Tile.AVATAR, centerRow, centerCol, scale, true);
+        drawTile(graphics, Tile.AVATAR, centerRow, centerCol, true);
     }
 
-    private boolean handledAsSpecialCase(Graphics graphics, Tile tile, int row, int col, int scale) {
+    private boolean handledAsSpecialCase(Graphics graphics, Tile tile, int row, int col) {
         int viewRow = row - 1;
         int viewCol = col - 1;
         if (tile == Tile.LYIN_DOWN) {
             Tile groundTile = guessGroundTile(row, col);
             if (groundTile != null) {
-                drawTile(graphics, groundTile, viewRow, viewCol, scale, false);
-                drawTile(graphics, tile, viewRow, viewCol, scale, true);
+                drawTile(graphics, groundTile, viewRow, viewCol, false);
+                drawTile(graphics, tile, viewRow, viewCol, true);
                 return true;
             }
         }
         if (tile == Tile.WHITE_SW || tile == Tile.WHITE_SE || tile == Tile.WHITE_NW || tile == Tile.WHITE_NE) {
-            drawTile(graphics, Tile.SHALLOW_WATER, viewRow, viewCol, scale, false);
-            drawPartialTile(graphics, tile, viewRow, viewCol, scale);
+            drawTile(graphics, Tile.SHALLOW_WATER, viewRow, viewCol, false);
+            drawPartialTile(graphics, tile, viewRow, viewCol);
             return true;
         }
         if (tile == Tile.ANKH) {
             Tile groundTile = guessGroundTile(row, col);
             if (groundTile != null) {
-                drawTile(graphics, groundTile, viewRow, viewCol, scale, false);
-                drawTile(graphics, tile, viewRow, viewCol, scale, true);
+                drawTile(graphics, groundTile, viewRow, viewCol, false);
+                drawTile(graphics, tile, viewRow, viewCol, true);
                 return true;
             }
         }
@@ -150,34 +168,34 @@ public class GameViewRenderer {
             if (groundTile == null) {
                 groundTile = Tile.BRICK_FLOOR;
             }
-            drawTile(graphics, groundTile, viewRow, viewCol, scale, false);
-            drawTile(graphics, tile, viewRow, viewCol, scale, true);
+            drawTile(graphics, groundTile, viewRow, viewCol, false);
+            drawTile(graphics, tile, viewRow, viewCol, true);
             return true;
         }
         return false;
     }
 
-    private void drawTile(Graphics graphics, Tile tile, int row, int col, int scale, boolean drawInForeground) {
+    private void drawTile(Graphics graphics, Tile tile, int row, int col, boolean drawInForeground) {
         for (int pixelRow = 0; pixelRow < Tiles.TILE_HEIGHT; pixelRow ++) {
             for (int pixelCol = 0; pixelCol < Tiles.TILE_WIDTH; pixelCol ++) {
                 int code = codeWithOffsetApplied(tile, pixelRow, pixelCol, drawInForeground);
                 if (code != -1) {
                     graphics.setColor(Colours.BY_CODE[code]);
-                    graphics.fillRect(BACKGROUND_OFFSET_X * scale + col * Tiles.TILE_WIDTH * scale + pixelCol * scale,
-                            BACKGROUND_OFFSET_Y * scale + row * Tiles.TILE_HEIGHT * scale + pixelRow * scale, scale, scale);
+                    graphics.fillRect(BACKGROUND_OFFSET_X + col * Tiles.TILE_WIDTH + pixelCol,
+                            BACKGROUND_OFFSET_Y + row * Tiles.TILE_HEIGHT + pixelRow, 1, 1);
                 }
             }
         }
     }
 
-    private void drawPartialTile(Graphics graphics, Tile tile, int row, int col, int scale) {
+    private void drawPartialTile(Graphics graphics, Tile tile, int row, int col) {
         for (int pixelRow = 0; pixelRow < Tiles.TILE_HEIGHT; pixelRow ++) {
             for (int pixelCol = 0; pixelCol < Tiles.TILE_WIDTH; pixelCol ++) {
                 int code = tiles.data()[tile.index()][pixelRow][pixelCol];
                 if (code == Colours.COLOUR_BRIGHT_WHITE) {
                     graphics.setColor(Colours.BY_CODE[code]);
-                    graphics.fillRect(BACKGROUND_OFFSET_X * scale + col * Tiles.TILE_WIDTH * scale + pixelCol * scale,
-                            BACKGROUND_OFFSET_Y * scale + row * Tiles.TILE_HEIGHT * scale + pixelRow * scale, scale, scale);
+                    graphics.fillRect(BACKGROUND_OFFSET_X + col * Tiles.TILE_WIDTH + pixelCol,
+                            BACKGROUND_OFFSET_Y + row * Tiles.TILE_HEIGHT + pixelRow, 1, 1);
                 }
             }
         }
@@ -261,7 +279,7 @@ public class GameViewRenderer {
             case ANKH:
                 code = tiles.data()[tile.index()][row][col];
                 if (code == Colours.COLOUR_BLACK && drawInForeground) {
-                    if (! isAdjacentToForeground(tiles.data()[tile.index()], row, col)) {
+                    if (isNotAdjacentToForeground(tiles.data()[tile.index()], row, col)) {
                         return -1;
                     }
                 }
@@ -295,7 +313,7 @@ public class GameViewRenderer {
                         (animationCycle >= 14 && animationCycle < 16) ? tile.index() : tile.index() + 1;
                 code = tiles.data()[animatedTile][row][col];
                 if (code == Colours.COLOUR_BLACK && drawInForeground) {
-                    if (! isAdjacentToForeground(tiles.data()[animatedTile], row, col)) {
+                    if (isNotAdjacentToForeground(tiles.data()[animatedTile], row, col)) {
                         return -1;
                     }
                 }
@@ -329,7 +347,7 @@ public class GameViewRenderer {
                         (animationCycle >= 14 && animationCycle < 16) ? tile.index() : tile.index() - 1;
                 code = tiles.data()[animatedTile][row][col];
                 if (code == Colours.COLOUR_BLACK && drawInForeground) {
-                    if (! isAdjacentToForeground(tiles.data()[animatedTile], row, col)) {
+                    if (isNotAdjacentToForeground(tiles.data()[animatedTile], row, col)) {
                         return -1;
                     }
                 }
@@ -369,7 +387,7 @@ public class GameViewRenderer {
                                         tile.index() + 3;
                 code = tiles.data()[animatedTile][row][col];
                 if (code == Colours.COLOUR_BLACK && drawInForeground) {
-                    if (! isAdjacentToForeground(tiles.data()[animatedTile], row, col)) {
+                    if (isNotAdjacentToForeground(tiles.data()[animatedTile], row, col)) {
                         return -1;
                     }
                 }
@@ -409,7 +427,7 @@ public class GameViewRenderer {
                                         tile.index() - 1;
                 code = tiles.data()[animatedTile][row][col];
                 if (code == Colours.COLOUR_BLACK && drawInForeground) {
-                    if (! isAdjacentToForeground(tiles.data()[animatedTile], row, col)) {
+                    if (isNotAdjacentToForeground(tiles.data()[animatedTile], row, col)) {
                         return -1;
                     }
                 }
@@ -449,7 +467,7 @@ public class GameViewRenderer {
                                         tile.index() - 1;
                 code = tiles.data()[animatedTile][row][col];
                 if (code == Colours.COLOUR_BLACK && drawInForeground) {
-                    if (! isAdjacentToForeground(tiles.data()[animatedTile], row, col)) {
+                    if (isNotAdjacentToForeground(tiles.data()[animatedTile], row, col)) {
                         return -1;
                     }
                 }
@@ -489,7 +507,7 @@ public class GameViewRenderer {
                                         tile.index() - 1;
                 code = tiles.data()[animatedTile][row][col];
                 if (code == Colours.COLOUR_BLACK && drawInForeground) {
-                    if (! isAdjacentToForeground(tiles.data()[animatedTile], row, col)) {
+                    if (isNotAdjacentToForeground(tiles.data()[animatedTile], row, col)) {
                         return -1;
                     }
                 }
@@ -500,30 +518,30 @@ public class GameViewRenderer {
         }
     }
 
-    private boolean isAdjacentToForeground(int[][] tile, int row, int col) {
-        return (row > 0 && col > 0 && tile[row - 1][col - 1] != Colours.COLOUR_BLACK) ||
-                (row > 0 && tile[row - 1][col] != Colours.COLOUR_BLACK) ||
-                (row > 0 && col + 1 < Tiles.TILE_WIDTH && tile[row - 1][col + 1] != Colours.COLOUR_BLACK) ||
-                (col > 0 && tile[row][col - 1] != Colours.COLOUR_BLACK) ||
-                (col + 1 < Tiles.TILE_WIDTH && tile[row][col + 1] != Colours.COLOUR_BLACK) ||
-                (row + 1 < Tiles.TILE_HEIGHT && col > 0 && tile[row + 1][col - 1] != Colours.COLOUR_BLACK) ||
-                (row + 1 < Tiles.TILE_HEIGHT && tile[row + 1][col] != Colours.COLOUR_BLACK) ||
-                (row + 1 < Tiles.TILE_HEIGHT && col + 1 < Tiles.TILE_WIDTH && tile[row + 1][col + 1] != Colours.COLOUR_BLACK);
+    private boolean isNotAdjacentToForeground(int[][] tile, int row, int col) {
+        return (row <= 0 || col <= 0 || tile[row - 1][col - 1] == Colours.COLOUR_BLACK) &&
+                (row <= 0 || tile[row - 1][col] == Colours.COLOUR_BLACK) &&
+                (row <= 0 || col + 1 >= Tiles.TILE_WIDTH || tile[row - 1][col + 1] == Colours.COLOUR_BLACK) &&
+                (col <= 0 || tile[row][col - 1] == Colours.COLOUR_BLACK) &&
+                (col + 1 >= Tiles.TILE_WIDTH || tile[row][col + 1] == Colours.COLOUR_BLACK) &&
+                (row + 1 >= Tiles.TILE_HEIGHT || col <= 0 || tile[row + 1][col - 1] == Colours.COLOUR_BLACK) &&
+                (row + 1 >= Tiles.TILE_HEIGHT || tile[row + 1][col] == Colours.COLOUR_BLACK) &&
+                (row + 1 >= Tiles.TILE_HEIGHT || col + 1 >= Tiles.TILE_WIDTH || tile[row + 1][col + 1] == Colours.COLOUR_BLACK);
     }
 
-    private void drawTextArea(Graphics graphics, int scale) {
+    private void drawTextArea(Graphics graphics) {
         for (int row = 0; row < textLines.size(); row ++) {
             String textLine = textLines.get(row);
             for (int col = 0; col < textLine.length(); col ++) {
                 int charCode = textLine.charAt(col);
                 int[][] character = charset.data()[charCode];
-                drawCharacter(graphics, character, row, col, scale, true);
+                drawCharacter(graphics, character, row, col, true);
             }
         }
         int inputRow = 19;
-        drawCharacter(graphics, charset.data()[16], inputRow, 0, scale, true);
+        drawCharacter(graphics, charset.data()[16], inputRow, 0, true);
         for (int index = 0; index < inputLine.length(); index ++) {
-            drawCharacter(graphics, charset.data()[inputLine.charAt(index)], inputRow, index + 1, scale, true);
+            drawCharacter(graphics, charset.data()[inputLine.charAt(index)], inputRow, index + 1, true);
         }
         if (allowInput) {
             int index = inputLine.indexOf(" ");
@@ -531,22 +549,26 @@ public class GameViewRenderer {
                 return;
             }
 
-            drawCharacter(graphics, charset.data()[31 - animationCycle % 4], inputRow, index + 1, scale, true);
+            drawCharacter(graphics, charset.data()[31 - animationCycle % 4], inputRow, index + 1, true);
+        }
+        int emptyRow = 20;
+        for (int index = 0; index < 28; index ++) {
+            drawCharacter(graphics, charset.data()[32], emptyRow, index, true);
         }
     }
 
-    private void drawCharacter(Graphics graphics, int[][] character, int row, int col, int scale, boolean applyOffset) {
-        int x = col * Charset.CHAR_WIDTH * scale;
-        int y = row * Charset.CHAR_HEIGHT * scale;
+    private void drawCharacter(Graphics graphics, int[][] character, int row, int col, boolean applyOffset) {
+        int x = col * Charset.CHAR_WIDTH;
+        int y = row * Charset.CHAR_HEIGHT;
         if (applyOffset) {
-            y += TEXT_AREA_OFFSET_Y * scale;
-            x += TEXT_AREA_OFFSET_X * scale;
+            y += TEXT_AREA_OFFSET_Y;
+            x += TEXT_AREA_OFFSET_X;
         }
         for (int pixelY = 0; pixelY < Charset.CHAR_HEIGHT; pixelY ++) {
             for (int pixelX = 0; pixelX < Charset.CHAR_WIDTH; pixelX ++) {
                 int code = character[pixelY][pixelX];
                 graphics.setColor(Colours.BY_CODE[code]);
-                graphics.fillRect(x + pixelX * scale, y + pixelY * scale, scale, scale);
+                graphics.fillRect(x + pixelX, y + pixelY, 1, 1);
             }
         }
     }

@@ -21,41 +21,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.rarysoft.u4.ui;
+package com.rarysoft.u4.model.npc;
 
-import com.rarysoft.u4.model.graphics.Charset;
-import com.rarysoft.u4.model.graphics.Tiles;
-
-public class Scale {
-    private final int multiplier;
-
-    public Scale(int width, int height) {
-        int widthScale = determineAppropriateScaleForWidth(width);
-        int heightScale = determineAppropriateScaleForHeight(height);
-        this.multiplier = Math.min(widthScale, heightScale);
-    }
-
-    public int multiplier() {
-        return multiplier;
-    }
-
-    private int determineAppropriateScaleForWidth(int width) {
-        if (width < 21 * Tiles.TILE_WIDTH * 2 + 20 * Charset.CHAR_WIDTH * 2) {
-            return 1;
-        }
-        if (width < 21 * Tiles.TILE_WIDTH * 3 + 20 * Charset.CHAR_WIDTH * 3) {
-            return 2;
-        }
-        return 3;
-    }
-
-    private int determineAppropriateScaleForHeight(int height) {
-        if (height < 21 * Tiles.TILE_HEIGHT * 2) {
-            return 1;
-        }
-        if (height < 21 * Tiles.TILE_HEIGHT * 3) {
-            return 2;
-        }
-        return 3;
-    }
+public enum ConversationType {
+    LORD_BRITISH,
+    CITIZEN
 }

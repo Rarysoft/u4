@@ -74,7 +74,7 @@ public class Launcher {
         Charset charset = initializeCharset("/data/charset.ega");
         BufferedImage icon = initializeIcon("/images/ankh.png");
         Maps maps = initializeMaps("/data");
-        Conversations conversations = initializeConversations("/data");
+        Conversations conversations = initializeConversations("/data", messages);
         UiBuilder uiBuilder = new UiBuilder();
         JFrame gameWindow = uiBuilder.buildGameWindow(messages.windowTitle());
         List<DisplayListener> displayListeners = uiBuilder.buildGamePanel(gameWindow, tiles, charset);
@@ -123,8 +123,8 @@ public class Launcher {
         return Maps.fromFiles(directory);
     }
 
-    private Conversations initializeConversations(String directory) throws IOException {
-        return Conversations.fromFiles(directory);
+    private Conversations initializeConversations(String directory, Messages messages) throws IOException {
+        return Conversations.fromFiles(directory, messages);
     }
 
     private BufferedImage initializeIcon(String filename) {

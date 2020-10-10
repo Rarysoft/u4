@@ -23,51 +23,80 @@
  */
 package com.rarysoft.u4.model.npc;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+
 public class Conversation {
     public static final int QUESTION_FLAG_JOB = 3;
     public static final int QUESTION_FLAG_HEALTH = 4;
     public static final int QUESTION_FLAG_KEYWORD1 = 5;
     public static final int QUESTION_FLAG_KEYWORD2 = 6;
 
+    private final ConversationType type;
     private final int questionFlag;
     private final boolean responseAffectsHumility;
     private final int turnAwayProbability;
-    private final String name;
-    private final String pronoun;
+    private final String intro;
+    private final String nameResponse;
     private final String lookResponse;
     private final String jobResponse;
     private final String healthResponse;
-    private final String keyword1Response;
-    private final String keyword2Response;
+    private final String noJoinResponse;
+    private final List<String> keywordResponses;
     private final String yesNoQuestion;
     private final String yesResponse;
     private final String noResponse;
-    private final String keyword1;
-    private final String keyword2;
+    private final String unknownResponse;
+    private final List<String> keywords;
 
-    public Conversation(int questionFlag, boolean responseAffectsHumility, int turnAwayProbability, String name, String pronoun, String lookResponse, String jobResponse, String healthResponse, String keyword1Response, String keyword2Response, String yesNoQuestion, String yesResponse, String noResponse, String keyword1, String keyword2) {
+    public Conversation(int questionFlag, boolean responseAffectsHumility, int turnAwayProbability, String intro, String nameResponse, String lookResponse, String jobResponse, String healthResponse, String noJoinResponse, String keyword1Response, String keyword2Response, String yesNoQuestion, String yesResponse, String noResponse, String unknownResponse, String keyword1, String keyword2) {
+        this.type = ConversationType.CITIZEN;
         this.questionFlag = questionFlag;
         this.responseAffectsHumility = responseAffectsHumility;
         this.turnAwayProbability = turnAwayProbability;
-        this.name = name;
-        this.pronoun = pronoun;
+        this.intro = intro;
+        this.nameResponse = nameResponse;
         this.lookResponse = lookResponse;
         this.jobResponse = jobResponse;
         this.healthResponse = healthResponse;
-        this.keyword1Response = keyword1Response;
-        this.keyword2Response = keyword2Response;
+        this.noJoinResponse = noJoinResponse;
+        this.keywordResponses = Arrays.asList(keyword1Response, keyword2Response);
         this.yesNoQuestion = yesNoQuestion;
         this.yesResponse = yesResponse;
         this.noResponse = noResponse;
-        this.keyword1 = keyword1;
-        this.keyword2 = keyword2;
+        this.unknownResponse = unknownResponse;
+        this.keywords = Arrays.asList(keyword1, keyword2);
+    }
+
+    public Conversation(ConversationType type, int questionFlag, boolean responseAffectsHumility, int turnAwayProbability, String intro, String nameResponse, String lookResponse, String jobResponse, String healthResponse, String noJoinResponse, List<String> keywordResponses, String yesNoQuestion, String yesResponse, String noResponse, String unknownResponse, List<String> keywords) {
+        this.type = type;
+        this.questionFlag = questionFlag;
+        this.responseAffectsHumility = responseAffectsHumility;
+        this.turnAwayProbability = turnAwayProbability;
+        this.intro = intro;
+        this.nameResponse = nameResponse;
+        this.lookResponse = lookResponse;
+        this.jobResponse = jobResponse;
+        this.healthResponse = healthResponse;
+        this.noJoinResponse = noJoinResponse;
+        this.keywordResponses = keywordResponses;
+        this.yesNoQuestion = yesNoQuestion;
+        this.yesResponse = yesResponse;
+        this.noResponse = noResponse;
+        this.unknownResponse = unknownResponse;
+        this.keywords = keywords;
+    }
+
+    public ConversationType getType() {
+        return type;
     }
 
     public int getQuestionFlag() {
         return questionFlag;
     }
 
-    public boolean isResponseAffectsHumility() {
+    public boolean responseAffectsHumility() {
         return responseAffectsHumility;
     }
 
@@ -75,12 +104,12 @@ public class Conversation {
         return turnAwayProbability;
     }
 
-    public String getName() {
-        return name;
+    public String getIntro() {
+        return intro;
     }
 
-    public String getPronoun() {
-        return pronoun;
+    public String getNameResponse() {
+        return nameResponse;
     }
 
     public String getLookResponse() {
@@ -95,12 +124,12 @@ public class Conversation {
         return healthResponse;
     }
 
-    public String getKeyword1Response() {
-        return keyword1Response;
+    public String getNoJoinResponse() {
+        return noJoinResponse;
     }
 
-    public String getKeyword2Response() {
-        return keyword2Response;
+    public String getKeywordResponse(int index) {
+        return keywordResponses.get(index);
     }
 
     public String getYesNoQuestion() {
@@ -115,11 +144,19 @@ public class Conversation {
         return noResponse;
     }
 
-    public String getKeyword1() {
-        return keyword1;
+    public String getUnknownResponse() {
+        return unknownResponse;
     }
 
-    public String getKeyword2() {
-        return keyword2;
+    public String getKeyword(int index) {
+        return keywords.get(index);
+    }
+
+    public Optional<String> getKeywordResponse(String keyword) {
+        int index = keywords.indexOf(keyword);
+        if (index < 0) {
+            return Optional.empty();
+        }
+        return Optional.of(keywordResponses.get(index));
     }
 }

@@ -405,88 +405,6 @@ public class ExtendedCharset {
                     COLOUR_BRIGHT_BLUE
             }
     };
-    private static final int[][] BORDER_VERTICAL_JUNCTION_E = {
-            {
-                    COLOUR_LIGHT_GRAY,
-                    COLOUR_BRIGHT_BLUE,
-                    COLOUR_BRIGHT_BLUE,
-                    COLOUR_BRIGHT_BLUE,
-                    COLOUR_BRIGHT_BLUE,
-                    COLOUR_BRIGHT_BLUE,
-                    COLOUR_BRIGHT_BLUE,
-                    COLOUR_BRIGHT_BLUE
-            },
-            {
-                    COLOUR_LIGHT_GRAY,
-                    COLOUR_BRIGHT_BLUE,
-                    COLOUR_BRIGHT_BLUE,
-                    COLOUR_BRIGHT_BLUE,
-                    COLOUR_BRIGHT_BLUE,
-                    COLOUR_BRIGHT_BLUE,
-                    COLOUR_BRIGHT_BLUE,
-                    COLOUR_BRIGHT_BLUE
-            },
-            {
-                    COLOUR_LIGHT_GRAY,
-                    COLOUR_BRIGHT_BLUE,
-                    COLOUR_BRIGHT_BLUE,
-                    COLOUR_BRIGHT_BLUE,
-                    COLOUR_BRIGHT_BLUE,
-                    COLOUR_BRIGHT_BLUE,
-                    COLOUR_BRIGHT_BLUE,
-                    COLOUR_BRIGHT_BLUE
-            },
-            {
-                    COLOUR_LIGHT_GRAY,
-                    COLOUR_BRIGHT_BLUE,
-                    COLOUR_BRIGHT_BLUE,
-                    COLOUR_BRIGHT_BLUE,
-                    COLOUR_BRIGHT_BLUE,
-                    COLOUR_BRIGHT_BLUE,
-                    COLOUR_BRIGHT_BLUE,
-                    COLOUR_BRIGHT_BLUE
-            },
-            {
-                    COLOUR_LIGHT_GRAY,
-                    COLOUR_BRIGHT_BLUE,
-                    COLOUR_BRIGHT_BLUE,
-                    COLOUR_BRIGHT_BLUE,
-                    COLOUR_BRIGHT_BLUE,
-                    COLOUR_BRIGHT_BLUE,
-                    COLOUR_BRIGHT_BLUE,
-                    COLOUR_BRIGHT_BLUE
-            },
-            {
-                    COLOUR_LIGHT_GRAY,
-                    COLOUR_BRIGHT_BLUE,
-                    COLOUR_BRIGHT_BLUE,
-                    COLOUR_BRIGHT_BLUE,
-                    COLOUR_BRIGHT_BLUE,
-                    COLOUR_BRIGHT_BLUE,
-                    COLOUR_BRIGHT_BLUE,
-                    COLOUR_BRIGHT_BLUE
-            },
-            {
-                    COLOUR_LIGHT_GRAY,
-                    COLOUR_BRIGHT_BLUE,
-                    COLOUR_BRIGHT_BLUE,
-                    COLOUR_BRIGHT_BLUE,
-                    COLOUR_BRIGHT_BLUE,
-                    COLOUR_BRIGHT_BLUE,
-                    COLOUR_BRIGHT_BLUE,
-                    COLOUR_BRIGHT_BLUE
-            },
-            {
-                    COLOUR_LIGHT_GRAY,
-                    COLOUR_BRIGHT_BLUE,
-                    COLOUR_BRIGHT_BLUE,
-                    COLOUR_BRIGHT_BLUE,
-                    COLOUR_BRIGHT_BLUE,
-                    COLOUR_BRIGHT_BLUE,
-                    COLOUR_BRIGHT_BLUE,
-                    COLOUR_BRIGHT_BLUE
-            }
-    };
 
     public int[][] borderHorizontal() {
         return BORDER_HORIZONTAL;
@@ -510,9 +428,5 @@ public class ExtendedCharset {
 
     public int[][] borderCornerNorthwest() {
         return BORDER_CORNER_NW;
-    }
-
-    public int[][] getBorderVerticalJunctionEast() {
-        return BORDER_VERTICAL_JUNCTION_E;
     }
 }

@@ -69,8 +69,7 @@ public class GamePanel extends JPanel implements BorderProvider, GameProvider, C
     public void paint(Graphics graphics) {
         super.paint(graphics);
         Dimension windowSize = this.getParent().getSize();
-        int scale = new Scale(windowSize.width, windowSize.height).multiplier();
-        gameViewRenderer.drawGameView(graphics, scale);
+        gameViewRenderer.drawGameView(graphics, windowSize.width, windowSize.height);
     }
 
     @Override

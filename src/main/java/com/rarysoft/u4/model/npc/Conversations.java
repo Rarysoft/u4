@@ -23,6 +23,7 @@
  */
 package com.rarysoft.u4.model.npc;
 
+import com.rarysoft.u4.i18n.Messages;
 import com.rarysoft.u4.model.party.Location;
 
 import java.io.File;
@@ -34,37 +35,44 @@ import java.util.Map;
 public class Conversations {
     private final Map<Location, List<Conversation>> locationConversations;
 
-    public static Conversations fromFiles(String directory) throws IOException {
+    public static Conversations fromFiles(String directory, Messages messages) throws IOException {
         Map<Location, List<Conversation>> locationConversations = new HashMap<>();
-        locationConversations.put(Location.BRITAIN, loadConversations(path(directory, "britain.tlk")));
-        locationConversations.put(Location.COVE, loadConversations(path(directory, "cove.tlk")));
-        locationConversations.put(Location.BUCCANEERS_DEN, loadConversations(path(directory, "den.tlk")));
-        locationConversations.put(Location.EMPATH_ABBEY, loadConversations(path(directory, "empath.tlk")));
-        locationConversations.put(Location.JHELOM, loadConversations(path(directory, "jhelom.tlk")));
-        locationConversations.put(Location.CASTLE_BRITANNIA, loadConversations(path(directory, "lcb.tlk")));
-        locationConversations.put(Location.THE_LYCAEUM, loadConversations(path(directory, "lycaeum.tlk")));
-        locationConversations.put(Location.SERPENTS_HOLD, loadConversations(path(directory, "serpent.tlk")));
-        locationConversations.put(Location.MAGINCIA, loadConversations(path(directory, "magincia.tlk")));
-        locationConversations.put(Location.MINOC, loadConversations(path(directory, "minoc.tlk")));
-        locationConversations.put(Location.MOONGLOW, loadConversations(path(directory, "moonglow.tlk")));
-        locationConversations.put(Location.PAWS, loadConversations(path(directory, "paws.tlk")));
-        locationConversations.put(Location.SKARA_BRAE, loadConversations(path(directory, "skara.tlk")));
-        locationConversations.put(Location.TRINSIC, loadConversations(path(directory, "trinsic.tlk")));
-        locationConversations.put(Location.VESPER, loadConversations(path(directory, "vesper.tlk")));
-        locationConversations.put(Location.YEW, loadConversations(path(directory, "yew.tlk")));
+        locationConversations.put(Location.BRITAIN, loadConversations(path(directory, "britain.tlk"), messages));
+        locationConversations.put(Location.COVE, loadConversations(path(directory, "cove.tlk"), messages));
+        locationConversations.put(Location.BUCCANEERS_DEN, loadConversations(path(directory, "den.tlk"), messages));
+        locationConversations.put(Location.EMPATH_ABBEY, loadConversations(path(directory, "empath.tlk"), messages));
+        locationConversations.put(Location.JHELOM, loadConversations(path(directory, "jhelom.tlk"), messages));
+        locationConversations.put(Location.CASTLE_BRITANNIA, loadConversations(path(directory, "lcb.tlk"), messages, ConversationBuilder.buildLordBritishConversation()));
+        locationConversations.put(Location.THE_LYCAEUM, loadConversations(path(directory, "lycaeum.tlk"), messages));
+        locationConversations.put(Location.SERPENTS_HOLD, loadConversations(path(directory, "serpent.tlk"), messages));
+        locationConversations.put(Location.MAGINCIA, loadConversations(path(directory, "magincia.tlk"), messages));
+        locationConversations.put(Location.MINOC, loadConversations(path(directory, "minoc.tlk"), messages));
+        locationConversations.put(Location.MOONGLOW, loadConversations(path(directory, "moonglow.tlk"), messages));
+        locationConversations.put(Location.PAWS, loadConversations(path(directory, "paws.tlk"), messages));
+        locationConversations.put(Location.SKARA_BRAE, loadConversations(path(directory, "skara.tlk"), messages));
+        locationConversations.put(Location.TRINSIC, loadConversations(path(directory, "trinsic.tlk"), messages));
+        locationConversations.put(Location.VESPER, loadConversations(path(directory, "vesper.tlk"), messages));
+        locationConversations.put(Location.YEW, loadConversations(path(directory, "yew.tlk"), messages));
         return new Conversations(locationConversations);
     }
 
     private static String path(String directory, String filename) {
         return String.format("%s%s%s", directory, File.separator, filename);
     }
-    
-    private static List<Conversation> loadConversations(String conversationsFilename) throws IOException {
+
+    private static List<Conversation> loadConversations(String conversationsFilename, Messages messages) throws IOException {
+        return loadConversations(conversationsFilename, messages, null);
+    }
+
+    private static List<Conversation> loadConversations(String conversationsFilename, Messages messages, Conversation additionalConversation) throws IOException {
         List<Conversation> conversations = new ArrayList<>();
+        if (additionalConversation != null) {
+            conversations.add(additionalConversation);
+        }
         InputStream stream = Conversations.class.getResourceAsStream(conversationsFilename);
         boolean done = false;
         while (! done) {
-            Conversation conversation = buildConversationFromStream(stream);
+            Conversation conversation = buildConversationFromStream(stream, messages);
             if (conversation == null) {
                 done = true;
             }
@@ -75,7 +83,7 @@ public class Conversations {
         return conversations;
     }
 
-    private static Conversation buildConversationFromStream(InputStream stream) throws IOException {
+    private static Conversation buildConversationFromStream(InputStream stream, Messages messages) throws IOException {
         int byteCount = 0;
         int questionFlag = stream.read();
         if (questionFlag == -1) {
@@ -111,7 +119,25 @@ public class Conversations {
         String keyword2 = readNullTerminatedString(stream);
         byteCount += keyword2.length() + 1;
         stream.skip(288 - byteCount);
-        return new Conversation(questionFlag, responseAffectsHumility, turnAwayProbability, name, pronoun, lookResponse, jobResponse, healthResponse, keyword1Response, keyword2Response, yesNoQuestion, yesResponse, noResponse, keyword1, keyword2);
+        return new Conversation(
+                questionFlag,
+                responseAffectsHumility,
+                turnAwayProbability,
+                messages.speechCitizenIntro(withinSentence(lookResponse)),
+                conversationResponse(messages.speechCitizenName(name), pronoun, messages),
+                messages.speechCitizenDescribe(withinSentence(lookResponse)),
+                conversationResponse(jobResponse, pronoun, messages),
+                conversationResponse(healthResponse, pronoun, messages),
+                conversationResponse(messages.speechCitizenNoJoin(), pronoun, messages),
+                conversationResponse(keyword1Response, pronoun, messages),
+                conversationResponse(keyword2Response, pronoun, messages),
+                yesNoQuestion,
+                conversationResponse(yesResponse, pronoun, messages),
+                conversationResponse(noResponse, pronoun, messages),
+                conversationResponse(messages.speechCitizenUnknown(), pronoun, messages),
+                keyword1,
+                keyword2
+        );
     }
 
     private static String readNullTerminatedString(InputStream stream) throws IOException {
@@ -132,6 +158,17 @@ public class Conversations {
             }
         }
         return stringBuilder.toString();
+    }
+
+    private static String conversationResponse(String message, String pronoun, Messages messages) {
+        return messages.speechCitizenSpeaking(pronoun) + " " + message;
+    }
+
+    private static String withinSentence(String message) {
+        if (message.length() <= 1) {
+            return message.toLowerCase();
+        }
+        return message.substring(0, 1).toLowerCase() + message.substring(1);
     }
 
     public Conversations(Map<Location, List<Conversation>> locationConversations) {
