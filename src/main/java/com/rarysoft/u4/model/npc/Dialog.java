@@ -27,13 +27,14 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-public class CharacterConversation {
+public class Dialog {
+    public static final int QUESTION_FLAG_NONE = 0;
     public static final int QUESTION_FLAG_JOB = 3;
     public static final int QUESTION_FLAG_HEALTH = 4;
     public static final int QUESTION_FLAG_KEYWORD1 = 5;
     public static final int QUESTION_FLAG_KEYWORD2 = 6;
 
-    private final ConversationType type;
+    private final NonPlayerCharacter npc;
     private final int questionFlag;
     private final boolean responseAffectsHumility;
     private final int turnAwayProbability;
@@ -50,8 +51,8 @@ public class CharacterConversation {
     private final String unknownResponse;
     private final List<String> keywords;
 
-    public CharacterConversation(int questionFlag, boolean responseAffectsHumility, int turnAwayProbability, String intro, String nameResponse, String lookResponse, String jobResponse, String healthResponse, String noJoinResponse, String keyword1Response, String keyword2Response, String yesNoQuestion, String yesResponse, String noResponse, String unknownResponse, String keyword1, String keyword2) {
-        this.type = ConversationType.CITIZEN;
+    public Dialog(int questionFlag, boolean responseAffectsHumility, int turnAwayProbability, String intro, String nameResponse, String lookResponse, String jobResponse, String healthResponse, String noJoinResponse, String keyword1Response, String keyword2Response, String yesNoQuestion, String yesResponse, String noResponse, String unknownResponse, String keyword1, String keyword2) {
+        this.npc = NonPlayerCharacter.CITIZEN;
         this.questionFlag = questionFlag;
         this.responseAffectsHumility = responseAffectsHumility;
         this.turnAwayProbability = turnAwayProbability;
@@ -69,8 +70,8 @@ public class CharacterConversation {
         this.keywords = Arrays.asList(keyword1, keyword2);
     }
 
-    public CharacterConversation(ConversationType type, int questionFlag, boolean responseAffectsHumility, int turnAwayProbability, String intro, String nameResponse, String lookResponse, String jobResponse, String healthResponse, String noJoinResponse, List<String> keywordResponses, String yesNoQuestion, String yesResponse, String noResponse, String unknownResponse, List<String> keywords) {
-        this.type = type;
+    public Dialog(NonPlayerCharacter npc, int questionFlag, boolean responseAffectsHumility, int turnAwayProbability, String intro, String nameResponse, String lookResponse, String jobResponse, String healthResponse, String noJoinResponse, List<String> keywordResponses, String yesNoQuestion, String yesResponse, String noResponse, String unknownResponse, List<String> keywords) {
+        this.npc = npc;
         this.questionFlag = questionFlag;
         this.responseAffectsHumility = responseAffectsHumility;
         this.turnAwayProbability = turnAwayProbability;
@@ -88,8 +89,8 @@ public class CharacterConversation {
         this.keywords = keywords;
     }
 
-    public ConversationType getType() {
-        return type;
+    public NonPlayerCharacter getNpc() {
+        return npc;
     }
 
     public int getQuestionFlag() {

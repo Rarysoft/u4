@@ -25,5 +25,6 @@ package com.rarysoft.u4.model.npc;
 
 public enum NonPlayerCharacter {
     LORD_BRITISH,
-    HAWKWIND
+    HAWKWIND,
+    CITIZEN
 }

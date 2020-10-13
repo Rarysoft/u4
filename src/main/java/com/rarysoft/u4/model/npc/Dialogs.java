@@ -33,13 +33,13 @@ import java.io.InputStream;
 import java.util.*;
 import java.util.Map;
 
-public class CharacterConversations {
-    private final Map<Location, List<CharacterConversation>> locationConversations;
+public class Dialogs {
+    private final Map<Location, List<Dialog>> locationConversations;
 
-    private final Map<NonPlayerCharacter, CharacterConversation> npcConversations;
+    private final Map<NonPlayerCharacter, Dialog> npcConversations;
 
-    public static CharacterConversations fromFiles(String directory, Messages messages) throws IOException {
-        Map<Location, List<CharacterConversation>> locationConversations = new HashMap<>();
+    public static Dialogs fromFiles(String directory, Messages messages) throws IOException {
+        Map<Location, List<Dialog>> locationConversations = new HashMap<>();
         locationConversations.put(Location.BRITAIN, loadCharacterConversations(path(directory, "britain.tlk"), messages));
         locationConversations.put(Location.COVE, loadCharacterConversations(path(directory, "cove.tlk"), messages));
         locationConversations.put(Location.BUCCANEERS_DEN, loadCharacterConversations(path(directory, "den.tlk"), messages));
@@ -56,33 +56,33 @@ public class CharacterConversations {
         locationConversations.put(Location.TRINSIC, loadCharacterConversations(path(directory, "trinsic.tlk"), messages));
         locationConversations.put(Location.VESPER, loadCharacterConversations(path(directory, "vesper.tlk"), messages));
         locationConversations.put(Location.YEW, loadCharacterConversations(path(directory, "yew.tlk"), messages));
-        Map<NonPlayerCharacter, CharacterConversation> npcConversations = new HashMap<>();
-        npcConversations.put(NonPlayerCharacter.LORD_BRITISH, CharacterConversationBuilder.buildLordBritishConversation());
-        npcConversations.put(NonPlayerCharacter.HAWKWIND, CharacterConversationBuilder.buildHawkwindConversation());
-        return new CharacterConversations(locationConversations, npcConversations);
+        Map<NonPlayerCharacter, Dialog> npcConversations = new HashMap<>();
+        npcConversations.put(NonPlayerCharacter.LORD_BRITISH, DialogBuilder.buildLordBritishDialog());
+        npcConversations.put(NonPlayerCharacter.HAWKWIND, DialogBuilder.buildHawkwindDialog());
+        return new Dialogs(locationConversations, npcConversations);
     }
 
     private static String path(String directory, String filename) {
         return String.format("%s%s%s", directory, File.separator, filename);
     }
 
-    private static List<CharacterConversation> loadCharacterConversations(String characterConversationsFilename, Messages messages) throws IOException {
-        List<CharacterConversation> characterConversations = new ArrayList<>();
-        InputStream stream = CharacterConversations.class.getResourceAsStream(characterConversationsFilename);
+    private static List<Dialog> loadCharacterConversations(String characterConversationsFilename, Messages messages) throws IOException {
+        List<Dialog> dialogs = new ArrayList<>();
+        InputStream stream = Dialogs.class.getResourceAsStream(characterConversationsFilename);
         boolean done = false;
         while (! done) {
-            CharacterConversation characterConversation = buildCharacterConversationFromStream(stream, messages);
-            if (characterConversation == null) {
+            Dialog dialog = buildCharacterConversationFromStream(stream, messages);
+            if (dialog == null) {
                 done = true;
             }
             else {
-                characterConversations.add(characterConversation);
+                dialogs.add(dialog);
             }
         }
-        return characterConversations;
+        return dialogs;
     }
 
-    private static CharacterConversation buildCharacterConversationFromStream(InputStream stream, Messages messages) throws IOException {
+    private static Dialog buildCharacterConversationFromStream(InputStream stream, Messages messages) throws IOException {
         int byteCount = 0;
         int questionFlag = stream.read();
         if (questionFlag == -1) {
@@ -118,7 +118,7 @@ public class CharacterConversations {
         String keyword2 = readNullTerminatedString(stream);
         byteCount += keyword2.length() + 1;
         stream.skip(288 - byteCount);
-        return new CharacterConversation(
+        return new Dialog(
                 questionFlag,
                 responseAffectsHumility,
                 turnAwayProbability,
@@ -170,23 +170,23 @@ public class CharacterConversations {
         return message.substring(0, 1).toLowerCase() + message.substring(1);
     }
 
-    public CharacterConversations(Map<Location, List<CharacterConversation>> locationConversations, Map<NonPlayerCharacter, CharacterConversation> npcConversations) {
+    public Dialogs(Map<Location, List<Dialog>> locationConversations, Map<NonPlayerCharacter, Dialog> npcConversations) {
         this.locationConversations = locationConversations;
         this.npcConversations = npcConversations;
     }
 
-    public Optional<CharacterConversation> findCharacterConversationFor(Location location, Person person) {
+    public Optional<Dialog> findCharacterConversationFor(Location location, Person person) {
         if (person.conversationIndex() == 0 || person.tile() == Tile.LORD_BRITISH_1) {
             return findExtendedCharacterConversationFor(location, person);
         }
         if (! locationConversations.containsKey(location)) {
             return Optional.empty();
         }
-        List<CharacterConversation> characterConversations = locationConversations.get(location);
-        return Optional.of(characterConversations.get(person.conversationIndex() - 1));
+        List<Dialog> dialogs = locationConversations.get(location);
+        return Optional.of(dialogs.get(person.conversationIndex() - 1));
     }
 
-    private Optional<CharacterConversation> findExtendedCharacterConversationFor(Location location, Person person) {
+    private Optional<Dialog> findExtendedCharacterConversationFor(Location location, Person person) {
         if (person.tile() == Tile.LORD_BRITISH_1) {
             return Optional.ofNullable(npcConversations.get(NonPlayerCharacter.LORD_BRITISH));
         }

@@ -25,7 +25,7 @@ package com.rarysoft.u4;
 
 import com.rarysoft.u4.i18n.Messages;
 import com.rarysoft.u4.model.*;
-import com.rarysoft.u4.model.npc.CharacterConversations;
+import com.rarysoft.u4.model.npc.Dialogs;
 import com.rarysoft.u4.model.graphics.Charset;
 import com.rarysoft.u4.model.DisplayListener;
 import com.rarysoft.u4.model.graphics.Tiles;
@@ -74,11 +74,11 @@ public class Launcher {
         Charset charset = initializeCharset("/data/charset.ega");
         BufferedImage icon = initializeIcon("/images/ankh.png");
         Maps maps = initializeMaps("/data");
-        CharacterConversations characterConversations = initializeConversations("/data", messages);
+        Dialogs dialogs = initializeConversations("/data", messages);
         UiBuilder uiBuilder = new UiBuilder();
         JFrame gameWindow = uiBuilder.buildGameWindow(messages.windowTitle());
         List<DisplayListener> displayListeners = uiBuilder.buildGamePanel(gameWindow, tiles, charset);
-        Game game = initializeGame(messages, gameWindow, displayListeners, characterConversations);
+        Game game = initializeGame(messages, gameWindow, displayListeners, dialogs);
         gameWindow.setIconImage(icon);
         FrameHelper.enableExitOnClose(gameWindow);
         FrameHelper.center(gameWindow);
@@ -123,8 +123,8 @@ public class Launcher {
         return Maps.fromFiles(directory);
     }
 
-    private CharacterConversations initializeConversations(String directory, Messages messages) throws IOException {
-        return CharacterConversations.fromFiles(directory, messages);
+    private Dialogs initializeConversations(String directory, Messages messages) throws IOException {
+        return Dialogs.fromFiles(directory, messages);
     }
 
     private BufferedImage initializeIcon(String filename) {
@@ -137,8 +137,8 @@ public class Launcher {
         }
     }
 
-    private Game initializeGame(Messages messages, JFrame gameWindow, List<DisplayListener> displayListeners, CharacterConversations characterConversations) {
-        Game game = new Game(messages, characterConversations);
+    private Game initializeGame(Messages messages, JFrame gameWindow, List<DisplayListener> displayListeners, Dialogs dialogs) {
+        Game game = new Game(messages, dialogs);
         displayListeners.forEach(game::addDisplayListener);
         gameWindow.addKeyListener(new KeyboardListener(game));
         return game;

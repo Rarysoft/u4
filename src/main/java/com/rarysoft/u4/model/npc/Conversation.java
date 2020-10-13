@@ -31,7 +31,7 @@ import java.util.Random;
 public class Conversation {
     private static final Random RANDOM = new Random();
 
-    private final CharacterConversation characterConversation;
+    private final Dialog dialog;
 
     private final int honestyKarma;
     private final int compassionKarma;
@@ -48,8 +48,8 @@ public class Conversation {
     private final int virtueDelta;
     private final boolean healPlayer;
 
-    public Conversation(CharacterConversation characterConversation, int honestyKarma, int compassionKarma, int valourKarma, int justiceKarma, int sacrificeKarma, int honourKarma, int spiritualityKarma, int humilityKarma) {
-        this.characterConversation = characterConversation;
+    public Conversation(Dialog dialog, int honestyKarma, int compassionKarma, int valourKarma, int justiceKarma, int sacrificeKarma, int honourKarma, int spiritualityKarma, int humilityKarma) {
+        this.dialog = dialog;
         this.honestyKarma = honestyKarma;
         this.compassionKarma = compassionKarma;
         this.valourKarma = valourKarma;
@@ -65,8 +65,8 @@ public class Conversation {
         this.healPlayer = false;
     }
 
-    private Conversation(CharacterConversation characterConversation, int honestyKarma, int compassionKarma, int valourKarma, int justiceKarma, int sacrificeKarma, int honourKarma, int spiritualityKarma, int humilityKarma, String response, String question, Virtue affectedVirtue, int virtueDelta, boolean healPlayer) {
-        this.characterConversation = characterConversation;
+    private Conversation(Dialog dialog, int honestyKarma, int compassionKarma, int valourKarma, int justiceKarma, int sacrificeKarma, int honourKarma, int spiritualityKarma, int humilityKarma, String response, String question, Virtue affectedVirtue, int virtueDelta, boolean healPlayer) {
+        this.dialog = dialog;
         this.honestyKarma = honestyKarma;
         this.compassionKarma = compassionKarma;
         this.valourKarma = valourKarma;
@@ -103,65 +103,74 @@ public class Conversation {
     }
 
     public Conversation forInput(String input) {
+        String playerInput = input.toUpperCase();
+        if (playerInput.length() > 4) {
+            playerInput = playerInput.substring(0, 4);
+        }
         String response = null;
         String question = null;
         if (characterWillRespond()) {
-            switch (input) {
+            switch (playerInput) {
                 case "LOOK":
-                    response = characterConversation.getLookResponse();
+                    response = dialog.getLookResponse();
                     break;
 
                 case "NAME":
-                    response = characterConversation.getNameResponse();
+                    response = dialog.getNameResponse();
                     break;
 
                 case "JOB":
-                    response = characterConversation.getJobResponse();
-                    if (characterConversation.getQuestionFlag() == CharacterConversation.QUESTION_FLAG_JOB) {
-                        question = characterConversation.getYesNoQuestion();
+                    response = dialog.getJobResponse();
+                    if (dialog.getQuestionFlag() == Dialog.QUESTION_FLAG_JOB) {
+                        question = dialog.getYesNoQuestion();
                     }
                     break;
 
                 case "HEAL":
-                    response = characterConversation.getHealthResponse();
-                    if (characterConversation.getQuestionFlag() == CharacterConversation.QUESTION_FLAG_HEALTH) {
-                        question = characterConversation.getYesNoQuestion();
+                    response = dialog.getHealthResponse();
+                    if (dialog.getQuestionFlag() == Dialog.QUESTION_FLAG_HEALTH) {
+                        question = dialog.getYesNoQuestion();
                     }
                     break;
 
                 case "JOIN":
                     // TODO: deal with NPCs that can join the party
-                    response = characterConversation.getNoJoinResponse();
+                    response = dialog.getNoJoinResponse();
                     break;
 
                 case "BYE":
                     break;
 
                 default:
-                    if (characterConversation.getType() == ConversationType.CITIZEN) {
-                        if (input.equals(characterConversation.getKeyword(0))) {
-                            response = characterConversation.getKeywordResponse(0);
-                            if (characterConversation.getQuestionFlag() == CharacterConversation.QUESTION_FLAG_KEYWORD1) {
-                                question = characterConversation.getYesNoQuestion();
+                    if (dialog.getNpc() == NonPlayerCharacter.CITIZEN) {
+                        if (playerInput.equals(dialog.getKeyword(0))) {
+                            response = dialog.getKeywordResponse(0);
+                            if (dialog.getQuestionFlag() == Dialog.QUESTION_FLAG_KEYWORD1) {
+                                question = dialog.getYesNoQuestion();
                             }
-                        } else if (input.equals(characterConversation.getKeyword(1))) {
-                            response = characterConversation.getKeywordResponse(1);
-                            if (characterConversation.getQuestionFlag() == CharacterConversation.QUESTION_FLAG_KEYWORD2) {
-                                question = characterConversation.getYesNoQuestion();
+                        } else if (playerInput.equals(dialog.getKeyword(1))) {
+                            response = dialog.getKeywordResponse(1);
+                            if (dialog.getQuestionFlag() == Dialog.QUESTION_FLAG_KEYWORD2) {
+                                question = dialog.getYesNoQuestion();
                             }
                         } else {
-                             response = characterConversation.getUnknownResponse();
+                             response = dialog.getUnknownResponse();
                         }
                     }
-                    else if (characterConversation.getType() == ConversationType.LORD_BRITISH) {
-                        Optional<String> lordBritishResponse = characterConversation.getKeywordResponse(input);
-                        response = lordBritishResponse.orElseGet(characterConversation::getUnknownResponse);
+                    else if (dialog.getNpc() == NonPlayerCharacter.LORD_BRITISH) {
+                        Optional<String> lordBritishResponse = dialog.getKeywordResponse(playerInput);
+                        response = lordBritishResponse.orElseGet(dialog::getUnknownResponse);
+                    }
+                    else if (dialog.getNpc() == NonPlayerCharacter.HAWKWIND) {
+                        String modifiedInput = modifyInputWithKarmaLevel(playerInput);
+                        Optional<String> hawkwindResponse = dialog.getKeywordResponse(modifiedInput);
+                        response = hawkwindResponse.orElseGet(dialog::getUnknownResponse);
                     }
                     break;
             }
         }
         return new Conversation(
-                characterConversation,
+                dialog,
                 honestyKarma,
                 compassionKarma,
                 valourKarma,
@@ -179,9 +188,9 @@ public class Conversation {
     }
 
     public Conversation forResponse(String response) {
-        if (response.startsWith("Y")) {
+        if (response.toUpperCase().startsWith("Y")) {
             return new Conversation(
-                    characterConversation,
+                    dialog,
                     honestyKarma,
                     compassionKarma,
                     valourKarma,
@@ -190,15 +199,15 @@ public class Conversation {
                     honourKarma,
                     spiritualityKarma,
                     humilityKarma,
-                    characterConversation.getYesResponse(),
+                    dialog.getYesResponse(),
                     null,
-                    characterConversation.responseAffectsHumility() ? Virtue.HUMILITY : null,
-                    characterConversation.responseAffectsHumility() ? -1 : 0,
+                    dialog.responseAffectsHumility() ? Virtue.HUMILITY : null,
+                    dialog.responseAffectsHumility() ? -1 : 0,
                     false
             );
         }
         return new Conversation(
-                characterConversation,
+                dialog,
                 honestyKarma,
                 compassionKarma,
                 valourKarma,
@@ -207,31 +216,83 @@ public class Conversation {
                 honourKarma,
                 spiritualityKarma,
                 humilityKarma,
-                characterConversation.getNoResponse(),
+                dialog.getNoResponse(),
                 null,
                 null,
                 0,
-                characterConversation.getType() == ConversationType.LORD_BRITISH
+                dialog.getNpc() == NonPlayerCharacter.LORD_BRITISH
         );
     }
 
     private String getConversationStarter() {
         String response = null;
         if (characterWillRespond()) {
-            response = characterConversation.getIntro();
+            response = dialog.getIntro();
             if (characterWillIntroduceSelf()) {
                 response += "\n\n";
-                response += characterConversation.getNameResponse();
+                response += dialog.getNameResponse();
             }
         }
         return response;
     }
 
     private boolean characterWillRespond() {
-        return RANDOM.nextInt(256) <= 255 - characterConversation.getTurnAwayProbability();
+        return RANDOM.nextInt(256) <= 255 - dialog.getTurnAwayProbability();
     }
 
     private boolean characterWillIntroduceSelf() {
         return RANDOM.nextBoolean();
+    }
+
+    private String modifyInputWithKarmaLevel(String input) {
+        int karmaLevel = 0;
+        switch (input) {
+            case "HONE":
+                karmaLevel = getKarmaLevel(honestyKarma);
+                break;
+            case "COMP":
+                karmaLevel = getKarmaLevel(compassionKarma);
+                break;
+            case "VALO":
+                karmaLevel = getKarmaLevel(valourKarma);
+                break;
+            case "JUST":
+                karmaLevel = getKarmaLevel(justiceKarma);
+                break;
+            case "SACR":
+                karmaLevel = getKarmaLevel(honestyKarma);
+                break;
+            case "HONO":
+                karmaLevel = getKarmaLevel(honourKarma);
+                break;
+            case "SPIR":
+                karmaLevel = getKarmaLevel(spiritualityKarma);
+                break;
+            case "HUMI":
+                karmaLevel = getKarmaLevel(humilityKarma);
+                break;
+            default:
+                break;
+        }
+        return input + "-" + karmaLevel;
+    }
+
+    private int getKarmaLevel(int karma) {
+        if (karma < 40) {
+            return 1;
+        }
+        if (karma < 50) {
+            return 2;
+        }
+        if (karma < 60) {
+            return 3;
+        }
+        if (karma < 70) {
+            return 4;
+        }
+        if (karma < 100) {
+            return 5;
+        }
+        return 6;
     }
 }

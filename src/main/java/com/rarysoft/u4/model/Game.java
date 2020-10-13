@@ -37,7 +37,7 @@ public class Game {
 
     private final Messages messages;
 
-    private final CharacterConversations characterConversations;
+    private final Dialogs dialogs;
 
     private final Set<DisplayListener> displayListeners;
 
@@ -47,9 +47,9 @@ public class Game {
 
     private int animationCycle;
 
-    public Game(Messages messages, CharacterConversations characterConversations) {
+    public Game(Messages messages, Dialogs dialogs) {
         this.messages = messages;
-        this.characterConversations = characterConversations;
+        this.dialogs = dialogs;
         this.displayListeners = new HashSet<>();
         this.random = new Random();
     }
@@ -137,18 +137,14 @@ public class Game {
     public void onUserInput(char input) {
         if (gameState.inConversation()) {
             if (input == '\n') {
-                String playerInput = gameState.input().toUpperCase();
-                if (playerInput.length() > 4) {
-                    playerInput = playerInput.substring(0, 4);
-                }
-                CharacterConversation characterConversation = gameState.conversation();
+                Dialog dialog = gameState.conversation();
                 Conversation conversation;
                 if (gameState.inConversationRespondingYesOrNo()) {
-                    conversation = new Conversation(characterConversation, 0, 0, 0, 0, 0, 0, 0, 0).forResponse(playerInput);
+                    conversation = new Conversation(dialog, 0, 0, 0, 0, 0, 0, 0, 0).forResponse(gameState.input());
                     gameState.queryAnswered();
                 }
                 else {
-                    conversation = new Conversation(characterConversation, 0, 0, 0, 0, 0, 0, 0, 0).forInput(playerInput);
+                    conversation = new Conversation(dialog, 0, 0, 0, 0, 0, 0, 0, 0).forInput(gameState.input());
                 }
                 conversation.response().ifPresent(response -> {
                     String question = conversation.question().orElse(null);
@@ -237,12 +233,12 @@ public class Game {
     }
 
     private void attemptConversationWith(Person person) {
-        Optional<CharacterConversation> possibleConversation = characterConversations.findCharacterConversationFor(gameState.location(), person);
+        Optional<Dialog> possibleConversation = dialogs.findCharacterConversationFor(gameState.location(), person);
         if (possibleConversation.isPresent()) {
-            CharacterConversation characterConversation = possibleConversation.get();
-            Conversation conversation = new Conversation(characterConversation, 0, 0, 0, 0, 0, 0, 0, 0);
+            Dialog dialog = possibleConversation.get();
+            Conversation conversation = new Conversation(dialog, 0, 0, 0, 0, 0, 0, 0, 0);
             conversation.response().ifPresent(response -> {
-                gameState.startConversation(characterConversation, person);
+                gameState.startConversation(dialog, person);
                 List<String> speech = new ArrayList<>();
                 speech.add(response);
                 speech.add("");
@@ -299,7 +295,7 @@ public class Game {
     }
 
     private void endConversation() {
-        CharacterConversation characterConversation = gameState.conversation();
+        Dialog dialog = gameState.conversation();
         spokenTo(Arrays.asList(
                 messages.speechCitizenBye(),
                 ""
