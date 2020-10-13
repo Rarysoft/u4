@@ -21,10 +21,15 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.rarysoft.u4.model.npc;
+package com.rarysoft.u4.model;
 
-public enum ConversationType {
-    LORD_BRITISH,
-    HAWKWIND,
-    CITIZEN
+public enum Virtue {
+    HONESTY,
+    COMPASSION,
+    VALOUR,
+    JUSTICE,
+    SACRIFICE,
+    HONOUR,
+    SPIRITUALITY,
+    HUMILITY
 }

@@ -23,140 +23,215 @@
  */
 package com.rarysoft.u4.model.npc;
 
-import java.util.Arrays;
-import java.util.List;
+import com.rarysoft.u4.model.Virtue;
+
 import java.util.Optional;
+import java.util.Random;
 
 public class Conversation {
-    public static final int QUESTION_FLAG_JOB = 3;
-    public static final int QUESTION_FLAG_HEALTH = 4;
-    public static final int QUESTION_FLAG_KEYWORD1 = 5;
-    public static final int QUESTION_FLAG_KEYWORD2 = 6;
+    private static final Random RANDOM = new Random();
 
-    private final ConversationType type;
-    private final int questionFlag;
-    private final boolean responseAffectsHumility;
-    private final int turnAwayProbability;
-    private final String intro;
-    private final String nameResponse;
-    private final String lookResponse;
-    private final String jobResponse;
-    private final String healthResponse;
-    private final String noJoinResponse;
-    private final List<String> keywordResponses;
-    private final String yesNoQuestion;
-    private final String yesResponse;
-    private final String noResponse;
-    private final String unknownResponse;
-    private final List<String> keywords;
+    private final CharacterConversation characterConversation;
 
-    public Conversation(int questionFlag, boolean responseAffectsHumility, int turnAwayProbability, String intro, String nameResponse, String lookResponse, String jobResponse, String healthResponse, String noJoinResponse, String keyword1Response, String keyword2Response, String yesNoQuestion, String yesResponse, String noResponse, String unknownResponse, String keyword1, String keyword2) {
-        this.type = ConversationType.CITIZEN;
-        this.questionFlag = questionFlag;
-        this.responseAffectsHumility = responseAffectsHumility;
-        this.turnAwayProbability = turnAwayProbability;
-        this.intro = intro;
-        this.nameResponse = nameResponse;
-        this.lookResponse = lookResponse;
-        this.jobResponse = jobResponse;
-        this.healthResponse = healthResponse;
-        this.noJoinResponse = noJoinResponse;
-        this.keywordResponses = Arrays.asList(keyword1Response, keyword2Response);
-        this.yesNoQuestion = yesNoQuestion;
-        this.yesResponse = yesResponse;
-        this.noResponse = noResponse;
-        this.unknownResponse = unknownResponse;
-        this.keywords = Arrays.asList(keyword1, keyword2);
+    private final int honestyKarma;
+    private final int compassionKarma;
+    private final int valourKarma;
+    private final int justiceKarma;
+    private final int sacrificeKarma;
+    private final int honourKarma;
+    private final int spiritualityKarma;
+    private final int humilityKarma;
+
+    private final String response;
+    private final String question;
+    private final Virtue affectedVirtue;
+    private final int virtueDelta;
+    private final boolean healPlayer;
+
+    public Conversation(CharacterConversation characterConversation, int honestyKarma, int compassionKarma, int valourKarma, int justiceKarma, int sacrificeKarma, int honourKarma, int spiritualityKarma, int humilityKarma) {
+        this.characterConversation = characterConversation;
+        this.honestyKarma = honestyKarma;
+        this.compassionKarma = compassionKarma;
+        this.valourKarma = valourKarma;
+        this.justiceKarma = justiceKarma;
+        this.sacrificeKarma = sacrificeKarma;
+        this.honourKarma = honourKarma;
+        this.spiritualityKarma = spiritualityKarma;
+        this.humilityKarma = humilityKarma;
+        this.response = getConversationStarter();
+        this.question = null;
+        this.affectedVirtue = null;
+        this.virtueDelta = 0;
+        this.healPlayer = false;
     }
 
-    public Conversation(ConversationType type, int questionFlag, boolean responseAffectsHumility, int turnAwayProbability, String intro, String nameResponse, String lookResponse, String jobResponse, String healthResponse, String noJoinResponse, List<String> keywordResponses, String yesNoQuestion, String yesResponse, String noResponse, String unknownResponse, List<String> keywords) {
-        this.type = type;
-        this.questionFlag = questionFlag;
-        this.responseAffectsHumility = responseAffectsHumility;
-        this.turnAwayProbability = turnAwayProbability;
-        this.intro = intro;
-        this.nameResponse = nameResponse;
-        this.lookResponse = lookResponse;
-        this.jobResponse = jobResponse;
-        this.healthResponse = healthResponse;
-        this.noJoinResponse = noJoinResponse;
-        this.keywordResponses = keywordResponses;
-        this.yesNoQuestion = yesNoQuestion;
-        this.yesResponse = yesResponse;
-        this.noResponse = noResponse;
-        this.unknownResponse = unknownResponse;
-        this.keywords = keywords;
+    private Conversation(CharacterConversation characterConversation, int honestyKarma, int compassionKarma, int valourKarma, int justiceKarma, int sacrificeKarma, int honourKarma, int spiritualityKarma, int humilityKarma, String response, String question, Virtue affectedVirtue, int virtueDelta, boolean healPlayer) {
+        this.characterConversation = characterConversation;
+        this.honestyKarma = honestyKarma;
+        this.compassionKarma = compassionKarma;
+        this.valourKarma = valourKarma;
+        this.justiceKarma = justiceKarma;
+        this.sacrificeKarma = sacrificeKarma;
+        this.honourKarma = honourKarma;
+        this.spiritualityKarma = spiritualityKarma;
+        this.humilityKarma = humilityKarma;
+        this.response = response;
+        this.question = question;
+        this.affectedVirtue = affectedVirtue;
+        this.virtueDelta = virtueDelta;
+        this.healPlayer = healPlayer;
     }
 
-    public ConversationType getType() {
-        return type;
+    public Optional<String> response() {
+        return Optional.ofNullable(response);
     }
 
-    public int getQuestionFlag() {
-        return questionFlag;
+    public Optional<String> question() {
+        return Optional.ofNullable(question);
     }
 
-    public boolean responseAffectsHumility() {
-        return responseAffectsHumility;
+    public Optional<Virtue> affectedVirtue() {
+        return Optional.ofNullable(affectedVirtue);
     }
 
-    public int getTurnAwayProbability() {
-        return turnAwayProbability;
+    public int virtueDelta() {
+        return virtueDelta;
     }
 
-    public String getIntro() {
-        return intro;
+    public boolean healPlayer() {
+        return healPlayer;
     }
 
-    public String getNameResponse() {
-        return nameResponse;
-    }
+    public Conversation forInput(String input) {
+        String response = null;
+        String question = null;
+        if (characterWillRespond()) {
+            switch (input) {
+                case "LOOK":
+                    response = characterConversation.getLookResponse();
+                    break;
 
-    public String getLookResponse() {
-        return lookResponse;
-    }
+                case "NAME":
+                    response = characterConversation.getNameResponse();
+                    break;
 
-    public String getJobResponse() {
-        return jobResponse;
-    }
+                case "JOB":
+                    response = characterConversation.getJobResponse();
+                    if (characterConversation.getQuestionFlag() == CharacterConversation.QUESTION_FLAG_JOB) {
+                        question = characterConversation.getYesNoQuestion();
+                    }
+                    break;
 
-    public String getHealthResponse() {
-        return healthResponse;
-    }
+                case "HEAL":
+                    response = characterConversation.getHealthResponse();
+                    if (characterConversation.getQuestionFlag() == CharacterConversation.QUESTION_FLAG_HEALTH) {
+                        question = characterConversation.getYesNoQuestion();
+                    }
+                    break;
 
-    public String getNoJoinResponse() {
-        return noJoinResponse;
-    }
+                case "JOIN":
+                    // TODO: deal with NPCs that can join the party
+                    response = characterConversation.getNoJoinResponse();
+                    break;
 
-    public String getKeywordResponse(int index) {
-        return keywordResponses.get(index);
-    }
+                case "BYE":
+                    break;
 
-    public String getYesNoQuestion() {
-        return yesNoQuestion;
-    }
-
-    public String getYesResponse() {
-        return yesResponse;
-    }
-
-    public String getNoResponse() {
-        return noResponse;
-    }
-
-    public String getUnknownResponse() {
-        return unknownResponse;
-    }
-
-    public String getKeyword(int index) {
-        return keywords.get(index);
-    }
-
-    public Optional<String> getKeywordResponse(String keyword) {
-        int index = keywords.indexOf(keyword);
-        if (index < 0) {
-            return Optional.empty();
+                default:
+                    if (characterConversation.getType() == ConversationType.CITIZEN) {
+                        if (input.equals(characterConversation.getKeyword(0))) {
+                            response = characterConversation.getKeywordResponse(0);
+                            if (characterConversation.getQuestionFlag() == CharacterConversation.QUESTION_FLAG_KEYWORD1) {
+                                question = characterConversation.getYesNoQuestion();
+                            }
+                        } else if (input.equals(characterConversation.getKeyword(1))) {
+                            response = characterConversation.getKeywordResponse(1);
+                            if (characterConversation.getQuestionFlag() == CharacterConversation.QUESTION_FLAG_KEYWORD2) {
+                                question = characterConversation.getYesNoQuestion();
+                            }
+                        } else {
+                             response = characterConversation.getUnknownResponse();
+                        }
+                    }
+                    else if (characterConversation.getType() == ConversationType.LORD_BRITISH) {
+                        Optional<String> lordBritishResponse = characterConversation.getKeywordResponse(input);
+                        response = lordBritishResponse.orElseGet(characterConversation::getUnknownResponse);
+                    }
+                    break;
+            }
         }
-        return Optional.of(keywordResponses.get(index));
+        return new Conversation(
+                characterConversation,
+                honestyKarma,
+                compassionKarma,
+                valourKarma,
+                justiceKarma,
+                sacrificeKarma,
+                honourKarma,
+                spiritualityKarma,
+                humilityKarma,
+                response,
+                question,
+                null,
+                0,
+                false
+        );
+    }
+
+    public Conversation forResponse(String response) {
+        if (response.startsWith("Y")) {
+            return new Conversation(
+                    characterConversation,
+                    honestyKarma,
+                    compassionKarma,
+                    valourKarma,
+                    justiceKarma,
+                    sacrificeKarma,
+                    honourKarma,
+                    spiritualityKarma,
+                    humilityKarma,
+                    characterConversation.getYesResponse(),
+                    null,
+                    characterConversation.responseAffectsHumility() ? Virtue.HUMILITY : null,
+                    characterConversation.responseAffectsHumility() ? -1 : 0,
+                    false
+            );
+        }
+        return new Conversation(
+                characterConversation,
+                honestyKarma,
+                compassionKarma,
+                valourKarma,
+                justiceKarma,
+                sacrificeKarma,
+                honourKarma,
+                spiritualityKarma,
+                humilityKarma,
+                characterConversation.getNoResponse(),
+                null,
+                null,
+                0,
+                characterConversation.getType() == ConversationType.LORD_BRITISH
+        );
+    }
+
+    private String getConversationStarter() {
+        String response = null;
+        if (characterWillRespond()) {
+            response = characterConversation.getIntro();
+            if (characterWillIntroduceSelf()) {
+                response += "\n\n";
+                response += characterConversation.getNameResponse();
+            }
+        }
+        return response;
+    }
+
+    private boolean characterWillRespond() {
+        return RANDOM.nextInt(256) <= 255 - characterConversation.getTurnAwayProbability();
+    }
+
+    private boolean characterWillIntroduceSelf() {
+        return RANDOM.nextBoolean();
     }
 }

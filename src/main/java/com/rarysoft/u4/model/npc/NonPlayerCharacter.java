@@ -23,8 +23,7 @@
  */
 package com.rarysoft.u4.model.npc;
 
-public enum ConversationType {
+public enum NonPlayerCharacter {
     LORD_BRITISH,
-    HAWKWIND,
-    CITIZEN
+    HAWKWIND
 }

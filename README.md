@@ -33,10 +33,10 @@ files from their own original Ultima IV game disk into the `src/main/resources/d
 * Apply transparency to characters to see the ground tile below them
 * Apply transparency to some object tiles and guess at the correct ground tile to show below them
 * Add diagonal movement
-* Initiate conversation with non-player characters by bumping into them
+* Initiate characterConversation with non-player characters by bumping into them
 * Add "$pronoun says:" before all non-player character speech
 * Let other non-player characters continue to move around while player converses
-* Leave conversation with non-player character by just walking away
+* Leave characterConversation with non-player character by just walking away
 * Open doors by bumping into them
 * Climb ladders by walking onto the tile
 * more to come...

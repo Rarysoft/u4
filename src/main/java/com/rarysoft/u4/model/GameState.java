@@ -23,7 +23,7 @@
  */
 package com.rarysoft.u4.model;
 
-import com.rarysoft.u4.model.npc.Conversation;
+import com.rarysoft.u4.model.npc.CharacterConversation;
 import com.rarysoft.u4.model.npc.NpcMover;
 import com.rarysoft.u4.model.npc.Person;
 import com.rarysoft.u4.model.graphics.Tile;
@@ -42,7 +42,7 @@ public class GameState {
     private int surfaceRow;
     private int surfaceCol;
     private PlayMode playMode;
-    private Conversation conversation;
+    private CharacterConversation characterConversation;
     private Person conversingPerson;
     private String input;
 
@@ -84,8 +84,8 @@ public class GameState {
         return playMode == PlayMode.CONVERSATION_QUERIED;
     }
 
-    public Conversation conversation() {
-        return conversation;
+    public CharacterConversation conversation() {
+        return characterConversation;
     }
 
     public String input() {
@@ -149,9 +149,9 @@ public class GameState {
         doors.forEach(Door::turnCompleted);
     }
 
-    public void startConversation(Conversation conversation, Person person) {
+    public void startConversation(CharacterConversation characterConversation, Person person) {
         playMode = PlayMode.CONVERSATION;
-        this.conversation = conversation;
+        this.characterConversation = characterConversation;
         this.conversingPerson = person;
         input = "";
     }
@@ -178,7 +178,7 @@ public class GameState {
 
     public void endConversation() {
         playMode = PlayMode.NORMAL;
-        this.conversation = null;
+        this.characterConversation = null;
         this.conversingPerson = null;
         input = null;
     }

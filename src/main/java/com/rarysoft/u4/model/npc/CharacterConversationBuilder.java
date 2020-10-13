@@ -25,46 +25,19 @@ package com.rarysoft.u4.model.npc;
 
 import java.util.Arrays;
 
-public class ConversationBuilder {
-    public static Conversation buildLordBritishConversation() {
-        return new Conversation(
+public class CharacterConversationBuilder {
+    public static CharacterConversation buildLordBritishConversation() {
+        return new CharacterConversation(
                 ConversationType.LORD_BRITISH,
                 4,
                 false,
                 0,
                 "Thou see the King with the Royal Sceptre.",
-                "Hey says: My name is Lord British, Sovereign of all Britannia!",
+                "He says: My name is Lord British, Sovereign of all Britannia!",
                 "Thou see the King with the Royal Sceptre.",
                 "He says: I rule all Britannia, and shall do my best to help thee!",
                 "He says: I am well, thank ye.",
                 "He says: I cannot join thee.",
-                Arrays.asList(
-                        "truth",
-                        "love",
-                        "courage",
-                        "honesty",
-                        "compassion",
-                        "valor",
-                        "justice",
-                        "sacrifice",
-                        "honor",
-                        "spirituality",
-                        "humility",
-                        "pride",
-                        "avatar",
-                        "quest",
-                        "britannia",
-                        "ankh",
-                        "abyss",
-                        "mondain",
-                        "minax",
-                        "exodus",
-                        "virtue"
-                ),
-                "Art thou well?",
-                "He says: That is good.",
-                "He says: Let me heal thy wounds!",
-                "He says: That I cannot help thee with.",
                 Arrays.asList(
                         "He says: Many truths can be learned at the Lycaeum. It lies on the northwestern shore of Verity Isle!",
                         "He says: Look for the meaning of Love at Empath Abbey. The Abbey sits on the western edge of the Deep Forest!",
@@ -87,7 +60,55 @@ public class ConversationBuilder {
                         "He says: Minax is dead!",
                         "He says: Exodus is dead!",
                         "He says: The Eight Virtues of the Avatar are: Honesty, Compassion, Valor, Justice, Sacrifice, Honor, Spirituality, and Humility!"
+                ),
+                "Art thou well?",
+                "He says: That is good.",
+                "He says: Let me heal thy wounds!",
+                "He says: That I cannot help thee with.",
+                Arrays.asList(
+                        "TRUT",
+                        "LOVE",
+                        "COUR",
+                        "HONE",
+                        "COMP",
+                        "VALO",
+                        "JUST",
+                        "SACR",
+                        "HONO",
+                        "SPIR",
+                        "HUMI",
+                        "PRID",
+                        "AVAT",
+                        "QUES",
+                        "BRIT",
+                        "ANKH",
+                        "ABYS",
+                        "MOND",
+                        "MINA",
+                        "EXOD",
+                        "VIRT"
                 )
+        );
+    }
+
+    public static CharacterConversation buildHawkwindConversation() {
+        return new CharacterConversation(
+                ConversationType.HAWKWIND,
+                0,
+                false,
+                0,
+                null,
+                "Welcome, {player}\nI am Hawkwind, Seer of Souls. I see that which is within thee and drives thee to deeds of good or evil...\n\nFor what path dost thou seek enlightenment?",
+                null,
+                null,
+                null,
+                null,
+                Arrays.asList(),
+                null,
+                null,
+                null,
+                "He says: That is not a subject for enlightenment.",
+                Arrays.asList("")
         );
     }
 }

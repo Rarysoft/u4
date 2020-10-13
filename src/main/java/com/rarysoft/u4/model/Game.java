@@ -24,10 +24,7 @@
 package com.rarysoft.u4.model;
 
 import com.rarysoft.u4.i18n.Messages;
-import com.rarysoft.u4.model.npc.Conversation;
-import com.rarysoft.u4.model.npc.ConversationType;
-import com.rarysoft.u4.model.npc.Conversations;
-import com.rarysoft.u4.model.npc.Person;
+import com.rarysoft.u4.model.npc.*;
 import com.rarysoft.u4.model.graphics.*;
 
 import javax.swing.Timer;
@@ -40,7 +37,7 @@ public class Game {
 
     private final Messages messages;
 
-    private final Conversations conversations;
+    private final CharacterConversations characterConversations;
 
     private final Set<DisplayListener> displayListeners;
 
@@ -50,9 +47,9 @@ public class Game {
 
     private int animationCycle;
 
-    public Game(Messages messages, Conversations conversations) {
+    public Game(Messages messages, CharacterConversations characterConversations) {
         this.messages = messages;
-        this.conversations = conversations;
+        this.characterConversations = characterConversations;
         this.displayListeners = new HashSet<>();
         this.random = new Random();
     }
@@ -144,68 +141,27 @@ public class Game {
                 if (playerInput.length() > 4) {
                     playerInput = playerInput.substring(0, 4);
                 }
-                Conversation conversation = gameState.conversation();
+                CharacterConversation characterConversation = gameState.conversation();
+                Conversation conversation;
                 if (gameState.inConversationRespondingYesOrNo()) {
-                    if (playerInput.startsWith("Y")) {
-                        sayAndPrompt(conversation.getYesResponse());
-                    }
-                    else {
-                        sayAndPrompt(conversation.getNoResponse());
-                    }
+                    conversation = new Conversation(characterConversation, 0, 0, 0, 0, 0, 0, 0, 0).forResponse(playerInput);
                     gameState.queryAnswered();
                 }
                 else {
-                    boolean playerQueried = false;
-                    switch (playerInput) {
-                        case "LOOK":
-                            sayAndPrompt(conversation.getLookResponse());
-                            break;
-
-                        case "NAME":
-                            sayAndPrompt(conversation.getNameResponse());
-                            break;
-
-                        case "JOB":
-                            playerQueried = sayAndPrompt(conversation.getJobResponse(), Conversation.QUESTION_FLAG_JOB, conversation);
-                            break;
-
-                        case "HEAL":
-                            playerQueried = sayAndPrompt(conversation.getHealthResponse(), Conversation.QUESTION_FLAG_HEALTH, conversation);
-                            break;
-
-                        case "JOIN":
-                            // TODO: deal with NPCs that can join the party
-                            sayAndPrompt(conversation.getNoJoinResponse());
-                            break;
-
-                        case "BYE":
-                            endConversation();
-                            break;
-
-                        default:
-                            if (conversation.getType() == ConversationType.CITIZEN) {
-                                if (playerInput.equals(conversation.getKeyword(0))) {
-                                    playerQueried = sayAndPrompt(conversation.getKeywordResponse(0), Conversation.QUESTION_FLAG_KEYWORD1, conversation);
-                                } else if (playerInput.equals(conversation.getKeyword(1))) {
-                                    playerQueried = sayAndPrompt(conversation.getKeywordResponse(1), Conversation.QUESTION_FLAG_KEYWORD2, conversation);
-                                } else {
-                                    sayAndPrompt(conversation.getUnknownResponse());
-                                }
-                            }
-                            else if (conversation.getType() == ConversationType.LORD_BRITISH) {
-                                Optional<String> response = conversation.getKeywordResponse(playerInput);
-                                if (response.isPresent()) {
-                                    sayAndPrompt(response.get());
-                                }
-                                else {
-                                    sayAndPrompt(conversation.getUnknownResponse());
-                                }
-                            }
-                            break;
-                    }
-                    if (playerQueried) {
-                        gameState.playerQueried();
-                    }
+                    conversation = new Conversation(characterConversation, 0, 0, 0, 0, 0, 0, 0, 0).forInput(playerInput);
+                }
+                conversation.response().ifPresent(response -> {
+                    String question = conversation.question().orElse(null);
+                    sayAndPrompt(response, question);
+                });
+                if (conversation.question().isPresent()) {
+                    gameState.playerQueried();
+                }
+                conversation.affectedVirtue().ifPresent(virtue -> {
+                    // TODO check conversation.virtueDelta() and apply accordingly
+                });
+                if (conversation.healPlayer()) {
+                    // TODO heal the party
                 }
                 gameState.resetInput();
                 afterPlayerMove();
@@ -281,24 +237,18 @@ public class Game {
     }
 
     private void attemptConversationWith(Person person) {
-        Optional<Conversation> possibleConversation = conversations.findConversationFor(gameState.location(), person);
+        Optional<CharacterConversation> possibleConversation = characterConversations.findCharacterConversationFor(gameState.location(), person);
         if (possibleConversation.isPresent()) {
-            Conversation conversation = possibleConversation.get();
-            if (random.nextInt(256) > 255 - conversation.getTurnAwayProbability()) {
-                conversationIgnored();
-                afterPlayerMove();
-                return;
-            }
-            gameState.startConversation(conversation, person);
-            List<String> speech = new ArrayList<>();
-            speech.add(conversation.getIntro());
-            speech.add("");
-            if (random.nextBoolean()) {
-                speech.add(conversation.getNameResponse());
+            CharacterConversation characterConversation = possibleConversation.get();
+            Conversation conversation = new Conversation(characterConversation, 0, 0, 0, 0, 0, 0, 0, 0);
+            conversation.response().ifPresent(response -> {
+                gameState.startConversation(characterConversation, person);
+                List<String> speech = new ArrayList<>();
+                speech.add(response);
                 speech.add("");
-            }
-            speech.add(messages.speechCitizenPrompt());
-            spokenTo(speech);
+                speech.add(messages.speechCitizenPrompt());
+                spokenTo(speech);
+            });
             afterPlayerMove();
             return;
         }
@@ -307,7 +257,7 @@ public class Game {
     }
 
     private void initializeDisplay() {
-        displayListeners.forEach(displayListener -> displayListener.initialize());
+        displayListeners.forEach(DisplayListener::initialize);
     }
 
     private void updateBackground() {
@@ -339,28 +289,17 @@ public class Game {
         displayListeners.forEach(displayListener -> displayListener.inputReceived(input));
     }
 
-    private void sayAndPrompt(String message) {
+    private void sayAndPrompt(String response, String question) {
         spokenTo(Arrays.asList(
                 "",
-                message,
+                response,
                 "",
-                messages.speechCitizenPrompt()
+                question == null ? messages.speechCitizenPrompt() : question
         ));
-    }
-
-    private boolean sayAndPrompt(String message, int questionFlag, Conversation conversation) {
-        boolean playerQueried = conversation.getQuestionFlag() == questionFlag;
-        spokenTo(Arrays.asList(
-                "",
-                message,
-                "",
-                playerQueried ? conversation.getYesNoQuestion() : messages.speechCitizenPrompt()
-        ));
-        return playerQueried;
     }
 
     private void endConversation() {
-        Conversation conversation = gameState.conversation();
+        CharacterConversation characterConversation = gameState.conversation();
         spokenTo(Arrays.asList(
                 messages.speechCitizenBye(),
                 ""

@@ -24,6 +24,7 @@
 package com.rarysoft.u4.model.npc;
 
 import com.rarysoft.u4.i18n.Messages;
+import com.rarysoft.u4.model.graphics.Tile;
 import com.rarysoft.u4.model.party.Location;
 
 import java.io.File;
@@ -32,58 +33,56 @@ import java.io.InputStream;
 import java.util.*;
 import java.util.Map;
 
-public class Conversations {
-    private final Map<Location, List<Conversation>> locationConversations;
+public class CharacterConversations {
+    private final Map<Location, List<CharacterConversation>> locationConversations;
 
-    public static Conversations fromFiles(String directory, Messages messages) throws IOException {
-        Map<Location, List<Conversation>> locationConversations = new HashMap<>();
-        locationConversations.put(Location.BRITAIN, loadConversations(path(directory, "britain.tlk"), messages));
-        locationConversations.put(Location.COVE, loadConversations(path(directory, "cove.tlk"), messages));
-        locationConversations.put(Location.BUCCANEERS_DEN, loadConversations(path(directory, "den.tlk"), messages));
-        locationConversations.put(Location.EMPATH_ABBEY, loadConversations(path(directory, "empath.tlk"), messages));
-        locationConversations.put(Location.JHELOM, loadConversations(path(directory, "jhelom.tlk"), messages));
-        locationConversations.put(Location.CASTLE_BRITANNIA, loadConversations(path(directory, "lcb.tlk"), messages, ConversationBuilder.buildLordBritishConversation()));
-        locationConversations.put(Location.THE_LYCAEUM, loadConversations(path(directory, "lycaeum.tlk"), messages));
-        locationConversations.put(Location.SERPENTS_HOLD, loadConversations(path(directory, "serpent.tlk"), messages));
-        locationConversations.put(Location.MAGINCIA, loadConversations(path(directory, "magincia.tlk"), messages));
-        locationConversations.put(Location.MINOC, loadConversations(path(directory, "minoc.tlk"), messages));
-        locationConversations.put(Location.MOONGLOW, loadConversations(path(directory, "moonglow.tlk"), messages));
-        locationConversations.put(Location.PAWS, loadConversations(path(directory, "paws.tlk"), messages));
-        locationConversations.put(Location.SKARA_BRAE, loadConversations(path(directory, "skara.tlk"), messages));
-        locationConversations.put(Location.TRINSIC, loadConversations(path(directory, "trinsic.tlk"), messages));
-        locationConversations.put(Location.VESPER, loadConversations(path(directory, "vesper.tlk"), messages));
-        locationConversations.put(Location.YEW, loadConversations(path(directory, "yew.tlk"), messages));
-        return new Conversations(locationConversations);
+    private final Map<NonPlayerCharacter, CharacterConversation> npcConversations;
+
+    public static CharacterConversations fromFiles(String directory, Messages messages) throws IOException {
+        Map<Location, List<CharacterConversation>> locationConversations = new HashMap<>();
+        locationConversations.put(Location.BRITAIN, loadCharacterConversations(path(directory, "britain.tlk"), messages));
+        locationConversations.put(Location.COVE, loadCharacterConversations(path(directory, "cove.tlk"), messages));
+        locationConversations.put(Location.BUCCANEERS_DEN, loadCharacterConversations(path(directory, "den.tlk"), messages));
+        locationConversations.put(Location.EMPATH_ABBEY, loadCharacterConversations(path(directory, "empath.tlk"), messages));
+        locationConversations.put(Location.JHELOM, loadCharacterConversations(path(directory, "jhelom.tlk"), messages));
+        locationConversations.put(Location.CASTLE_BRITANNIA, loadCharacterConversations(path(directory, "lcb.tlk"), messages));
+        locationConversations.put(Location.THE_LYCAEUM, loadCharacterConversations(path(directory, "lycaeum.tlk"), messages));
+        locationConversations.put(Location.SERPENTS_HOLD, loadCharacterConversations(path(directory, "serpent.tlk"), messages));
+        locationConversations.put(Location.MAGINCIA, loadCharacterConversations(path(directory, "magincia.tlk"), messages));
+        locationConversations.put(Location.MINOC, loadCharacterConversations(path(directory, "minoc.tlk"), messages));
+        locationConversations.put(Location.MOONGLOW, loadCharacterConversations(path(directory, "moonglow.tlk"), messages));
+        locationConversations.put(Location.PAWS, loadCharacterConversations(path(directory, "paws.tlk"), messages));
+        locationConversations.put(Location.SKARA_BRAE, loadCharacterConversations(path(directory, "skara.tlk"), messages));
+        locationConversations.put(Location.TRINSIC, loadCharacterConversations(path(directory, "trinsic.tlk"), messages));
+        locationConversations.put(Location.VESPER, loadCharacterConversations(path(directory, "vesper.tlk"), messages));
+        locationConversations.put(Location.YEW, loadCharacterConversations(path(directory, "yew.tlk"), messages));
+        Map<NonPlayerCharacter, CharacterConversation> npcConversations = new HashMap<>();
+        npcConversations.put(NonPlayerCharacter.LORD_BRITISH, CharacterConversationBuilder.buildLordBritishConversation());
+        npcConversations.put(NonPlayerCharacter.HAWKWIND, CharacterConversationBuilder.buildHawkwindConversation());
+        return new CharacterConversations(locationConversations, npcConversations);
     }
 
     private static String path(String directory, String filename) {
         return String.format("%s%s%s", directory, File.separator, filename);
     }
 
-    private static List<Conversation> loadConversations(String conversationsFilename, Messages messages) throws IOException {
-        return loadConversations(conversationsFilename, messages, null);
-    }
-
-    private static List<Conversation> loadConversations(String conversationsFilename, Messages messages, Conversation additionalConversation) throws IOException {
-        List<Conversation> conversations = new ArrayList<>();
-        if (additionalConversation != null) {
-            conversations.add(additionalConversation);
-        }
-        InputStream stream = Conversations.class.getResourceAsStream(conversationsFilename);
+    private static List<CharacterConversation> loadCharacterConversations(String characterConversationsFilename, Messages messages) throws IOException {
+        List<CharacterConversation> characterConversations = new ArrayList<>();
+        InputStream stream = CharacterConversations.class.getResourceAsStream(characterConversationsFilename);
         boolean done = false;
         while (! done) {
-            Conversation conversation = buildConversationFromStream(stream, messages);
-            if (conversation == null) {
+            CharacterConversation characterConversation = buildCharacterConversationFromStream(stream, messages);
+            if (characterConversation == null) {
                 done = true;
             }
             else {
-                conversations.add(conversation);
+                characterConversations.add(characterConversation);
             }
         }
-        return conversations;
+        return characterConversations;
     }
 
-    private static Conversation buildConversationFromStream(InputStream stream, Messages messages) throws IOException {
+    private static CharacterConversation buildCharacterConversationFromStream(InputStream stream, Messages messages) throws IOException {
         int byteCount = 0;
         int questionFlag = stream.read();
         if (questionFlag == -1) {
@@ -119,7 +118,7 @@ public class Conversations {
         String keyword2 = readNullTerminatedString(stream);
         byteCount += keyword2.length() + 1;
         stream.skip(288 - byteCount);
-        return new Conversation(
+        return new CharacterConversation(
                 questionFlag,
                 responseAffectsHumility,
                 turnAwayProbability,
@@ -171,15 +170,31 @@ public class Conversations {
         return message.substring(0, 1).toLowerCase() + message.substring(1);
     }
 
-    public Conversations(Map<Location, List<Conversation>> locationConversations) {
+    public CharacterConversations(Map<Location, List<CharacterConversation>> locationConversations, Map<NonPlayerCharacter, CharacterConversation> npcConversations) {
         this.locationConversations = locationConversations;
+        this.npcConversations = npcConversations;
     }
 
-    public Optional<Conversation> findConversationFor(Location location, Person person) {
+    public Optional<CharacterConversation> findCharacterConversationFor(Location location, Person person) {
+        if (person.conversationIndex() == 0 || person.tile() == Tile.LORD_BRITISH_1) {
+            return findExtendedCharacterConversationFor(location, person);
+        }
         if (! locationConversations.containsKey(location)) {
             return Optional.empty();
         }
-        List<Conversation> conversations = locationConversations.get(location);
-        return Optional.of(conversations.get(person.conversationIndex() - 1));
+        List<CharacterConversation> characterConversations = locationConversations.get(location);
+        return Optional.of(characterConversations.get(person.conversationIndex() - 1));
+    }
+
+    private Optional<CharacterConversation> findExtendedCharacterConversationFor(Location location, Person person) {
+        if (person.tile() == Tile.LORD_BRITISH_1) {
+            return Optional.ofNullable(npcConversations.get(NonPlayerCharacter.LORD_BRITISH));
+        }
+        if (location == Location.CASTLE_BRITANNIA) {
+            if (person.startRow() == 27 && person.startCol() == 9) {
+                return Optional.ofNullable(npcConversations.get(NonPlayerCharacter.HAWKWIND));
+            }
+        }
+        return Optional.empty();
     }
 }

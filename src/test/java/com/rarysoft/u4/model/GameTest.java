@@ -24,9 +24,9 @@
 package com.rarysoft.u4.model;
 
 import com.rarysoft.u4.i18n.Messages;
-import com.rarysoft.u4.model.npc.Conversation;
+import com.rarysoft.u4.model.npc.CharacterConversation;
 import com.rarysoft.u4.model.npc.ConversationType;
-import com.rarysoft.u4.model.npc.Conversations;
+import com.rarysoft.u4.model.npc.CharacterConversations;
 import com.rarysoft.u4.model.graphics.Tile;
 import org.junit.Before;
 import org.junit.Test;
@@ -48,7 +48,7 @@ public class GameTest {
     private Messages messages;
 
     @Mock
-    private Conversations conversations;
+    private CharacterConversations characterConversations;
 
     @Mock
     private DisplayListener displayListener;
@@ -57,7 +57,7 @@ public class GameTest {
     private GameState gameState;
 
     @Mock
-    private Conversation conversation;
+    private CharacterConversation characterConversation;
 
     @InjectMocks
     private Game game;
@@ -80,7 +80,7 @@ public class GameTest {
                 emptyRow, emptyRow, emptyRow, emptyRow, emptyRow, emptyRow, emptyRow, emptyRow, emptyRow, emptyRow
         };
         when(gameState.mapView(10)).thenReturn(emptyMap);
-        when(gameState.conversation()).thenReturn(conversation);
+        when(gameState.conversation()).thenReturn(characterConversation);
         when(messages.speechCitizenPrompt()).thenReturn("Prompt:");
         game.start(gameState);
     }
@@ -100,7 +100,7 @@ public class GameTest {
         when(gameState.inConversationRespondingYesOrNo()).thenReturn(false);
         when(gameState.input()).thenReturn("look");
 
-        when(conversation.getLookResponse()).thenReturn("You see a character.");
+        when(characterConversation.getLookResponse()).thenReturn("You see a character.");
 
         game.onUserInput('\n');
 
@@ -113,7 +113,7 @@ public class GameTest {
         when(gameState.inConversationRespondingYesOrNo()).thenReturn(false);
         when(gameState.input()).thenReturn("name");
 
-        when(conversation.getNameResponse()).thenReturn("Pronoun says: I am Character Name.");
+        when(characterConversation.getNameResponse()).thenReturn("Pronoun says: I am Character Name.");
 
         game.onUserInput('\n');
 
@@ -126,7 +126,7 @@ public class GameTest {
         when(gameState.inConversationRespondingYesOrNo()).thenReturn(false);
         when(gameState.input()).thenReturn("job");
 
-        when(conversation.getJobResponse()).thenReturn("Pronoun says: I have a job.");
+        when(characterConversation.getJobResponse()).thenReturn("Pronoun says: I have a job.");
 
         game.onUserInput('\n');
 
@@ -139,7 +139,7 @@ public class GameTest {
         when(gameState.inConversationRespondingYesOrNo()).thenReturn(false);
         when(gameState.input()).thenReturn("health");
 
-        when(conversation.getHealthResponse()).thenReturn("Pronoun says: I have health.");
+        when(characterConversation.getHealthResponse()).thenReturn("Pronoun says: I have health.");
 
         game.onUserInput('\n');
 
@@ -152,9 +152,9 @@ public class GameTest {
         when(gameState.inConversationRespondingYesOrNo()).thenReturn(false);
         when(gameState.input()).thenReturn("key1");
 
-        when(conversation.getType()).thenReturn(ConversationType.CITIZEN);
-        when(conversation.getKeyword(0)).thenReturn("KEY1");
-        when(conversation.getKeywordResponse(0)).thenReturn("Pronoun says: Blah 1.");
+        when(characterConversation.getType()).thenReturn(ConversationType.CITIZEN);
+        when(characterConversation.getKeyword(0)).thenReturn("KEY1");
+        when(characterConversation.getKeywordResponse(0)).thenReturn("Pronoun says: Blah 1.");
 
         game.onUserInput('\n');
 
@@ -167,9 +167,9 @@ public class GameTest {
         when(gameState.inConversationRespondingYesOrNo()).thenReturn(false);
         when(gameState.input()).thenReturn("key2");
 
-        when(conversation.getType()).thenReturn(ConversationType.CITIZEN);
-        when(conversation.getKeyword(1)).thenReturn("KEY2");
-        when(conversation.getKeywordResponse(1)).thenReturn("Pronoun says: Blah 2.");
+        when(characterConversation.getType()).thenReturn(ConversationType.CITIZEN);
+        when(characterConversation.getKeyword(1)).thenReturn("KEY2");
+        when(characterConversation.getKeywordResponse(1)).thenReturn("Pronoun says: Blah 2.");
 
         game.onUserInput('\n');
 
