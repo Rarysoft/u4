@@ -37,8 +37,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.util.List;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
@@ -63,7 +61,7 @@ public class GameTest {
     private Game game;
 
     @Captor
-    private ArgumentCaptor<List<String>> messagesCaptor;
+    private ArgumentCaptor<String> messageCaptor;
 
     @Before
     public void initializeGame() {
@@ -177,8 +175,8 @@ public class GameTest {
     }
 
     private void verifyResponse(String message) {
-        verify(displayListener).responseRequested(messagesCaptor.capture());
-        List<String> result = messagesCaptor.getValue();
-        assertThat(result).isNotNull().isNotEmpty().hasSize(4).containsExactly("", message, "", "Prompt:");
+        verify(displayListener).responseRequested(messageCaptor.capture());
+        String result = messageCaptor.getValue();
+        assertThat(result).isNotNull().isEqualTo(message + "\nPrompt:");
     }
 }

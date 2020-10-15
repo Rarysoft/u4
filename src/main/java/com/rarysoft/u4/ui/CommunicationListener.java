@@ -27,14 +27,11 @@ import com.rarysoft.u4.model.DisplayListener;
 import com.rarysoft.u4.model.RenderedTile;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class CommunicationListener implements DisplayListener {
     private static final int LINE_LENGTH = 28;
-    private static final int MAX_LINES = 19;
+    private static final int VISIBLE_LINES = 19;
 
     private final CommunicationProvider communicationProvider;
 
@@ -56,75 +53,62 @@ public class CommunicationListener implements DisplayListener {
 
     @Override
     public void actionCompleted(String message) {
-        textLines.addAll(wrapText(message).stream().map(this::pad).collect(Collectors.toList()));
-        scrollTextLinesIfNeeded();
+        textLines.addAll(wrapText(message));
         communicationProvider.showText(getDisplayedTextLines());
     }
 
     @Override
-    public void responseRequested(List<String> messages) {
-        textLines.addAll(messages.stream().map(this::wrapText).flatMap(Collection::stream).map(this::pad).collect(Collectors.toList()));
-        scrollTextLinesIfNeeded();
+    public void responseRequested(String message) {
+        textLines.addAll(wrapText(message));
         communicationProvider.showTextAndAwaitResponse(getDisplayedTextLines());
     }
 
     @Override
     public void inputReceived(String input) {
-        communicationProvider.showInput(pad(input, LINE_LENGTH - 1));
+        communicationProvider.showInput(input);
     }
 
     private List<String> wrapText(String text) {
-        if (text.length() <= LINE_LENGTH) {
-            return Collections.singletonList(text);
-        }
-        List<String> lines = new ArrayList<>();
-        String textToWrap = text;
-        while (textToWrap.length() > LINE_LENGTH) {
-            int lastSpaceIndex = -1;
-            for (int index = 0; index < LINE_LENGTH; index ++) {
-                char character = textToWrap.charAt(index);
-                if (character == ' ') {
-                    lastSpaceIndex = index;
-                }
-            }
-            if (lastSpaceIndex == -1) {
-                // This shouldn't happen; just truncate the whole thing if it does
-                lines.add(textToWrap.substring(0, LINE_LENGTH));
-                textToWrap = "";
+        List<String> wrappedLines = new ArrayList<>();
+        for (String line : text.split("\n")) {
+            String trimmedLine = line.trim();
+            if (trimmedLine.length() <= LINE_LENGTH) {
+                wrappedLines.add(trimmedLine);
                 continue;
             }
-            lines.add(textToWrap.substring(0, lastSpaceIndex));
-            textToWrap = textToWrap.substring(lastSpaceIndex + 1);
+            String textToWrap = trimmedLine;
+            while (textToWrap.length() > LINE_LENGTH) {
+                int lastSpaceIndex = -1;
+                for (int index = 0; index < LINE_LENGTH; index ++) {
+                    char character = textToWrap.charAt(index);
+                    if (character == ' ') {
+                        lastSpaceIndex = index;
+                    }
+                }
+                if (textToWrap.charAt(LINE_LENGTH) == ' ') {
+                    // The next character will be a space, so break at the full line length, not the previous space
+                    wrappedLines.add(textToWrap.substring(0, LINE_LENGTH));
+                    textToWrap = textToWrap.substring(LINE_LENGTH + 1);
+                }
+                else if (lastSpaceIndex == -1) {
+                    // This shouldn't happen; just break at the the full line length if it does
+                    wrappedLines.add(textToWrap.substring(0, LINE_LENGTH));
+                    textToWrap = textToWrap.substring(LINE_LENGTH + 1);
+                }
+                else {
+                    wrappedLines.add(textToWrap.substring(0, lastSpaceIndex));
+                    textToWrap = textToWrap.substring(lastSpaceIndex + 1);
+                }
+            }
+            wrappedLines.add(textToWrap);
         }
-        if (! textToWrap.isEmpty()) {
-            lines.add(textToWrap);
-        }
-        return lines;
-    }
-
-    private String pad(String text) {
-        return pad(text, LINE_LENGTH);
-    }
-
-    private String pad(String text, int lineLength) {
-        StringBuilder stringBuilder = new StringBuilder(text);
-        for (int index = text.length(); index < lineLength; index ++) {
-            stringBuilder.append(" ");
-        }
-        return stringBuilder.toString();
-    }
-
-    private void scrollTextLinesIfNeeded() {
-        while(textLines.size() > MAX_LINES) {
-            textLines.remove(0);
-        }
+        return wrappedLines;
     }
 
     private List<String> getDisplayedTextLines() {
-        List<String> displayedTextLines = new ArrayList<>(textLines);
-        while (displayedTextLines.size() < MAX_LINES) {
-            displayedTextLines.add(pad(""));
+        if (textLines.size() < VISIBLE_LINES) {
+            return textLines;
         }
-        return displayedTextLines;
+        return textLines.subList(textLines.size() - VISIBLE_LINES, textLines.size());
     }
 }

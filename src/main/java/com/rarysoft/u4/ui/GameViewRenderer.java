@@ -47,7 +47,7 @@ public class GameViewRenderer {
 
     private List<String> textLines = new ArrayList<>();
     private boolean allowInput = false;
-    private String inputLine = "                           ";
+    private String inputLine = "";
 
     public GameViewRenderer(Tiles tiles, Charset charset, ExtendedCharset extendedCharset) {
         this.tiles = tiles;
@@ -544,12 +544,8 @@ public class GameViewRenderer {
             drawCharacter(graphics, charset.data()[inputLine.charAt(index)], inputRow, index + 1, true);
         }
         if (allowInput) {
-            int index = inputLine.indexOf(" ");
-            if (index < 0) {
-                return;
-            }
-
-            drawCharacter(graphics, charset.data()[31 - animationCycle % 4], inputRow, index + 1, true);
+            int cursorCol = inputLine.length() + 1;
+            drawCharacter(graphics, charset.data()[31 - animationCycle % 4], inputRow, cursorCol, true);
         }
         int emptyRow = 20;
         for (int index = 0; index < 28; index ++) {

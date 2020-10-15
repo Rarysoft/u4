@@ -35,6 +35,7 @@ public class GamePanel extends JPanel implements BorderProvider, GameProvider, C
 
     public GamePanel(GameViewRenderer gameViewRenderer) {
         this.gameViewRenderer = gameViewRenderer;
+        this.setBackground(Color.BLACK);
         this.setPreferredSize(new Dimension(21 * Tiles.TILE_WIDTH * 3, 21 * Tiles.TILE_HEIGHT * 3));
     }
 

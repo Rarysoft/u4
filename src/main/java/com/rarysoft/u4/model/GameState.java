@@ -56,6 +56,10 @@ public class GameState {
         switchToMap(this.map);
     }
 
+    public String playerName() {
+        return party.getPlayer0().getName();
+    }
+
     public int row() {
         return party.getRow();
     }

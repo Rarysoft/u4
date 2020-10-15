@@ -36,6 +36,26 @@ public class Messages {
         return resourceBundle.getString("window.title");
     }
 
+    public String actionMove(String direction) {
+        return resourceBundle.getString("action.move").replace("{direction}", direction);
+    }
+
+    public String actionExit() {
+        return resourceBundle.getString("action.exit");
+    }
+
+    public String actionEnter(String name) {
+        return resourceBundle.getString("action.enter").replace("{name}", name);
+    }
+
+    public String actionTalk(String direction) {
+        return resourceBundle.getString("action.talk").replace("{direction}", direction);
+    }
+
+    public String actionOpen(String direction) {
+        return resourceBundle.getString("action.open").replace("{direction}", direction);
+    }
+
     public String actionResponseBlocked() {
         return resourceBundle.getString("action.response.blocked");
     }

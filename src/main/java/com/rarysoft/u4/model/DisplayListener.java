@@ -23,8 +23,6 @@
  */
 package com.rarysoft.u4.model;
 
-import java.util.List;
-
 public interface DisplayListener {
     void initialize();
 
@@ -32,7 +30,7 @@ public interface DisplayListener {
 
     void actionCompleted(String message);
 
-    void responseRequested(List<String> messages);
+    void responseRequested(String message);
 
     void inputReceived(String input);
 }

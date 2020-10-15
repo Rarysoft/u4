@@ -51,7 +51,7 @@ public class GameListener implements DisplayListener {
     }
 
     @Override
-    public void responseRequested(List<String> messages) {
+    public void responseRequested(String message) {
         // nothing to update here
     }
 

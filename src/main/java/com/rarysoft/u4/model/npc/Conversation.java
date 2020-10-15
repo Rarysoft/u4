@@ -33,6 +33,7 @@ public class Conversation {
 
     private final Dialog dialog;
 
+    private final String player;
     private final int honestyKarma;
     private final int compassionKarma;
     private final int valourKarma;
@@ -48,8 +49,9 @@ public class Conversation {
     private final int virtueDelta;
     private final boolean healPlayer;
 
-    public Conversation(Dialog dialog, int honestyKarma, int compassionKarma, int valourKarma, int justiceKarma, int sacrificeKarma, int honourKarma, int spiritualityKarma, int humilityKarma) {
+    public Conversation(Dialog dialog, String player, int honestyKarma, int compassionKarma, int valourKarma, int justiceKarma, int sacrificeKarma, int honourKarma, int spiritualityKarma, int humilityKarma) {
         this.dialog = dialog;
+        this.player = player;
         this.honestyKarma = honestyKarma;
         this.compassionKarma = compassionKarma;
         this.valourKarma = valourKarma;
@@ -65,8 +67,9 @@ public class Conversation {
         this.healPlayer = false;
     }
 
-    private Conversation(Dialog dialog, int honestyKarma, int compassionKarma, int valourKarma, int justiceKarma, int sacrificeKarma, int honourKarma, int spiritualityKarma, int humilityKarma, String response, String question, Virtue affectedVirtue, int virtueDelta, boolean healPlayer) {
+    private Conversation(Dialog dialog, String player, int honestyKarma, int compassionKarma, int valourKarma, int justiceKarma, int sacrificeKarma, int honourKarma, int spiritualityKarma, int humilityKarma, String response, String question, Virtue affectedVirtue, int virtueDelta, boolean healPlayer) {
         this.dialog = dialog;
+        this.player = player;
         this.honestyKarma = honestyKarma;
         this.compassionKarma = compassionKarma;
         this.valourKarma = valourKarma;
@@ -171,6 +174,7 @@ public class Conversation {
         }
         return new Conversation(
                 dialog,
+                player,
                 honestyKarma,
                 compassionKarma,
                 valourKarma,
@@ -179,7 +183,7 @@ public class Conversation {
                 honourKarma,
                 spiritualityKarma,
                 humilityKarma,
-                response,
+                personalizeResponse(response),
                 question,
                 null,
                 0,
@@ -191,6 +195,7 @@ public class Conversation {
         if (response.toUpperCase().startsWith("Y")) {
             return new Conversation(
                     dialog,
+                    player,
                     honestyKarma,
                     compassionKarma,
                     valourKarma,
@@ -208,6 +213,7 @@ public class Conversation {
         }
         return new Conversation(
                 dialog,
+                player,
                 honestyKarma,
                 compassionKarma,
                 valourKarma,
@@ -227,7 +233,7 @@ public class Conversation {
     private String getConversationStarter() {
         String response = null;
         if (characterWillRespond()) {
-            response = dialog.getIntro();
+            response = personalizeResponse(dialog.getIntro());
             if (characterWillIntroduceSelf()) {
                 response += "\n\n";
                 response += dialog.getNameResponse();
@@ -241,7 +247,7 @@ public class Conversation {
     }
 
     private boolean characterWillIntroduceSelf() {
-        return RANDOM.nextBoolean();
+        return dialog.getNpc() != NonPlayerCharacter.HAWKWIND || (dialog.getNpc() != NonPlayerCharacter.CITIZEN && RANDOM.nextBoolean());
     }
 
     private String modifyInputWithKarmaLevel(String input) {
@@ -294,5 +300,12 @@ public class Conversation {
             return 5;
         }
         return 6;
+    }
+
+    private String personalizeResponse(String response) {
+        if (response == null) {
+            return response;
+        }
+        return response.replace("{player}", player);
     }
 }

@@ -29,8 +29,8 @@ import com.rarysoft.u4.model.npc.Dialogs;
 import com.rarysoft.u4.model.graphics.Charset;
 import com.rarysoft.u4.model.DisplayListener;
 import com.rarysoft.u4.model.graphics.Tiles;
-import com.rarysoft.u4.model.party.Location;
-import com.rarysoft.u4.model.party.Party;
+import com.rarysoft.u4.model.party.*;
+import com.rarysoft.u4.model.party.Character;
 import com.rarysoft.u4.ui.*;
 import com.rarysoft.u4.ui.util.FrameHelper;
 
@@ -85,6 +85,7 @@ public class Launcher {
         FrameHelper.maximize(gameWindow);
         FrameHelper.show(gameWindow);
         Party party = new Party();
+        party.setPlayer0(new Character(20, 20, 0, 16, 14, 15, 13, 0, Weapon.HANDS, Armour.CLOTH, "Player Name", Sex.MALE, CharacterClass.BARD, Status.GOOD));
         party.setCurrentPartyLocation(Location.SURFACE);
         party.setDungeonLevel(1);
         party.setRow(maps.surface().startRow());

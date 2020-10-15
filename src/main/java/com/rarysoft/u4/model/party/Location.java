@@ -26,44 +26,47 @@ package com.rarysoft.u4.model.party;
 import java.util.stream.Stream;
 
 public enum Location {
-    SURFACE(0x00),
-    CASTLE_BRITANNIA(0x01),
-    THE_LYCAEUM(0x02),
-    EMPATH_ABBEY(0x03),
-    SERPENTS_HOLD(0x04),
-    MOONGLOW(0x05),
-    BRITAIN(0x06),
-    JHELOM(0x07),
-    YEW(0x08),
-    MINOC(0x09),
-    TRINSIC(0x0A),
-    SKARA_BRAE(0x0B),
-    MAGINCIA(0x0C),
-    PAWS(0x0D),
-    BUCCANEERS_DEN(0x0E),
-    VESPER(0x0F),
-    COVE(0x10),
-    DECEIT(0x11),
-    DESPISE(0x12),
-    DESTARD(0x13),
-    WRONG(0x14),
-    COVETOUS(0x15),
-    SHAME(0x16),
-    HYTHLOTH(0x17),
-    ABYSS(0x18),
-    SHRINE_OF_HONESTY(0x19),
-    SHRINE_OF_COMPASSION(0x1A),
-    SHRINE_OF_VALOUR(0x1B),
-    SHRINE_OF_JUSTICE(0x1C),
-    SHRINE_OF_SACRIFICE(0x1D),
-    SHRINE_OF_HONOUR(0x1E),
-    SHRINE_OF_SPIRITUALTIY(0x1F),
-    SHRINE_OF_HUMILITY(0x20);
+    SURFACE(0x00, "Britannia"),
+    CASTLE_BRITANNIA(0x01, "Castle Britannia"),
+    THE_LYCAEUM(0x02, "The Lycaeum"),
+    EMPATH_ABBEY(0x03, "Empath Abbey"),
+    SERPENTS_HOLD(0x04, "Serpent's Hold"),
+    MOONGLOW(0x05, "Moonglow"),
+    BRITAIN(0x06, "Britain"),
+    JHELOM(0x07, "Jhelom"),
+    YEW(0x08, "Yew"),
+    MINOC(0x09, "Minoc"),
+    TRINSIC(0x0A, "Trinsic"),
+    SKARA_BRAE(0x0B, "Skara Brae"),
+    MAGINCIA(0x0C, "Magincia"),
+    PAWS(0x0D, "Paws"),
+    BUCCANEERS_DEN(0x0E, "Buccaneer's Den"),
+    VESPER(0x0F, "Vesper"),
+    COVE(0x10, "Cove"),
+    DECEIT(0x11, "Deceit"),
+    DESPISE(0x12, "Despise"),
+    DESTARD(0x13, "Destard"),
+    WRONG(0x14, "Wrong"),
+    COVETOUS(0x15, "Covetous"),
+    SHAME(0x16, "Shame"),
+    HYTHLOTH(0x17, "Hythloth"),
+    ABYSS(0x18, "the Great Stygian Abyss"),
+    SHRINE_OF_HONESTY(0x19, "the Shrine of Honesty"),
+    SHRINE_OF_COMPASSION(0x1A, "the Shrine of Compassion"),
+    SHRINE_OF_VALOUR(0x1B, "the Shrine of Valour"),
+    SHRINE_OF_JUSTICE(0x1C, "the Shrine of Justice"),
+    SHRINE_OF_SACRIFICE(0x1D, "the Shrine of Sacrifice"),
+    SHRINE_OF_HONOUR(0x1E, "the Shrine of Honour"),
+    SHRINE_OF_SPIRITUALTIY(0x1F, "the Shrine of Spirituality"),
+    SHRINE_OF_HUMILITY(0x20, "the Shrine of Humility");
 
     private final int code;
 
-    Location(int code) {
+    private final String displayName;
+
+    Location(int code, String displayName) {
         this.code = code;
+        this.displayName = displayName;
     }
 
     public static Location forCode(int code) {
@@ -72,5 +75,9 @@ public enum Location {
 
     public int code() {
         return code;
+    }
+
+    public String displayName() {
+        return displayName;
     }
 }
