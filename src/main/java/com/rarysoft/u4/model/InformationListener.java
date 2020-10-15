@@ -23,10 +23,8 @@
  */
 package com.rarysoft.u4.model;
 
-public interface DisplayListener {
+public interface InformationListener {
     void initialize();
-
-    void backgroundUpdated(RenderedTile[][] background, int animationCycle);
 
     void actionCompleted(String message);
 

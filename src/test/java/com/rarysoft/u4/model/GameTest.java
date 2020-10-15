@@ -49,7 +49,7 @@ public class GameTest {
     private Dialogs dialogs;
 
     @Mock
-    private DisplayListener displayListener;
+    private InformationListener informationListener;
 
     @Mock
     private GameState gameState;
@@ -65,7 +65,7 @@ public class GameTest {
 
     @Before
     public void initializeGame() {
-        game.addDisplayListener(displayListener);
+        game.addInformationListener(informationListener);
         RenderedTile empty = new RenderedTile(Tile.BRICK_FLOOR, null);
         RenderedTile[] emptyRow = new RenderedTile[] {
                 empty, empty, empty, empty, empty, empty, empty, empty, empty, empty,
@@ -89,7 +89,7 @@ public class GameTest {
 
         game.onUserInput('\n');
 
-        verify(displayListener, never()).responseRequested(any());
+        verify(informationListener, never()).responseRequested(any());
     }
 
     @Test
@@ -175,7 +175,7 @@ public class GameTest {
     }
 
     private void verifyResponse(String message) {
-        verify(displayListener).responseRequested(messageCaptor.capture());
+        verify(informationListener).responseRequested(messageCaptor.capture());
         String result = messageCaptor.getValue();
         assertThat(result).isNotNull().isEqualTo(message + "\nPrompt:");
     }

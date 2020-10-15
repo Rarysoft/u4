@@ -39,7 +39,9 @@ public class Game {
 
     private final Dialogs dialogs;
 
-    private final Set<DisplayListener> displayListeners;
+    private final Set<InformationListener> informationListeners;
+
+    private final Set<ViewListener> viewListeners;
 
     private final Random random;
 
@@ -50,12 +52,17 @@ public class Game {
     public Game(Messages messages, Dialogs dialogs) {
         this.messages = messages;
         this.dialogs = dialogs;
-        this.displayListeners = new HashSet<>();
+        this.informationListeners = new HashSet<>();
+        this.viewListeners = new HashSet<>();
         this.random = new Random();
     }
 
-    public void addDisplayListener(DisplayListener displayListener) {
-        displayListeners.add(displayListener);
+    public void addInformationListener(InformationListener informationListener) {
+        informationListeners.add(informationListener);
+    }
+
+    public void addViewListener(ViewListener viewListener) {
+        viewListeners.add(viewListener);
     }
 
     @Override
@@ -264,36 +271,36 @@ public class Game {
     }
 
     private void initializeDisplay() {
-        displayListeners.forEach(DisplayListener::initialize);
+        informationListeners.forEach(InformationListener::initialize);
     }
 
     private void updateBackground() {
         RenderedTile[][] playerView = determinePlayerView(gameState.mapView(VIEW_RADIUS));
-        displayListeners.forEach(displayListener -> displayListener.backgroundUpdated(playerView, animationCycle));
+        viewListeners.forEach(viewListener -> viewListener.backgroundUpdated(playerView, animationCycle));
     }
 
     private void actionCompleted(String message) {
-        displayListeners.forEach(displayListener -> displayListener.actionCompleted(message));
+        informationListeners.forEach(displayListener -> displayListener.actionCompleted(message));
     }
 
     private void moveBlocked() {
-        displayListeners.forEach(displayListener -> displayListener.actionCompleted(messages.actionResponseBlocked()));
+        informationListeners.forEach(displayListener -> displayListener.actionCompleted(messages.actionResponseBlocked()));
     }
 
     private void moveSlowed() {
-        displayListeners.forEach(displayListener -> displayListener.actionCompleted(messages.actionResponseSlowProgress()));
+        informationListeners.forEach(displayListener -> displayListener.actionCompleted(messages.actionResponseSlowProgress()));
     }
 
     private void conversationIgnored() {
-        displayListeners.forEach(displayListener -> displayListener.actionCompleted(messages.actionResponseIgnored()));
+        informationListeners.forEach(displayListener -> displayListener.actionCompleted(messages.actionResponseIgnored()));
     }
 
     private void spokenTo(String text) {
-        displayListeners.forEach(displayListener -> displayListener.responseRequested(text));
+        informationListeners.forEach(displayListener -> displayListener.responseRequested(text));
     }
 
     private void type(String input) {
-        displayListeners.forEach(displayListener -> displayListener.inputReceived(input));
+        informationListeners.forEach(displayListener -> displayListener.inputReceived(input));
     }
 
     private void sayAndPrompt(String input, String response, String question) {

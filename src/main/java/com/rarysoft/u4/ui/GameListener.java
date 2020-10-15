@@ -23,12 +23,10 @@
  */
 package com.rarysoft.u4.ui;
 
-import com.rarysoft.u4.model.DisplayListener;
 import com.rarysoft.u4.model.RenderedTile;
+import com.rarysoft.u4.model.ViewListener;
 
-import java.util.List;
-
-public class GameListener implements DisplayListener {
+public class GameListener implements ViewListener {
     private final GameProvider gameProvider;
 
     public GameListener(GameProvider gameProvider) {
@@ -36,27 +34,7 @@ public class GameListener implements DisplayListener {
     }
 
     @Override
-    public void initialize() {
-        // nothing to update here
-    }
-
-    @Override
     public void backgroundUpdated(RenderedTile[][] background, int animationCycle) {
         gameProvider.showGameView(background, animationCycle);
-    }
-
-    @Override
-    public void actionCompleted(String message) {
-        // nothing to update here
-    }
-
-    @Override
-    public void responseRequested(String message) {
-        // nothing to update here
-    }
-
-    @Override
-    public void inputReceived(String input) {
-        // nothing to update here
     }
 }

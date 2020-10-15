@@ -21,42 +21,8 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.rarysoft.u4.ui;
+package com.rarysoft.u4.model;
 
-import com.rarysoft.u4.model.DisplayListener;
-import com.rarysoft.u4.model.RenderedTile;
-
-import java.util.List;
-
-public class BorderListener implements DisplayListener {
-    private final BorderProvider borderProvider;
-
-    public BorderListener(BorderProvider borderProvider) {
-        this.borderProvider = borderProvider;
-    }
-
-    @Override
-    public void initialize() {
-        borderProvider.drawBorder();
-    }
-
-    @Override
-    public void backgroundUpdated(RenderedTile[][] background, int animationCycle) {
-        // nothing to update here
-    }
-
-    @Override
-    public void actionCompleted(String message) {
-        // nothing to update here
-    }
-
-    @Override
-    public void responseRequested(String message) {
-        // nothing to update here
-    }
-
-    @Override
-    public void inputReceived(String input) {
-        // nothing to update here
-    }
+public interface ViewListener {
+    void backgroundUpdated(RenderedTile[][] background, int animationCycle);
 }

@@ -27,7 +27,6 @@ import com.rarysoft.u4.i18n.Messages;
 import com.rarysoft.u4.model.*;
 import com.rarysoft.u4.model.npc.Dialogs;
 import com.rarysoft.u4.model.graphics.Charset;
-import com.rarysoft.u4.model.DisplayListener;
 import com.rarysoft.u4.model.graphics.Tiles;
 import com.rarysoft.u4.model.party.*;
 import com.rarysoft.u4.model.party.Character;
@@ -42,7 +41,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -77,8 +75,8 @@ public class Launcher {
         Dialogs dialogs = initializeConversations("/data", messages);
         UiBuilder uiBuilder = new UiBuilder();
         JFrame gameWindow = uiBuilder.buildGameWindow(messages.windowTitle());
-        List<DisplayListener> displayListeners = uiBuilder.buildGamePanel(gameWindow, tiles, charset);
-        Game game = initializeGame(messages, gameWindow, displayListeners, dialogs);
+        Game game = initializeGame(messages, gameWindow, dialogs);
+        uiBuilder.buildGamePanel(gameWindow, game, tiles, charset);
         gameWindow.setIconImage(icon);
         FrameHelper.enableExitOnClose(gameWindow);
         FrameHelper.center(gameWindow);
@@ -138,9 +136,8 @@ public class Launcher {
         }
     }
 
-    private Game initializeGame(Messages messages, JFrame gameWindow, List<DisplayListener> displayListeners, Dialogs dialogs) {
+    private Game initializeGame(Messages messages, JFrame gameWindow, Dialogs dialogs) {
         Game game = new Game(messages, dialogs);
-        displayListeners.forEach(game::addDisplayListener);
         gameWindow.addKeyListener(new KeyboardListener(game));
         return game;
     }

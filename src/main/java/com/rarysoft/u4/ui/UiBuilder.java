@@ -23,8 +23,9 @@
  */
 package com.rarysoft.u4.ui;
 
+import com.rarysoft.u4.model.Game;
 import com.rarysoft.u4.model.graphics.Charset;
-import com.rarysoft.u4.model.DisplayListener;
+import com.rarysoft.u4.model.InformationListener;
 import com.rarysoft.u4.model.graphics.ExtendedCharset;
 import com.rarysoft.u4.model.graphics.Tiles;
 
@@ -34,15 +35,12 @@ import java.util.Arrays;
 import java.util.List;
 
 public class UiBuilder {
-    public List<DisplayListener> buildGamePanel(JFrame gameWindow, Tiles tiles, Charset charset) {
+    public void buildGamePanel(JFrame gameWindow, Game game, Tiles tiles, Charset charset) {
         GameViewRenderer gameViewRenderer = new GameViewRenderer(tiles, charset, new ExtendedCharset());
         GamePanel gamePanel = new GamePanel(gameViewRenderer);
         gameWindow.add(gamePanel, BorderLayout.CENTER);
-        return Arrays.asList(
-                new BorderListener(gamePanel),
-                new GameListener(gamePanel),
-                new CommunicationListener(gamePanel)
-        );
+        game.addInformationListener(new CommunicationListener(gamePanel, gamePanel));
+        game.addViewListener(new GameListener(gamePanel));
     }
 
     public JFrame buildGameWindow(String title) {

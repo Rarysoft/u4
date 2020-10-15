@@ -23,32 +23,29 @@
  */
 package com.rarysoft.u4.ui;
 
-import com.rarysoft.u4.model.DisplayListener;
+import com.rarysoft.u4.model.InformationListener;
 import com.rarysoft.u4.model.RenderedTile;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class CommunicationListener implements DisplayListener {
+public class CommunicationListener implements InformationListener {
     private static final int LINE_LENGTH = 28;
     private static final int VISIBLE_LINES = 19;
 
+    private final BorderProvider borderProvider;
     private final CommunicationProvider communicationProvider;
 
     private final List<String> textLines = new ArrayList<>();
 
-    public CommunicationListener(CommunicationProvider communicationProvider) {
+    public CommunicationListener(BorderProvider borderProvider, CommunicationProvider communicationProvider) {
+        this.borderProvider = borderProvider;
         this.communicationProvider = communicationProvider;
     }
 
     @Override
     public void initialize() {
-        communicationProvider.showText(getDisplayedTextLines());
-    }
-
-    @Override
-    public void backgroundUpdated(RenderedTile[][] background, int animationCycle) {
-        // nothing to update here
+        borderProvider.drawBorder();
     }
 
     @Override
