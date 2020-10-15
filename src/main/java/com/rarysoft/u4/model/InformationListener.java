@@ -31,4 +31,6 @@ public interface InformationListener {
     void responseRequested(String message);
 
     void inputReceived(String input);
+
+    void environmentUpdated(int phaseOfTrammel, int phaseOfFelucca, int windDirection);
 }

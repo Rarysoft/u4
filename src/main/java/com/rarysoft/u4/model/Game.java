@@ -277,6 +277,7 @@ public class Game {
     private void updateBackground() {
         RenderedTile[][] playerView = determinePlayerView(gameState.mapView(VIEW_RADIUS));
         viewListeners.forEach(viewListener -> viewListener.backgroundUpdated(playerView, animationCycle));
+        informationListeners.forEach(informationListener -> informationListener.environmentUpdated(gameState.phaseOfTrammel(), gameState.phaseOfFelucca(), gameState.windDirection()));
     }
 
     private void actionCompleted(String message) {

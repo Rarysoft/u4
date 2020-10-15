@@ -74,7 +74,10 @@ public class GamePanel extends JPanel implements BorderProvider, GameProvider, C
     }
 
     @Override
-    public void drawBorder() {
+    public void drawBorder(int phaseOfTrammel, int phaseOfFelucca, int windDirection) {
+        gameViewRenderer.setPhaseOfTrammel(phaseOfTrammel);
+        gameViewRenderer.setPhaseOfFelucca(phaseOfFelucca);
+        gameViewRenderer.setWindDirection(windDirection);
         this.getParent().repaint();
     }
 }

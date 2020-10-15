@@ -45,7 +45,7 @@ public class CommunicationListener implements InformationListener {
 
     @Override
     public void initialize() {
-        borderProvider.drawBorder();
+        borderProvider.drawBorder(0, 0, 0);
     }
 
     @Override
@@ -63,6 +63,11 @@ public class CommunicationListener implements InformationListener {
     @Override
     public void inputReceived(String input) {
         communicationProvider.showInput(input);
+    }
+
+    @Override
+    public void environmentUpdated(int phaseOfTrammel, int phaseOfFelucca, int windDirection) {
+        borderProvider.drawBorder(phaseOfTrammel, phaseOfFelucca, windDirection);
     }
 
     private List<String> wrapText(String text) {

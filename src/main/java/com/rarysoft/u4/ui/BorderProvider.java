@@ -24,5 +24,5 @@
 package com.rarysoft.u4.ui;
 
 public interface BorderProvider {
-    void drawBorder();
+    void drawBorder(int phaseOfTrammel, int phaseOfFelucca, int windDirection);
 }

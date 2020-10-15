@@ -42,6 +42,10 @@ public class GameViewRenderer {
     private final Charset charset;
     private final ExtendedCharset extendedCharset;
 
+    private int phaseOfTrammel;
+    private int phaseOfFelucca;
+    private int windDirection;
+
     private RenderedTile[][] background;
     private int animationCycle;
 
@@ -53,6 +57,18 @@ public class GameViewRenderer {
         this.tiles = tiles;
         this.charset = charset;
         this.extendedCharset = extendedCharset;
+    }
+
+    public void setPhaseOfTrammel(int phaseOfTrammel) {
+        this.phaseOfTrammel = phaseOfTrammel;
+    }
+
+    public void setPhaseOfFelucca(int phaseOfFelucca) {
+        this.phaseOfFelucca = phaseOfFelucca;
+    }
+
+    public void setWindDirection(int windDirection) {
+        this.windDirection = windDirection;
     }
 
     public void setBackground(RenderedTile[][] background) {
@@ -102,8 +118,53 @@ public class GameViewRenderer {
         drawCharacter(graphics, extendedCharset.borderCornerNorthwest(), 0, 0, false);
         drawCharacter(graphics, extendedCharset.borderCornerSouthwest(), 39, 0, false);
         for (int index = 1; index < 39; index ++) {
-            drawCharacter(graphics, extendedCharset.borderHorizontal(), 0, index, false);
-            drawCharacter(graphics, extendedCharset.borderHorizontal(), 39, index, false);
+            if (index < 18 || index > 21) {
+                drawCharacter(graphics, extendedCharset.borderHorizontal(), 0, index, false);
+            }
+            else {
+                switch (index) {
+                    case 18:
+                        drawCharacter(graphics, charset.data()[16], 0, index, false);
+                        break;
+                    case 19:
+                        drawCharacter(graphics, charset.data()[20 + phaseOfTrammel], 0, index, false);
+                        break;
+                    case 20:
+                        drawCharacter(graphics, charset.data()[20 + phaseOfFelucca], 0, index, false);
+                        break;
+                    case 21:
+                        drawCharacter(graphics, charset.data()[17], 0, index, false);
+                        break;
+                }
+            }
+            if (index < 12 || index > 27) {
+                drawCharacter(graphics, extendedCharset.borderHorizontal(), 39, index, false);
+            }
+            else {
+                switch (index) {
+                    case 12:
+                        drawCharacter(graphics, charset.data()[16], 39, index, false);
+                        break;
+                    case 13:
+                        drawCharacter(graphics, charset.data()[87], 39, index, false);
+                        break;
+                    case 14:
+                        drawCharacter(graphics, charset.data()[105], 39, index, false);
+                        break;
+                    case 15:
+                        drawCharacter(graphics, charset.data()[110], 39, index, false);
+                        break;
+                    case 16:
+                        drawCharacter(graphics, charset.data()[100], 39, index, false);
+                        break;
+                    case 17:
+                        drawCharacter(graphics, charset.data()[58], 39, index, false);
+                        break;
+                    case 27:
+                        drawCharacter(graphics, charset.data()[17], 39, index, false);
+                        break;
+                }
+            }
             drawCharacter(graphics, extendedCharset.getBorderVertical(), index, 0, false);
             drawCharacter(graphics, extendedCharset.getBorderVertical(), index, 39, false);
         }
@@ -539,12 +600,11 @@ public class GameViewRenderer {
             }
         }
         int inputRow = 19;
-        drawCharacter(graphics, charset.data()[16], inputRow, 0, true);
         for (int index = 0; index < inputLine.length(); index ++) {
-            drawCharacter(graphics, charset.data()[inputLine.charAt(index)], inputRow, index + 1, true);
+            drawCharacter(graphics, charset.data()[inputLine.charAt(index)], inputRow, index, true);
         }
         if (allowInput) {
-            int cursorCol = inputLine.length() + 1;
+            int cursorCol = inputLine.length();
             drawCharacter(graphics, charset.data()[31 - animationCycle % 4], inputRow, cursorCol, true);
         }
         int emptyRow = 20;

@@ -100,6 +100,18 @@ public class GameState {
         return party.getCurrentPartyLocation();
     }
 
+    public int phaseOfTrammel() {
+        return party.getPhaseOfTrammel();
+    }
+
+    public int phaseOfFelucca() {
+        return party.getPhaseOfFelucca();
+    }
+
+    public int windDirection() {
+        return party.getWinds();
+    }
+
     public RenderedTile[][] mapView(int radius) {
         int row = party.getRow();
         int col = party.getCol();
@@ -149,6 +161,9 @@ public class GameState {
     }
 
     public void postTurnUpdates(Random random) {
+        party.setCounter(party.getCounter() + 1);
+        party.setMoves(party.getMoves() + 1);
+        updateMoonPhases();
         map.movePeople(new NpcMover(random), party.getRow(), party.getCol(), conversingPerson);
         doors.forEach(Door::turnCompleted);
     }
@@ -229,5 +244,14 @@ public class GameState {
 
     private boolean isDoorOpen(int row, int col) {
         return doors.stream().filter(door -> door.getRow() == row && door.getCol() == col).map(Door::isClosed).anyMatch(doorIsClosed -> ! doorIsClosed);
+    }
+
+    private void updateMoonPhases() {
+        if (party.getMoves() % 24 == 0) {
+            party.setPhaseOfTrammel((party.getPhaseOfTrammel() + 1) % 8);
+        }
+        if (party.getMoves() % 8 == 0) {
+            party.setPhaseOfFelucca((party.getPhaseOfFelucca() + 1) % 8);
+        }
     }
 }
