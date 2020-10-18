@@ -95,7 +95,7 @@ public class Surface implements Map {
     }
 
     @Override
-    public Tile[][] view(int centerRow, int centerCol, int radius) {
+    public Tile[][] view(ViewFinder viewFinder, int centerRow, int centerCol, int radius) {
         int size = radius * 2 + 1;
         Tile[][] view = new Tile[size][size];
         for (int row = 0; row < size; row ++) {

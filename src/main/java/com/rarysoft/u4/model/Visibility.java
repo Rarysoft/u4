@@ -24,17 +24,12 @@
 package com.rarysoft.u4.model;
 
 import com.rarysoft.u4.model.graphics.Coordinate;
+import com.rarysoft.u4.model.graphics.Tile;
 
 import java.math.BigDecimal;
 
 public class Visibility {
-    private final RenderedTile[][] area;
-
-    public Visibility(RenderedTile[][] area) {
-        this.area = area;
-    }
-
-    public boolean isVisibleToPlayer(Coordinate coordinate) {
+    public boolean isVisibleFromCenter(Tile[][] area, Coordinate coordinate) {
         if (area[coordinate.row()][coordinate.col()] == null) {
             return true;
         }
@@ -48,7 +43,7 @@ public class Visibility {
             case NORTH:
                 // Check for opaque tiles southward toward the player
                 for (int checkRow = coordinate.row() + 1; checkRow < playerCoordinate.row(); checkRow ++) {
-                    if (area[checkRow][coordinate.col()].tile().isOpaque()) {
+                    if (area[checkRow][coordinate.col()].isOpaque()) {
                         return false;
                     }
                 }
@@ -56,7 +51,7 @@ public class Visibility {
             case EAST:
                 // Check for opaque tiles westward toward the player
                 for (int checkCol = coordinate.col() - 1; checkCol > playerCoordinate.col(); checkCol --) {
-                    if (area[coordinate.row()][checkCol].tile().isOpaque()) {
+                    if (area[coordinate.row()][checkCol].isOpaque()) {
                         return false;
                     }
                 }
@@ -64,7 +59,7 @@ public class Visibility {
             case SOUTH:
                 // Check for opaque tiles northward toward the player
                 for (int checkRow = coordinate.row() - 1; checkRow > playerCoordinate.row(); checkRow --) {
-                    if (area[checkRow][coordinate.col()].tile().isOpaque()) {
+                    if (area[checkRow][coordinate.col()].isOpaque()) {
                         return false;
                     }
                 }
@@ -72,14 +67,14 @@ public class Visibility {
             case WEST:
                 // Check for opaque tiles eastward toward the player
                 for (int checkCol = coordinate.col() + 1; checkCol < playerCoordinate.col(); checkCol ++) {
-                    if (area[coordinate.row()][checkCol].tile().isOpaque()) {
+                    if (area[coordinate.row()][checkCol].isOpaque()) {
                         return false;
                     }
                 }
                 return true;
         }
         // Complicated case
-        Coordinate[] targetCoordinates = findTargetCoordinates(coordinate);
+        Coordinate[] targetCoordinates = findTargetCoordinates(area, coordinate);
         if (targetCoordinates.length == 0) {
             return false;
         }
@@ -105,7 +100,7 @@ public class Visibility {
                 }
                 for (int y = southernCoordinate.y(); y < northernCoordinate.y(); y ++) {
                     int x = xForY(y, slope);
-                    if (isBlocked(targetCoordinate, x, y)) {
+                    if (isBlocked(area, targetCoordinate, x, y)) {
                         isBlocked = true;
                         break;
                     }
@@ -114,7 +109,7 @@ public class Visibility {
             else {
                 for (int x = westernCoordinate.x(); x < easternCoordinate.x(); x ++) {
                     int y = yForX(x, slope);
-                    if (isBlocked(targetCoordinate, x, y)) {
+                    if (isBlocked(area, targetCoordinate, x, y)) {
                         isBlocked = true;
                         break;
                     }
@@ -127,33 +122,33 @@ public class Visibility {
         return false;
     }
 
-    private Coordinate[] findTargetCoordinates(Coordinate coordinate) {
+    private Coordinate[] findTargetCoordinates(Tile[][] area, Coordinate coordinate) {
         Coordinate[] alternativeTargetCoordinates;
         // We'll look for a sight-line to three different points in the tile
         switch (coordinate.region()) {
             case NORTHEAST:
-                alternativeTargetCoordinates = findAlternativeTargetCoordinates(coordinate.toTheWest(), coordinate.toTheSouth(), coordinate.toTheSouthwest());
+                alternativeTargetCoordinates = findAlternativeTargetCoordinates(area, coordinate.toTheWest(), coordinate.toTheSouth(), coordinate.toTheSouthwest());
                 if (alternativeTargetCoordinates.length > 0) {
                     return alternativeTargetCoordinates;
                 }
                 return new Coordinate[] { coordinate.atSouthwestCorner(), coordinate.atSouthSide(), coordinate.atWestSide() };
 
             case SOUTHEAST:
-                alternativeTargetCoordinates = findAlternativeTargetCoordinates(coordinate.toTheWest(), coordinate.toTheNorth(), coordinate.toTheNorthwest());
+                alternativeTargetCoordinates = findAlternativeTargetCoordinates(area, coordinate.toTheWest(), coordinate.toTheNorth(), coordinate.toTheNorthwest());
                 if (alternativeTargetCoordinates.length > 0) {
                     return alternativeTargetCoordinates;
                 }
                 return new Coordinate[] { coordinate.atNorthwestCorner(), coordinate.atNorthSide(), coordinate.atWestSide() };
 
             case SOUTHWEST:
-                alternativeTargetCoordinates = findAlternativeTargetCoordinates(coordinate.toTheEast(), coordinate.toTheNorth(), coordinate.toTheNortheast());
+                alternativeTargetCoordinates = findAlternativeTargetCoordinates(area, coordinate.toTheEast(), coordinate.toTheNorth(), coordinate.toTheNortheast());
                 if (alternativeTargetCoordinates.length > 0) {
                     return alternativeTargetCoordinates;
                 }
                 return new Coordinate[] { coordinate.atNortheastCorner(), coordinate.atNorthSide(), coordinate.atEastSide() };
 
             case NORTHWEST:
-                alternativeTargetCoordinates = findAlternativeTargetCoordinates(coordinate.toTheEast(), coordinate.toTheSouth(), coordinate.toTheSoutheast());
+                alternativeTargetCoordinates = findAlternativeTargetCoordinates(area, coordinate.toTheEast(), coordinate.toTheSouth(), coordinate.toTheSoutheast());
                 if (alternativeTargetCoordinates.length > 0) {
                     return alternativeTargetCoordinates;
                 }
@@ -165,12 +160,12 @@ public class Visibility {
         }
     }
 
-    private Coordinate[] findAlternativeTargetCoordinates(Coordinate colAdjacentCoordinate, Coordinate rowAdjacentCoordinate, Coordinate cornerAdjacentCoordinate) {
+    private Coordinate[] findAlternativeTargetCoordinates(Tile[][] area, Coordinate colAdjacentCoordinate, Coordinate rowAdjacentCoordinate, Coordinate cornerAdjacentCoordinate) {
         // Special case: if the two adjacent on the visible side are opaque but the corner one is not, this will be
         // visible if one of the adjacent tiles is visible, determined by whichever is not center-aligned
-        if (area[colAdjacentCoordinate.row()][colAdjacentCoordinate.col()].tile().isOpaque() &&
-                area[rowAdjacentCoordinate.row()][rowAdjacentCoordinate.col()].tile().isOpaque() &&
-                ! area[cornerAdjacentCoordinate.row()][cornerAdjacentCoordinate.col()].tile().isOpaque()) {
+        if (area[colAdjacentCoordinate.row()][colAdjacentCoordinate.col()].isOpaque() &&
+                area[rowAdjacentCoordinate.row()][rowAdjacentCoordinate.col()].isOpaque() &&
+                ! area[cornerAdjacentCoordinate.row()][cornerAdjacentCoordinate.col()].isOpaque()) {
             return new Coordinate[] { rowAdjacentCoordinate.isCenterRow() ? colAdjacentCoordinate.atSideFacingCenterRow() : rowAdjacentCoordinate.atSideFacingCenterCol() };
         }
         return new Coordinate[] {};
@@ -184,15 +179,12 @@ public class Visibility {
         return slope.multiply(BigDecimal.valueOf(x)).setScale(0, BigDecimal.ROUND_HALF_UP).intValue();
     }
 
-    private boolean isBlocked(Coordinate targetCoordinate, int passingThroughX, int passingThroughY) {
+    private boolean isBlocked(Tile[][] area, Coordinate targetCoordinate, int passingThroughX, int passingThroughY) {
         Coordinate passingThroughCoordinate = Coordinate.forXY(passingThroughX, passingThroughY);
         if (passingThroughCoordinate.isCenter() || passingThroughCoordinate.isSameRowCol(targetCoordinate)) {
             // The tile can't be blocked by the player or by itself
             return false;
         }
-        if (area[passingThroughCoordinate.row()][passingThroughCoordinate.col()].tile().isOpaque()) {
-            return true;
-        }
-        return false;
+        return area[passingThroughCoordinate.row()][passingThroughCoordinate.col()].isOpaque();
     }
 }

@@ -28,6 +28,7 @@ import com.rarysoft.u4.model.*;
 import com.rarysoft.u4.model.npc.Dialogs;
 import com.rarysoft.u4.model.graphics.Charset;
 import com.rarysoft.u4.model.graphics.Tiles;
+import com.rarysoft.u4.model.npc.WayFinder;
 import com.rarysoft.u4.model.party.*;
 import com.rarysoft.u4.model.party.Character;
 import com.rarysoft.u4.ui.*;
@@ -41,6 +42,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Random;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -137,7 +139,7 @@ public class Launcher {
     }
 
     private Game initializeGame(Messages messages, JFrame gameWindow, Dialogs dialogs) {
-        Game game = new Game(messages, dialogs);
+        Game game = new Game(messages, dialogs, new Random(), new ViewFinder(), new WayFinder());
         gameWindow.addKeyListener(new KeyboardListener(game));
         return game;
     }

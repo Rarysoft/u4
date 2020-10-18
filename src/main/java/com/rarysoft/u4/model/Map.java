@@ -30,7 +30,7 @@ public interface Map {
 
     Tile[][] full();
 
-    Tile[][] view(int centerRow, int centerCol, int radius);
+    Tile[][] view(ViewFinder viewFinder, int centerRow, int centerCol, int radius);
 
     Tile at(int row, int col);
 }

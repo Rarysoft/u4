@@ -285,6 +285,88 @@ public class NpcMoverTest {
     }
 
     @Test
+    public void movePeopleWhenPersonIsFollowAndPlayerIsNorthOfPersonAndPersonIsBlockedThenPersonStaysStill() {
+        Tile[][] area = new Tile[][] {
+                { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR },
+                { Tile.BRICK_WALL, Tile.BRICK_WALL, Tile.BRICK_WALL },
+                { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR }
+        };
+        Person person = new Person(Tile.CITIZEN_1, 2, 1, MovementBehaviour.FOLLOW, 0);
+        List<Person> people = Collections.singletonList(person);
+
+        npcMover.movePeople(area, people, 0, 1, null);
+
+        assertThat(person.row()).isEqualTo(2);
+        assertThat(person.col()).isEqualTo(1);
+    }
+
+    @Test
+    public void movePeopleWhenPersonIsFollowAndPlayerIsNorthOfPersonAndPersonIsPartiallyBlockedWithNortheastAccessThenPersonMovesNortheast() {
+        Tile[][] area = new Tile[][] {
+                { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR },
+                { Tile.BRICK_WALL, Tile.BRICK_WALL, Tile.BRICK_FLOOR },
+                { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR }
+        };
+        Person person = new Person(Tile.CITIZEN_1, 2, 1, MovementBehaviour.FOLLOW, 0);
+        List<Person> people = Collections.singletonList(person);
+
+        npcMover.movePeople(area, people, 0, 1, null);
+
+        assertThat(person.row()).isEqualTo(1);
+        assertThat(person.col()).isEqualTo(2);
+    }
+
+    @Test
+    public void movePeopleWhenPersonIsFollowAndPlayerIsNorthOfPersonAndPersonIsPartiallyBlockedWithNorthwestAccessThenPersonMovesNorthwest() {
+        Tile[][] area = new Tile[][] {
+                { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR },
+                { Tile.BRICK_FLOOR, Tile.BRICK_WALL, Tile.BRICK_WALL },
+                { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR }
+        };
+        Person person = new Person(Tile.CITIZEN_1, 2, 1, MovementBehaviour.FOLLOW, 0);
+        List<Person> people = Collections.singletonList(person);
+
+        npcMover.movePeople(area, people, 0, 1, null);
+
+        assertThat(person.row()).isEqualTo(1);
+        assertThat(person.col()).isEqualTo(0);
+    }
+
+    @Test
+    public void movePeopleWhenPersonIsFollowAndPlayerIsNorthOfPersonAndPersonIsPartiallyBlockedWithNortheastAndNorthwestAccessThenPersonMovesNorthwest() {
+        Tile[][] area = new Tile[][] {
+                { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR },
+                { Tile.BRICK_FLOOR, Tile.BRICK_WALL, Tile.BRICK_FLOOR },
+                { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR }
+        };
+        Person person = new Person(Tile.CITIZEN_1, 2, 1, MovementBehaviour.FOLLOW, 0);
+        List<Person> people = Collections.singletonList(person);
+        when(random.nextBoolean()).thenReturn(true);
+
+        npcMover.movePeople(area, people, 0, 1, null);
+
+        assertThat(person.row()).isEqualTo(1);
+        assertThat(person.col()).isEqualTo(0);
+    }
+
+    @Test
+    public void movePeopleWhenPersonIsFollowAndPlayerIsNorthOfPersonAndPersonIsPartiallyBlockedWithNortheastAndNorthwestAccessThenPersonMovesNortheast() {
+        Tile[][] area = new Tile[][] {
+                { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR },
+                { Tile.BRICK_FLOOR, Tile.BRICK_WALL, Tile.BRICK_FLOOR },
+                { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR }
+        };
+        Person person = new Person(Tile.CITIZEN_1, 2, 1, MovementBehaviour.FOLLOW, 0);
+        List<Person> people = Collections.singletonList(person);
+        when(random.nextBoolean()).thenReturn(false);
+
+        npcMover.movePeople(area, people, 0, 1, null);
+
+        assertThat(person.row()).isEqualTo(1);
+        assertThat(person.col()).isEqualTo(2);
+    }
+
+    @Test
     public void movePeopleWhenPersonIsFollowAndPlayerIsNortheastOfPersonThenPersonMovesNortheast() {
         Tile[][] area = new Tile[][] {
                 { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR },
@@ -297,6 +379,72 @@ public class NpcMoverTest {
         npcMover.movePeople(area, people, 0, 2, null);
 
         assertThat(person.row()).isEqualTo(1);
+        assertThat(person.col()).isEqualTo(1);
+    }
+
+    @Test
+    public void movePeopleWhenPersonIsFollowAndPlayerIsNortheastOfPersonAndPersonIsBlockedOnNorthSideThenPersonMovesEast() {
+        Tile[][] area = new Tile[][] {
+                { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR },
+                { Tile.BRICK_WALL, Tile.BRICK_WALL, Tile.BRICK_FLOOR },
+                { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR }
+        };
+        Person person = new Person(Tile.CITIZEN_1, 2, 0, MovementBehaviour.FOLLOW, 0);
+        List<Person> people = Collections.singletonList(person);
+
+        npcMover.movePeople(area, people, 0, 2, null);
+
+        assertThat(person.row()).isEqualTo(2);
+        assertThat(person.col()).isEqualTo(1);
+    }
+
+    @Test
+    public void movePeopleWhenPersonIsFollowAndPlayerIsNortheastOfPersonAndPersonIsBlockedOnEastSideThenPersonMovesNorth() {
+        Tile[][] area = new Tile[][] {
+                { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR },
+                { Tile.BRICK_FLOOR, Tile.BRICK_WALL, Tile.BRICK_FLOOR },
+                { Tile.BRICK_FLOOR, Tile.BRICK_WALL, Tile.BRICK_FLOOR }
+        };
+        Person person = new Person(Tile.CITIZEN_1, 2, 0, MovementBehaviour.FOLLOW, 0);
+        List<Person> people = Collections.singletonList(person);
+
+        npcMover.movePeople(area, people, 0, 2, null);
+
+        assertThat(person.row()).isEqualTo(1);
+        assertThat(person.col()).isEqualTo(0);
+    }
+
+    @Test
+    public void movePeopleWhenPersonIsFollowAndPlayerIsNortheastOfPersonAndPersonIsPartiallyBlockedWithNorthAndEastAccessThenPersonMovesNorth() {
+        Tile[][] area = new Tile[][] {
+                { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR },
+                { Tile.BRICK_FLOOR, Tile.BRICK_WALL, Tile.BRICK_FLOOR },
+                { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR }
+        };
+        Person person = new Person(Tile.CITIZEN_1, 2, 0, MovementBehaviour.FOLLOW, 0);
+        List<Person> people = Collections.singletonList(person);
+        when(random.nextBoolean()).thenReturn(true);
+
+        npcMover.movePeople(area, people, 0, 2, null);
+
+        assertThat(person.row()).isEqualTo(1);
+        assertThat(person.col()).isEqualTo(0);
+    }
+
+    @Test
+    public void movePeopleWhenPersonIsFollowAndPlayerIsNortheastOfPersonAndPersonIsPartiallyBlockedWithNorthAndEastAccessThenPersonMovesEast() {
+        Tile[][] area = new Tile[][] {
+                { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR },
+                { Tile.BRICK_FLOOR, Tile.BRICK_WALL, Tile.BRICK_FLOOR },
+                { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR }
+        };
+        Person person = new Person(Tile.CITIZEN_1, 2, 0, MovementBehaviour.FOLLOW, 0);
+        List<Person> people = Collections.singletonList(person);
+        when(random.nextBoolean()).thenReturn(false);
+
+        npcMover.movePeople(area, people, 0, 2, null);
+
+        assertThat(person.row()).isEqualTo(2);
         assertThat(person.col()).isEqualTo(1);
     }
 
@@ -317,6 +465,88 @@ public class NpcMoverTest {
     }
 
     @Test
+    public void movePeopleWhenPersonIsFollowAndPlayerIsEastOfPersonAndPersonIsBlockedOnEastSideThenPersonStaysStill() {
+        Tile[][] area = new Tile[][] {
+                { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR },
+                { Tile.BRICK_FLOOR, Tile.BRICK_WALL, Tile.BRICK_FLOOR },
+                { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR }
+        };
+        Person person = new Person(Tile.CITIZEN_1, 1, 0, MovementBehaviour.FOLLOW, 0);
+        List<Person> people = Collections.singletonList(person);
+
+        npcMover.movePeople(area, people, 1, 2, null);
+
+        assertThat(person.row()).isEqualTo(1);
+        assertThat(person.col()).isEqualTo(0);
+    }
+
+    @Test
+    public void movePeopleWhenPersonIsFollowAndPlayerIsEastOfPersonAndPersonIsPartiallyBlockedWithNortheastAccessThenPersonMovesNortheast() {
+        Tile[][] area = new Tile[][] {
+                { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR },
+                { Tile.BRICK_FLOOR, Tile.BRICK_WALL, Tile.BRICK_FLOOR },
+                { Tile.BRICK_FLOOR, Tile.BRICK_WALL, Tile.BRICK_FLOOR }
+        };
+        Person person = new Person(Tile.CITIZEN_1, 1, 0, MovementBehaviour.FOLLOW, 0);
+        List<Person> people = Collections.singletonList(person);
+
+        npcMover.movePeople(area, people, 1, 2, null);
+
+        assertThat(person.row()).isEqualTo(0);
+        assertThat(person.col()).isEqualTo(1);
+    }
+
+    @Test
+    public void movePeopleWhenPersonIsFollowAndPlayerIsEastOfPersonAndPersonIsPartiallyBlockedWithSoutheastAccessThenPersonMovesSoutheast() {
+        Tile[][] area = new Tile[][] {
+                { Tile.BRICK_FLOOR, Tile.BRICK_WALL, Tile.BRICK_FLOOR },
+                { Tile.BRICK_FLOOR, Tile.BRICK_WALL, Tile.BRICK_FLOOR },
+                { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR }
+        };
+        Person person = new Person(Tile.CITIZEN_1, 1, 0, MovementBehaviour.FOLLOW, 0);
+        List<Person> people = Collections.singletonList(person);
+
+        npcMover.movePeople(area, people, 1, 2, null);
+
+        assertThat(person.row()).isEqualTo(2);
+        assertThat(person.col()).isEqualTo(1);
+    }
+
+    @Test
+    public void movePeopleWhenPersonIsFollowAndPlayerIsEastOfPersonAndPersonIsPartiallyBlockedWithNortheastAndSoutheastAccessThenPersonMovesNortheast() {
+        Tile[][] area = new Tile[][] {
+                { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR },
+                { Tile.BRICK_FLOOR, Tile.BRICK_WALL, Tile.BRICK_FLOOR },
+                { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR }
+        };
+        Person person = new Person(Tile.CITIZEN_1, 1, 0, MovementBehaviour.FOLLOW, 0);
+        List<Person> people = Collections.singletonList(person);
+        when(random.nextBoolean()).thenReturn(true);
+
+        npcMover.movePeople(area, people, 1, 2, null);
+
+        assertThat(person.row()).isEqualTo(0);
+        assertThat(person.col()).isEqualTo(1);
+    }
+
+    @Test
+    public void movePeopleWhenPersonIsFollowAndPlayerIsEastOfPersonAndPersonIsPartiallyBlockedWithNortheastAndSoutheastAccessThenPersonMovesSoutheast() {
+        Tile[][] area = new Tile[][] {
+                { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR },
+                { Tile.BRICK_FLOOR, Tile.BRICK_WALL, Tile.BRICK_FLOOR },
+                { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR }
+        };
+        Person person = new Person(Tile.CITIZEN_1, 1, 0, MovementBehaviour.FOLLOW, 0);
+        List<Person> people = Collections.singletonList(person);
+        when(random.nextBoolean()).thenReturn(false);
+
+        npcMover.movePeople(area, people, 1, 2, null);
+
+        assertThat(person.row()).isEqualTo(2);
+        assertThat(person.col()).isEqualTo(1);
+    }
+
+    @Test
     public void movePeopleWhenPersonIsFollowAndPlayerIsSoutheastOfPersonThenPersonMovesSoutheast() {
         Tile[][] area = new Tile[][] {
                 { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR },
@@ -330,6 +560,72 @@ public class NpcMoverTest {
 
         assertThat(person.row()).isEqualTo(1);
         assertThat(person.col()).isEqualTo(1);
+    }
+
+    @Test
+    public void movePeopleWhenPersonIsFollowAndPlayerIsSoutheastOfPersonAndPersonIsBlockedOnSouthSideThenPersonMovesEast() {
+        Tile[][] area = new Tile[][] {
+                { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR },
+                { Tile.BRICK_WALL, Tile.BRICK_WALL, Tile.BRICK_FLOOR },
+                { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR }
+        };
+        Person person = new Person(Tile.CITIZEN_1, 0, 0, MovementBehaviour.FOLLOW, 0);
+        List<Person> people = Collections.singletonList(person);
+
+        npcMover.movePeople(area, people, 2, 2, null);
+
+        assertThat(person.row()).isEqualTo(0);
+        assertThat(person.col()).isEqualTo(1);
+    }
+
+    @Test
+    public void movePeopleWhenPersonIsFollowAndPlayerIsSoutheastOfPersonAndPersonIsBlockedOnEastSideThenPersonMovesSouth() {
+        Tile[][] area = new Tile[][] {
+                { Tile.BRICK_FLOOR, Tile.BRICK_WALL, Tile.BRICK_FLOOR },
+                { Tile.BRICK_FLOOR, Tile.BRICK_WALL, Tile.BRICK_FLOOR },
+                { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR }
+        };
+        Person person = new Person(Tile.CITIZEN_1, 0, 0, MovementBehaviour.FOLLOW, 0);
+        List<Person> people = Collections.singletonList(person);
+
+        npcMover.movePeople(area, people, 2, 2, null);
+
+        assertThat(person.row()).isEqualTo(1);
+        assertThat(person.col()).isEqualTo(0);
+    }
+
+    @Test
+    public void movePeopleWhenPersonIsFollowAndPlayerIsSoutheastOfPersonAndPersonIsPartiallyBlockedWithSouthAndEastAccessThenPersonMovesEast() {
+        Tile[][] area = new Tile[][] {
+                { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR },
+                { Tile.BRICK_FLOOR, Tile.BRICK_WALL, Tile.BRICK_FLOOR },
+                { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR }
+        };
+        Person person = new Person(Tile.CITIZEN_1, 0, 0, MovementBehaviour.FOLLOW, 0);
+        List<Person> people = Collections.singletonList(person);
+        when(random.nextBoolean()).thenReturn(true);
+
+        npcMover.movePeople(area, people, 2, 2, null);
+
+        assertThat(person.row()).isEqualTo(0);
+        assertThat(person.col()).isEqualTo(1);
+    }
+
+    @Test
+    public void movePeopleWhenPersonIsFollowAndPlayerIsSoutheastOfPersonAndPersonIsPartiallyBlockedWithSouthAndEastAccessThenPersonMovesSouth() {
+        Tile[][] area = new Tile[][] {
+                { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR },
+                { Tile.BRICK_FLOOR, Tile.BRICK_WALL, Tile.BRICK_FLOOR },
+                { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR }
+        };
+        Person person = new Person(Tile.CITIZEN_1, 0, 0, MovementBehaviour.FOLLOW, 0);
+        List<Person> people = Collections.singletonList(person);
+        when(random.nextBoolean()).thenReturn(false);
+
+        npcMover.movePeople(area, people, 2, 2, null);
+
+        assertThat(person.row()).isEqualTo(1);
+        assertThat(person.col()).isEqualTo(0);
     }
 
     @Test
@@ -349,6 +645,88 @@ public class NpcMoverTest {
     }
 
     @Test
+    public void movePeopleWhenPersonIsFollowAndPlayerIsSouthOfPersonAndPersonIsBlockedThenPersonStaysStill() {
+        Tile[][] area = new Tile[][] {
+                { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR },
+                { Tile.BRICK_WALL, Tile.BRICK_WALL, Tile.BRICK_WALL },
+                { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR }
+        };
+        Person person = new Person(Tile.CITIZEN_1, 0, 1, MovementBehaviour.FOLLOW, 0);
+        List<Person> people = Collections.singletonList(person);
+
+        npcMover.movePeople(area, people, 2, 1, null);
+
+        assertThat(person.row()).isEqualTo(0);
+        assertThat(person.col()).isEqualTo(1);
+    }
+
+    @Test
+    public void movePeopleWhenPersonIsFollowAndPlayerIsSouthOfPersonAndPersonIsPartiallyBlockedWithSoutheastAccessThenPersonMovesSoutheast() {
+        Tile[][] area = new Tile[][] {
+                { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR },
+                { Tile.BRICK_WALL, Tile.BRICK_WALL, Tile.BRICK_FLOOR },
+                { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR }
+        };
+        Person person = new Person(Tile.CITIZEN_1, 0, 1, MovementBehaviour.FOLLOW, 0);
+        List<Person> people = Collections.singletonList(person);
+
+        npcMover.movePeople(area, people, 2, 1, null);
+
+        assertThat(person.row()).isEqualTo(1);
+        assertThat(person.col()).isEqualTo(2);
+    }
+
+    @Test
+    public void movePeopleWhenPersonIsFollowAndPlayerIsSouthOfPersonAndPersonIsPartiallyBlockedWithSouthwestAccessThenPersonMovesSouthwest() {
+        Tile[][] area = new Tile[][] {
+                { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR },
+                { Tile.BRICK_FLOOR, Tile.BRICK_WALL, Tile.BRICK_WALL },
+                { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR }
+        };
+        Person person = new Person(Tile.CITIZEN_1, 0, 1, MovementBehaviour.FOLLOW, 0);
+        List<Person> people = Collections.singletonList(person);
+
+        npcMover.movePeople(area, people, 2, 1, null);
+
+        assertThat(person.row()).isEqualTo(1);
+        assertThat(person.col()).isEqualTo(0);
+    }
+
+    @Test
+    public void movePeopleWhenPersonIsFollowAndPlayerIsSouthOfPersonAndPersonIsPartiallyBlockedWithSoutheastAndSouthwestAccessThenPersonMovesSoutheast() {
+        Tile[][] area = new Tile[][] {
+                { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR },
+                { Tile.BRICK_FLOOR, Tile.BRICK_WALL, Tile.BRICK_FLOOR },
+                { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR }
+        };
+        Person person = new Person(Tile.CITIZEN_1, 0, 1, MovementBehaviour.FOLLOW, 0);
+        List<Person> people = Collections.singletonList(person);
+        when(random.nextBoolean()).thenReturn(true);
+
+        npcMover.movePeople(area, people, 2, 1, null);
+
+        assertThat(person.row()).isEqualTo(1);
+        assertThat(person.col()).isEqualTo(2);
+    }
+
+    @Test
+    public void movePeopleWhenPersonIsFollowAndPlayerIsSouthOfPersonAndPersonIsPartiallyBlockedWithSoutheastAndSouthwestAccessThenPersonMovesSouthwest() {
+        Tile[][] area = new Tile[][] {
+                { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR },
+                { Tile.BRICK_FLOOR, Tile.BRICK_WALL, Tile.BRICK_FLOOR },
+                { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR }
+        };
+        Person person = new Person(Tile.CITIZEN_1, 0, 1, MovementBehaviour.FOLLOW, 0);
+        List<Person> people = Collections.singletonList(person);
+        when(random.nextBoolean()).thenReturn(false);
+
+        npcMover.movePeople(area, people, 2, 1, null);
+
+        assertThat(person.row()).isEqualTo(1);
+        assertThat(person.col()).isEqualTo(0);
+    }
+
+    @Test
     public void movePeopleWhenPersonIsFollowAndPlayerIsSouthwestOfPersonThenPersonMovesSouthwest() {
         Tile[][] area = new Tile[][] {
                 { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR },
@@ -361,6 +739,72 @@ public class NpcMoverTest {
         npcMover.movePeople(area, people, 2, 0, null);
 
         assertThat(person.row()).isEqualTo(1);
+        assertThat(person.col()).isEqualTo(1);
+    }
+
+    @Test
+    public void movePeopleWhenPersonIsFollowAndPlayerIsSouthwestOfPersonAndPersonIsBlockedOnSouthSideThenPersonMovesWest() {
+        Tile[][] area = new Tile[][] {
+                { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR },
+                { Tile.BRICK_FLOOR, Tile.BRICK_WALL, Tile.BRICK_WALL },
+                { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR }
+        };
+        Person person = new Person(Tile.CITIZEN_1, 0, 2, MovementBehaviour.FOLLOW, 0);
+        List<Person> people = Collections.singletonList(person);
+
+        npcMover.movePeople(area, people, 2, 0, null);
+
+        assertThat(person.row()).isEqualTo(0);
+        assertThat(person.col()).isEqualTo(1);
+    }
+
+    @Test
+    public void movePeopleWhenPersonIsFollowAndPlayerIsSouthwestOfPersonAndPersonIsBlockedOnEastSideThenPersonMovesSouth() {
+        Tile[][] area = new Tile[][] {
+                { Tile.BRICK_FLOOR, Tile.BRICK_WALL, Tile.BRICK_FLOOR },
+                { Tile.BRICK_FLOOR, Tile.BRICK_WALL, Tile.BRICK_FLOOR },
+                { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR }
+        };
+        Person person = new Person(Tile.CITIZEN_1, 0, 2, MovementBehaviour.FOLLOW, 0);
+        List<Person> people = Collections.singletonList(person);
+
+        npcMover.movePeople(area, people, 2, 0, null);
+
+        assertThat(person.row()).isEqualTo(1);
+        assertThat(person.col()).isEqualTo(2);
+    }
+
+    @Test
+    public void movePeopleWhenPersonIsFollowAndPlayerIsSouthwestOfPersonAndPersonIsPartiallyBlockedWithSouthAndEastAccessThenPersonMovesSouth() {
+        Tile[][] area = new Tile[][] {
+                { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR },
+                { Tile.BRICK_FLOOR, Tile.BRICK_WALL, Tile.BRICK_FLOOR },
+                { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR }
+        };
+        Person person = new Person(Tile.CITIZEN_1, 0, 2, MovementBehaviour.FOLLOW, 0);
+        List<Person> people = Collections.singletonList(person);
+        when(random.nextBoolean()).thenReturn(true);
+
+        npcMover.movePeople(area, people, 2, 0, null);
+
+        assertThat(person.row()).isEqualTo(1);
+        assertThat(person.col()).isEqualTo(2);
+    }
+
+    @Test
+    public void movePeopleWhenPersonIsFollowAndPlayerIsSouthwestOfPersonAndPersonIsPartiallyBlockedWithSouthAndEastAccessThenPersonMovesWest() {
+        Tile[][] area = new Tile[][] {
+                { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR },
+                { Tile.BRICK_FLOOR, Tile.BRICK_WALL, Tile.BRICK_FLOOR },
+                { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR }
+        };
+        Person person = new Person(Tile.CITIZEN_1, 0, 2, MovementBehaviour.FOLLOW, 0);
+        List<Person> people = Collections.singletonList(person);
+        when(random.nextBoolean()).thenReturn(false);
+
+        npcMover.movePeople(area, people, 2, 0, null);
+
+        assertThat(person.row()).isEqualTo(0);
         assertThat(person.col()).isEqualTo(1);
     }
 
@@ -381,6 +825,88 @@ public class NpcMoverTest {
     }
 
     @Test
+    public void movePeopleWhenPersonIsFollowAndPlayerIsWestOfPersonAndPersonIsBlockedOnWestSideThenPersonStaysStill() {
+        Tile[][] area = new Tile[][] {
+                { Tile.BRICK_FLOOR, Tile.BRICK_WALL, Tile.BRICK_FLOOR },
+                { Tile.BRICK_FLOOR, Tile.BRICK_WALL, Tile.BRICK_FLOOR },
+                { Tile.BRICK_FLOOR, Tile.BRICK_WALL, Tile.BRICK_FLOOR }
+        };
+        Person person = new Person(Tile.CITIZEN_1, 1, 2, MovementBehaviour.FOLLOW, 0);
+        List<Person> people = Collections.singletonList(person);
+
+        npcMover.movePeople(area, people, 1, 0, null);
+
+        assertThat(person.row()).isEqualTo(1);
+        assertThat(person.col()).isEqualTo(2);
+    }
+
+    @Test
+    public void movePeopleWhenPersonIsFollowAndPlayerIsWestOfPersonAndPersonIsPartiallyBlockedWithNorthWestAccessThenPersonMovesNorthwest() {
+        Tile[][] area = new Tile[][] {
+                { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR },
+                { Tile.BRICK_FLOOR, Tile.BRICK_WALL, Tile.BRICK_FLOOR },
+                { Tile.BRICK_FLOOR, Tile.BRICK_WALL, Tile.BRICK_FLOOR }
+        };
+        Person person = new Person(Tile.CITIZEN_1, 1, 2, MovementBehaviour.FOLLOW, 0);
+        List<Person> people = Collections.singletonList(person);
+
+        npcMover.movePeople(area, people, 1, 0, null);
+
+        assertThat(person.row()).isEqualTo(0);
+        assertThat(person.col()).isEqualTo(1);
+    }
+
+    @Test
+    public void movePeopleWhenPersonIsFollowAndPlayerIsWestOfPersonAndPersonIsPartiallyBlockedWithSouthwestAccessThenPersonMovesSouthwest() {
+        Tile[][] area = new Tile[][] {
+                { Tile.BRICK_FLOOR, Tile.BRICK_WALL, Tile.BRICK_FLOOR },
+                { Tile.BRICK_FLOOR, Tile.BRICK_WALL, Tile.BRICK_FLOOR },
+                { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR }
+        };
+        Person person = new Person(Tile.CITIZEN_1, 1, 2, MovementBehaviour.FOLLOW, 0);
+        List<Person> people = Collections.singletonList(person);
+
+        npcMover.movePeople(area, people, 1, 0, null);
+
+        assertThat(person.row()).isEqualTo(2);
+        assertThat(person.col()).isEqualTo(1);
+    }
+
+    @Test
+    public void movePeopleWhenPersonIsFollowAndPlayerIsWestOfPersonAndPersonIsPartiallyBlockedWithNorthwestAndSouthwestAccessThenPersonMovesSouthwest() {
+        Tile[][] area = new Tile[][] {
+                { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR },
+                { Tile.BRICK_FLOOR, Tile.BRICK_WALL, Tile.BRICK_FLOOR },
+                { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR }
+        };
+        Person person = new Person(Tile.CITIZEN_1, 1, 2, MovementBehaviour.FOLLOW, 0);
+        List<Person> people = Collections.singletonList(person);
+        when(random.nextBoolean()).thenReturn(true);
+
+        npcMover.movePeople(area, people, 1, 0, null);
+
+        assertThat(person.row()).isEqualTo(2);
+        assertThat(person.col()).isEqualTo(1);
+    }
+
+    @Test
+    public void movePeopleWhenPersonIsFollowAndPlayerIsWestOfPersonAndPersonIsPartiallyBlockedWithNorthwestAndSouthwestAccessThenPersonMovesNorthwest() {
+        Tile[][] area = new Tile[][] {
+                { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR },
+                { Tile.BRICK_FLOOR, Tile.BRICK_WALL, Tile.BRICK_FLOOR },
+                { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR }
+        };
+        Person person = new Person(Tile.CITIZEN_1, 1, 2, MovementBehaviour.FOLLOW, 0);
+        List<Person> people = Collections.singletonList(person);
+        when(random.nextBoolean()).thenReturn(false);
+
+        npcMover.movePeople(area, people, 1, 0, null);
+
+        assertThat(person.row()).isEqualTo(0);
+        assertThat(person.col()).isEqualTo(1);
+    }
+
+    @Test
     public void movePeopleWhenPersonIsFollowAndPlayerIsNorthwestOfPersonThenPersonMovesNorthwest() {
         Tile[][] area = new Tile[][] {
                 { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR },
@@ -394,5 +920,71 @@ public class NpcMoverTest {
 
         assertThat(person.row()).isEqualTo(1);
         assertThat(person.col()).isEqualTo(1);
+    }
+
+    @Test
+    public void movePeopleWhenPersonIsFollowAndPlayerIsNorthwestOfPersonAndPersonIsBlockedOnNorthSideThenPersonMovesWest() {
+        Tile[][] area = new Tile[][] {
+                { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR },
+                { Tile.BRICK_FLOOR, Tile.BRICK_WALL, Tile.BRICK_WALL },
+                { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR }
+        };
+        Person person = new Person(Tile.CITIZEN_1, 2, 2, MovementBehaviour.FOLLOW, 0);
+        List<Person> people = Collections.singletonList(person);
+
+        npcMover.movePeople(area, people, 0, 0, null);
+
+        assertThat(person.row()).isEqualTo(2);
+        assertThat(person.col()).isEqualTo(1);
+    }
+
+    @Test
+    public void movePeopleWhenPersonIsFollowAndPlayerIsNorthwestOfPersonAndPersonIsBlockedOnEastSideThenPersonMovesNorth() {
+        Tile[][] area = new Tile[][] {
+                { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR },
+                { Tile.BRICK_FLOOR, Tile.BRICK_WALL, Tile.BRICK_FLOOR },
+                { Tile.BRICK_FLOOR, Tile.BRICK_WALL, Tile.BRICK_FLOOR }
+        };
+        Person person = new Person(Tile.CITIZEN_1, 2, 2, MovementBehaviour.FOLLOW, 0);
+        List<Person> people = Collections.singletonList(person);
+
+        npcMover.movePeople(area, people, 0, 0, null);
+
+        assertThat(person.row()).isEqualTo(1);
+        assertThat(person.col()).isEqualTo(2);
+    }
+
+    @Test
+    public void movePeopleWhenPersonIsFollowAndPlayerIsNorthwestOfPersonAndPersonIsPartiallyBlockedWithNorthAndWestAccessThenPersonMovesWest() {
+        Tile[][] area = new Tile[][] {
+                { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR },
+                { Tile.BRICK_FLOOR, Tile.BRICK_WALL, Tile.BRICK_FLOOR },
+                { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR }
+        };
+        Person person = new Person(Tile.CITIZEN_1, 2, 2, MovementBehaviour.FOLLOW, 0);
+        List<Person> people = Collections.singletonList(person);
+        when(random.nextBoolean()).thenReturn(true);
+
+        npcMover.movePeople(area, people, 0, 0, null);
+
+        assertThat(person.row()).isEqualTo(2);
+        assertThat(person.col()).isEqualTo(1);
+    }
+
+    @Test
+    public void movePeopleWhenPersonIsFollowAndPlayerIsNorthwestOfPersonAndPersonIsPartiallyBlockedWithNorthAndWestAccessThenPersonMovesNorth() {
+        Tile[][] area = new Tile[][] {
+                { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR },
+                { Tile.BRICK_FLOOR, Tile.BRICK_WALL, Tile.BRICK_FLOOR },
+                { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR }
+        };
+        Person person = new Person(Tile.CITIZEN_1, 2, 2, MovementBehaviour.FOLLOW, 0);
+        List<Person> people = Collections.singletonList(person);
+        when(random.nextBoolean()).thenReturn(false);
+
+        npcMover.movePeople(area, people, 0, 0, null);
+
+        assertThat(person.row()).isEqualTo(1);
+        assertThat(person.col()).isEqualTo(2);
     }
 }

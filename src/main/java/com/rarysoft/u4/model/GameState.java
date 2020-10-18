@@ -27,6 +27,7 @@ import com.rarysoft.u4.model.npc.Dialog;
 import com.rarysoft.u4.model.npc.NpcMover;
 import com.rarysoft.u4.model.npc.Person;
 import com.rarysoft.u4.model.graphics.Tile;
+import com.rarysoft.u4.model.npc.WayFinder;
 import com.rarysoft.u4.model.party.Location;
 import com.rarysoft.u4.model.party.Party;
 
@@ -112,10 +113,10 @@ public class GameState {
         return party.getWinds();
     }
 
-    public RenderedTile[][] mapView(int radius) {
+    public RenderedTile[][] mapView(ViewFinder viewFinder, int radius) {
         int row = party.getRow();
         int col = party.getCol();
-        Tile[][] mapView = map.view(row, col, radius);
+        Tile[][] mapView = map.view(viewFinder, row, col, radius);
         int viewSize = radius * 2 + 1;
         RenderedTile[][] view = new RenderedTile[viewSize][viewSize];
         for (int viewRow = 0; viewRow < viewSize; viewRow ++) {
@@ -160,11 +161,11 @@ public class GameState {
         party.setCol(surfaceCol);
     }
 
-    public void postTurnUpdates(Random random) {
+    public void postTurnUpdates(Random random, ViewFinder viewFinder, WayFinder wayFinder) {
         party.setCounter(party.getCounter() + 1);
         party.setMoves(party.getMoves() + 1);
         updateMoonPhases();
-        map.movePeople(new NpcMover(random), party.getRow(), party.getCol(), conversingPerson);
+        map.movePeople(new NpcMover(random, viewFinder, wayFinder), party.getRow(), party.getCol(), conversingPerson);
         doors.forEach(Door::turnCompleted);
     }
 

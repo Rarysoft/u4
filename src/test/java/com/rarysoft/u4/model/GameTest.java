@@ -57,6 +57,9 @@ public class GameTest {
     @Mock
     private Dialog dialog;
 
+    @Mock
+    private ViewFinder viewFinder;
+
     @InjectMocks
     private Game game;
 
@@ -77,7 +80,7 @@ public class GameTest {
                 emptyRow,
                 emptyRow, emptyRow, emptyRow, emptyRow, emptyRow, emptyRow, emptyRow, emptyRow, emptyRow, emptyRow
         };
-        when(gameState.mapView(10)).thenReturn(emptyMap);
+        when(gameState.mapView(viewFinder, 10)).thenReturn(emptyMap);
         when(gameState.conversation()).thenReturn(dialog);
         when(messages.speechCitizenPrompt()).thenReturn("Prompt:");
         game.start(gameState);

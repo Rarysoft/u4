@@ -17,14 +17,6 @@ public class Settlement implements Map {
 
     private static final int NPC_COUNT = 32;
 
-    private final Location location;
-    private final int level;
-    private final int worldX;
-    private final int worldY;
-    private final int startX;
-    private final int startY;
-    private final Tile areaTile;
-
     public static Settlement fromStream(InputStream stream, Location location, int level, int worldX, int worldY, int startX, int startY, Tile areaTile) throws IOException {
         Tile[][] data = new Tile[MAP_HEIGHT][MAP_WIDTH];
         for (int row = 0; row < MAP_HEIGHT; row ++) {
@@ -73,6 +65,14 @@ public class Settlement implements Map {
         }
         return new Settlement(location, level, data, people, worldX, worldY, startX, startY, areaTile);
     }
+
+    private final Location location;
+    private final int level;
+    private final int worldX;
+    private final int worldY;
+    private final int startX;
+    private final int startY;
+    private final Tile areaTile;
 
     private final Tile[][] data;
 
@@ -149,17 +149,8 @@ public class Settlement implements Map {
     }
 
     @Override
-    public Tile[][] view(int centerRow, int centerCol, int radius) {
-        int size = radius * 2 + 1;
-        Tile[][] view = new Tile[size][size];
-        for (int row = 0; row < size; row ++) {
-            for (int col = 0; col < size; col ++) {
-                int mapRow = centerRow - radius + row;
-                int mapCol = centerCol - radius + col;
-                view[row][col] = isWithinMapRange(mapRow, mapCol) ? data[mapRow][mapCol] : areaTile;
-            }
-        }
-        return view;
+    public Tile[][] view(ViewFinder viewFinder, int centerRow, int centerCol, int radius) {
+        return viewFinder.view(data, areaTile, radius, centerRow, centerCol);
     }
 
     @Override
@@ -168,9 +159,5 @@ public class Settlement implements Map {
             return null;
         }
         return data[row][col];
-    }
-
-    private boolean isWithinMapRange(int row, int col) {
-        return ! (row < 0 || row >= MAP_HEIGHT || col < 0 || col >= MAP_WIDTH);
     }
 }

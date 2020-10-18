@@ -24,6 +24,7 @@
 package com.rarysoft.u4.model.npc;
 
 import com.rarysoft.u4.model.PeopleMover;
+import com.rarysoft.u4.model.ViewFinder;
 import com.rarysoft.u4.model.graphics.Tile;
 
 import java.util.List;
@@ -32,8 +33,14 @@ import java.util.Random;
 public class NpcMover implements PeopleMover {
     private final Random random;
 
-    public NpcMover(Random random) {
+    private final ViewFinder viewFinder;
+
+    private final WayFinder wayFinder;
+
+    public NpcMover(Random random, ViewFinder viewFinder, WayFinder wayFinder) {
         this.random = random;
+        this.viewFinder = viewFinder;
+        this.wayFinder = wayFinder;
     }
 
     public void movePeople(Tile[][] area, List<Person> people, int playerRow, int playerCol, Person excluded) {
@@ -46,55 +53,58 @@ public class NpcMover implements PeopleMover {
                     break;
 
                 case WANDER:
-                    int direction = random.nextInt(9);
-                    // 0 = stay still
-                    // 1 = NW
-                    // 2 = N
-                    // 3 = NE
-                    // 4 = W
-                    // 5 = E
-                    // 6 = SW
-                    // 7 = S
-                    // 8 = SE
-                    if (direction > 0) {
-                        attemptToMoveTo(
-                                people,
-                                person,
-                                direction < 4 ? person.row() - 1 : direction > 5 ? person.row() + 1 : person.row(),
-                                direction == 1 || direction == 4 || direction == 6 ? person.col() - 1 : direction == 3 || direction == 5 || direction == 8 ? person.col() + 1 : person.col(),
-                                playerRow,
-                                playerCol,
-                                area);
-                    }
+                    wander(people, person, playerRow, playerCol, area);
                     break;
 
                 case FOLLOW:
-                    attemptToMoveTo(
-                            people,
-                            person,
-                            person.row() > playerRow ? person.row() - 1 : person.row() < playerRow ? person.row() + 1 : person.row(),
-                            person.col() > playerCol ? person.col() - 1 : person.col() < playerCol ? person.col() + 1 : person.col(),
-                            playerRow,
-                            playerCol,
-                            area);
+                    follow(people, person, playerRow, playerCol, area);
                     break;
 
                 case ATTACK:
-                    attemptToMoveTo(
-                            people,
-                            person,
-                            person.row() > playerRow ? person.row() - 1 : person.row() < playerRow ? person.row() + 1 : person.row(),
-                            person.col() > playerCol ? person.col() - 1 : person.col() < playerCol ? person.col() + 1 : person.col(),
-                            playerRow,
-                            playerCol,
-                            area);
-                    // TODO: need to implement combat
+                    attack(people, person, playerRow, playerCol, area);
                     break;
 
                 default:
                     break;
             }
         });
+    }
+
+    private void wander(List<Person> people, Person person, int playerRow, int playerCol, Tile[][] area) {
+        int direction = random.nextInt(9);
+        // 0 = stay still
+        // 1 = NW
+        // 2 = N
+        // 3 = NE
+        // 4 = W
+        // 5 = E
+        // 6 = SW
+        // 7 = S
+        // 8 = SE
+        if (direction > 0) {
+            attemptToMoveTo(
+                    people,
+                    person,
+                    direction < 4 ? person.row() - 1 : direction > 5 ? person.row() + 1 : person.row(),
+                    direction == 1 || direction == 4 || direction == 6 ? person.col() - 1 : direction == 3 || direction == 5 || direction == 8 ? person.col() + 1 : person.col(),
+                    playerRow,
+                    playerCol,
+                    area);
+        }
+    }
+
+    private void follow(List<Person> people, Person person, int playerRow, int playerCol, Tile[][] area) {
+        attemptToMoveTowardPlayer(
+                people,
+                person,
+                playerRow,
+                playerCol,
+                area);
+    }
+
+    private void attack(List<Person> people, Person person, int playerRow, int playerCol, Tile[][] area) {
+        // TODO: need to implement combat; for now just follow
+        follow(people, person, playerRow, playerCol, area);
     }
 
     private void attemptToMoveTo(List<Person> people, Person person, int row, int col, int playerRow, int playerCol, Tile[][] area) {
@@ -112,5 +122,15 @@ public class NpcMover implements PeopleMover {
             return;
         }
         person.moveTo(row, col);
+    }
+
+    private void attemptToMoveTowardPlayer(List<Person> people, Person person, int playerRow, int playerCol, Tile[][] area) {
+        int personViewRadius = 9;
+        int playerRowInPersonViewArea = playerRow - person.row() + personViewRadius;
+        int playerColInPersonViewArea = playerCol - person.col() + personViewRadius;
+        Movement movement = wayFinder.selectMovementTowardTarget(viewFinder.view(area, Tile.GRASSLANDS, personViewRadius, person.row(), person.col()), playerRowInPersonViewArea, playerColInPersonViewArea);
+        if (! movement.isStatic()) {
+            attemptToMoveTo(people, person, person.row() + movement.getDeltaRow(), person.col() + movement.getDeltaCol(), playerRow, playerCol, area);
+        }
     }
 }

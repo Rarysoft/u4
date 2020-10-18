@@ -45,16 +45,22 @@ public class Game {
 
     private final Random random;
 
+    private final ViewFinder viewFinder;
+
+    private final WayFinder wayFinder;
+
     private GameState gameState;
 
     private int animationCycle;
 
-    public Game(Messages messages, Dialogs dialogs) {
+    public Game(Messages messages, Dialogs dialogs, Random random, ViewFinder viewFinder, WayFinder wayFinder) {
         this.messages = messages;
         this.dialogs = dialogs;
         this.informationListeners = new HashSet<>();
         this.viewListeners = new HashSet<>();
-        this.random = new Random();
+        this.random = random;
+        this.viewFinder = viewFinder;
+        this.wayFinder = wayFinder;
     }
 
     public void addInformationListener(InformationListener informationListener) {
@@ -275,7 +281,7 @@ public class Game {
     }
 
     private void updateBackground() {
-        RenderedTile[][] playerView = determinePlayerView(gameState.mapView(VIEW_RADIUS));
+        RenderedTile[][] playerView = determinePlayerView(gameState.mapView(viewFinder, VIEW_RADIUS));
         viewListeners.forEach(viewListener -> viewListener.backgroundUpdated(playerView, animationCycle));
         informationListeners.forEach(informationListener -> informationListener.environmentUpdated(gameState.phaseOfTrammel(), gameState.phaseOfFelucca(), gameState.windDirection()));
     }
@@ -329,16 +335,26 @@ public class Game {
                 }
             }
         }
-        Visibility visibility = new Visibility(view);
+        Visibility visibility = new Visibility();
         for (int row = 0; row < size; row ++) {
             for (int col = 0; col < size; col ++) {
-                if (view[row][col].render() && visibility.isVisibleToPlayer(Coordinate.forRowCol(row, col))) {
+                if (view[row][col].render() && visibility.isVisibleFromCenter(tileView(view), Coordinate.forRowCol(row, col))) {
                     continue;
                 }
                 view[row][col] = view[row][col].hidden();
             }
         }
         return view;
+    }
+
+    private Tile[][] tileView(RenderedTile[][] view) {
+        Tile[][] tileView = new Tile[view.length][view[0].length];
+        for (int row = 0; row < view.length; row ++) {
+            for (int col = 0; col < view[row].length; col ++) {
+                tileView[row][col] = view[row][col].tile();
+            }
+        }
+        return tileView;
     }
 
     private boolean isInStandardView(int row, int col) {
@@ -376,7 +392,7 @@ public class Game {
     }
 
     private void afterPlayerMove() {
-        gameState.postTurnUpdates(random);
+        gameState.postTurnUpdates(random, viewFinder, wayFinder);
         updateBackground();
     }
 }
