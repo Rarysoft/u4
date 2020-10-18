@@ -114,7 +114,12 @@ public class NpcMover implements PeopleMover {
         if (row == playerRow && col == playerCol) {
             return;
         }
-        int walkability = area[row][col].walkability();
+        Tile tile = area[row][col];
+        if (tile == Tile.HIDDEN_PASSAGE) {
+            // NPCs don't go through hidden passages
+            return;
+        }
+        int walkability = tile.walkability();
         if (walkability < 100 && random.nextInt(100) >= walkability) {
             return;
         }
