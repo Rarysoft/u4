@@ -134,6 +134,7 @@ public class Dialogs {
                 conversationResponse(yesResponse, pronoun, messages),
                 conversationResponse(noResponse, pronoun, messages),
                 conversationResponse(messages.speechCitizenUnknown(), pronoun, messages),
+                conversationResponse(messages.speechCitizenBye(), pronoun, messages),
                 keyword1,
                 keyword2
         );

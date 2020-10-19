@@ -81,7 +81,7 @@ public class GameTest {
                 emptyRow, emptyRow, emptyRow, emptyRow, emptyRow, emptyRow, emptyRow, emptyRow, emptyRow, emptyRow
         };
         when(gameState.mapView(viewFinder, 10)).thenReturn(emptyMap);
-        when(gameState.conversation()).thenReturn(dialog);
+        when(gameState.dialog()).thenReturn(dialog);
         when(messages.speechCitizenPrompt()).thenReturn("Prompt:");
         game.start(gameState);
     }

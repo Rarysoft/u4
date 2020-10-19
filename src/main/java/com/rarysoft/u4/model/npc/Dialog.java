@@ -49,9 +49,10 @@ public class Dialog {
     private final String yesResponse;
     private final String noResponse;
     private final String unknownResponse;
+    private final String byeResponse;
     private final List<String> keywords;
 
-    public Dialog(int questionFlag, boolean responseAffectsHumility, int turnAwayProbability, String intro, String nameResponse, String lookResponse, String jobResponse, String healthResponse, String noJoinResponse, String keyword1Response, String keyword2Response, String yesNoQuestion, String yesResponse, String noResponse, String unknownResponse, String keyword1, String keyword2) {
+    public Dialog(int questionFlag, boolean responseAffectsHumility, int turnAwayProbability, String intro, String nameResponse, String lookResponse, String jobResponse, String healthResponse, String noJoinResponse, String keyword1Response, String keyword2Response, String yesNoQuestion, String yesResponse, String noResponse, String unknownResponse, String byeResponse, String keyword1, String keyword2) {
         this.npc = NonPlayerCharacter.CITIZEN;
         this.questionFlag = questionFlag;
         this.responseAffectsHumility = responseAffectsHumility;
@@ -67,10 +68,11 @@ public class Dialog {
         this.yesResponse = yesResponse;
         this.noResponse = noResponse;
         this.unknownResponse = unknownResponse;
+        this.byeResponse = byeResponse;
         this.keywords = Arrays.asList(keyword1, keyword2);
     }
 
-    public Dialog(NonPlayerCharacter npc, int questionFlag, boolean responseAffectsHumility, int turnAwayProbability, String intro, String nameResponse, String lookResponse, String jobResponse, String healthResponse, String noJoinResponse, List<String> keywordResponses, String yesNoQuestion, String yesResponse, String noResponse, String unknownResponse, List<String> keywords) {
+    public Dialog(NonPlayerCharacter npc, int questionFlag, boolean responseAffectsHumility, int turnAwayProbability, String intro, String nameResponse, String lookResponse, String jobResponse, String healthResponse, String noJoinResponse, List<String> keywordResponses, String yesNoQuestion, String yesResponse, String noResponse, String unknownResponse, String byeResponse, List<String> keywords) {
         this.npc = npc;
         this.questionFlag = questionFlag;
         this.responseAffectsHumility = responseAffectsHumility;
@@ -86,6 +88,7 @@ public class Dialog {
         this.yesResponse = yesResponse;
         this.noResponse = noResponse;
         this.unknownResponse = unknownResponse;
+        this.byeResponse = byeResponse;
         this.keywords = keywords;
     }
 
@@ -147,6 +150,10 @@ public class Dialog {
 
     public String getUnknownResponse() {
         return unknownResponse;
+    }
+
+    public String getByeResponse() {
+        return byeResponse;
     }
 
     public String getKeyword(int index) {

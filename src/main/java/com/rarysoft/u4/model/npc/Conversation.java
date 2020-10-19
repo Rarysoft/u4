@@ -48,6 +48,7 @@ public class Conversation {
     private final Virtue affectedVirtue;
     private final int virtueDelta;
     private final boolean healPlayer;
+    private final boolean endConversation;
 
     public Conversation(Dialog dialog, String player, int honestyKarma, int compassionKarma, int valourKarma, int justiceKarma, int sacrificeKarma, int honourKarma, int spiritualityKarma, int humilityKarma) {
         this.dialog = dialog;
@@ -65,9 +66,10 @@ public class Conversation {
         this.affectedVirtue = null;
         this.virtueDelta = 0;
         this.healPlayer = false;
+        this.endConversation = false;
     }
 
-    private Conversation(Dialog dialog, String player, int honestyKarma, int compassionKarma, int valourKarma, int justiceKarma, int sacrificeKarma, int honourKarma, int spiritualityKarma, int humilityKarma, String response, String question, Virtue affectedVirtue, int virtueDelta, boolean healPlayer) {
+    private Conversation(Dialog dialog, String player, int honestyKarma, int compassionKarma, int valourKarma, int justiceKarma, int sacrificeKarma, int honourKarma, int spiritualityKarma, int humilityKarma, String response, String question, Virtue affectedVirtue, int virtueDelta, boolean healPlayer, boolean endConversation) {
         this.dialog = dialog;
         this.player = player;
         this.honestyKarma = honestyKarma;
@@ -83,6 +85,7 @@ public class Conversation {
         this.affectedVirtue = affectedVirtue;
         this.virtueDelta = virtueDelta;
         this.healPlayer = healPlayer;
+        this.endConversation = endConversation;
     }
 
     public Optional<String> response() {
@@ -112,6 +115,7 @@ public class Conversation {
         }
         String response = null;
         String question = null;
+        boolean conversationHasEnded = false;
         if (characterWillRespond()) {
             switch (playerInput) {
                 case "LOOK":
@@ -142,6 +146,8 @@ public class Conversation {
                     break;
 
                 case "BYE":
+                    response = dialog.getByeResponse();
+                    conversationHasEnded = true;
                     break;
 
                 default:
@@ -187,7 +193,8 @@ public class Conversation {
                 question,
                 null,
                 0,
-                false
+                false,
+                conversationHasEnded
         );
     }
 
@@ -208,6 +215,7 @@ public class Conversation {
                     null,
                     dialog.responseAffectsHumility() ? Virtue.HUMILITY : null,
                     dialog.responseAffectsHumility() ? -1 : 0,
+                    false,
                     false
             );
         }
@@ -226,7 +234,8 @@ public class Conversation {
                 null,
                 null,
                 0,
-                dialog.getNpc() == NonPlayerCharacter.LORD_BRITISH
+                dialog.getNpc() == NonPlayerCharacter.LORD_BRITISH,
+                false
         );
     }
 

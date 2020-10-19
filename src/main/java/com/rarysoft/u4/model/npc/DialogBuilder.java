@@ -65,6 +65,7 @@ public class DialogBuilder {
                 "Lord British says: That is good.",
                 "Lord British says: Let me heal thy wounds!",
                 "Lord British says: That I cannot help thee with.",
+                "Lord British says: Fare thee well, my friend!",
                 Arrays.asList(
                         "TRUT",
                         "LOVE",
@@ -150,6 +151,7 @@ public class DialogBuilder {
                 null,
                 null,
                 "He says: That is not a subject for enlightenment.",
+                "Hawkwind says: Fare thee well and may thou complete the Quest of the Avatar!",
                 Arrays.asList(
                         "HONE-1",
                         "COMP-1",

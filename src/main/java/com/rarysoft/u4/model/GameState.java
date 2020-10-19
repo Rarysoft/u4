@@ -98,7 +98,7 @@ public class GameState {
         return playMode == PlayMode.CONVERSATION_QUERIED;
     }
 
-    public Dialog conversation() {
+    public Dialog dialog() {
         return dialog;
     }
 

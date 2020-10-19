@@ -84,65 +84,41 @@ public class Game {
     }
 
     public void onNorthPressed() {
-        if (gameState.inConversation()) {
-            endConversation();
-        }
         attemptMove(-1, 0, "north");
     }
 
     public void onNortheastPressed() {
-        if (gameState.inConversation()) {
-            endConversation();
-        }
         attemptMove(-1, 1, "northeast");
     }
 
     public void onEastPressed() {
-        if (gameState.inConversation()) {
-            endConversation();
-        }
         attemptMove(0, 1, "east");
     }
 
     public void onSoutheastPressed() {
-        if (gameState.inConversation()) {
-            endConversation();
-        }
         attemptMove(1, 1, "southeast");
     }
 
     public void onSouthPressed() {
-        if (gameState.inConversation()) {
-            endConversation();
-        }
         attemptMove(1, 0, "south");
     }
 
     public void onSouthwestPressed() {
-        if (gameState.inConversation()) {
-            endConversation();
-        }
         attemptMove(1, -1, "southwest");
     }
 
     public void onWestPressed() {
-        if (gameState.inConversation()) {
-            endConversation();
-        }
         attemptMove(0, -1, "west");
     }
 
     public void onNorthwestPressed() {
-        if (gameState.inConversation()) {
-            endConversation();
-        }
         attemptMove(-1, -1, "northwest");
     }
 
     public void onUserInput(char input) {
         if (gameState.inConversation()) {
             if (input == '\n') {
-                Dialog dialog = gameState.conversation();
+                Dialog dialog = gameState.dialog();
                 Conversation conversation;
                 if (gameState.inConversationRespondingYesOrNo()) {
                     conversation = new Conversation(dialog, gameState.playerName(), 0, 0, 0, 0, 0, 0, 0, 0).forResponse(gameState.input());
@@ -189,6 +165,9 @@ public class Game {
     }
 
     private void attemptMove(int rowDelta, int colDelta, String actionDirection) {
+        if (gameState.inConversation()) {
+            abandonConversation();
+        }
         RenderedTile renderedTile = gameState.tileAt(gameState.row() + rowDelta, gameState.col() + colDelta);
         if (renderedTile.tile() == null) {
             actionCompleted(messages.actionMove(actionDirection));
@@ -315,8 +294,13 @@ public class Game {
         spokenTo(input + "\n\n" + response + "\n\n" + (question == null ? messages.speechCitizenPrompt() : question));
     }
 
+    private void abandonConversation() {
+        Conversation conversation = new Conversation(gameState.dialog(), gameState.playerName(), 0, 0, 0, 0, 0, 0, 0, 0).forInput("BYE");
+        conversation.response().ifPresent(this::spokenTo);
+        endConversation();
+    }
+
     private void endConversation() {
-        actionCompleted("\n" + messages.speechCitizenBye());
         gameState.endConversation();
     }
 
