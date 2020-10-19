@@ -35,6 +35,9 @@ public class GameViewRenderer {
     private static final int BACKGROUND_OFFSET_X = Charset.CHAR_WIDTH;
     private static final int BACKGROUND_OFFSET_Y = Charset.CHAR_HEIGHT;
 
+    private static final int STATS_AREA_OFFSET_X = Charset.CHAR_WIDTH + 19 * Tiles.TILE_WIDTH + Charset.CHAR_WIDTH * 2;
+    private static final int STATS_AREA_OFFSET_Y = Charset.CHAR_HEIGHT;
+
     private static final int TEXT_AREA_OFFSET_X = Charset.CHAR_WIDTH + 19 * Tiles.TILE_WIDTH + Charset.CHAR_WIDTH;
     private static final int TEXT_AREA_OFFSET_Y = Charset.CHAR_HEIGHT * 19;
 
@@ -48,6 +51,8 @@ public class GameViewRenderer {
 
     private RenderedTile[][] background;
     private int animationCycle;
+
+    private List<String> statsLines = new ArrayList<>();
 
     private List<String> textLines = new ArrayList<>();
     private boolean allowInput = false;
@@ -91,10 +96,15 @@ public class GameViewRenderer {
         this.inputLine = inputLine;
     }
 
+    public void setStatistics(List<String> statsLines) {
+        this.statsLines = statsLines;
+    }
+
     public void drawGameView(Graphics graphics, int windowWidth, int windowHeight) {
         AffineTransform originalTransform = scaleToWindowSize(graphics, windowWidth, windowHeight);
         drawBorder(graphics);
         drawBackground(graphics);
+        drawStatsArea(graphics);
         drawTextArea(graphics);
         restoreOriginalTransform(graphics, originalTransform);
     }
@@ -115,61 +125,74 @@ public class GameViewRenderer {
     }
 
     private void drawBorder(Graphics graphics) {
-        drawCharacter(graphics, extendedCharset.borderCornerNorthwest(), 0, 0, false);
-        drawCharacter(graphics, extendedCharset.borderCornerSouthwest(), 39, 0, false);
+        drawCharacter(graphics, extendedCharset.borderCornerNorthwest(), 0, 0, 0, 0);
+        drawCharacter(graphics, extendedCharset.borderCornerSouthwest(), 39, 0, 0, 0);
         for (int index = 1; index < 39; index ++) {
             if (index < 18 || index > 21) {
-                drawCharacter(graphics, extendedCharset.borderHorizontal(), 0, index, false);
+                drawCharacter(graphics, extendedCharset.borderHorizontal(), 0, index, 0, 0);
             }
             else {
                 switch (index) {
                     case 18:
-                        drawCharacter(graphics, charset.data()[16], 0, index, false);
+                        drawCharacter(graphics, charset.data()[16], 0, index, 0, 0);
                         break;
                     case 19:
-                        drawCharacter(graphics, charset.data()[20 + phaseOfTrammel], 0, index, false);
+                        drawCharacter(graphics, charset.data()[20 + phaseOfTrammel], 0, index, 0, 0);
                         break;
                     case 20:
-                        drawCharacter(graphics, charset.data()[20 + phaseOfFelucca], 0, index, false);
+                        drawCharacter(graphics, charset.data()[20 + phaseOfFelucca], 0, index, 0, 0);
                         break;
                     case 21:
-                        drawCharacter(graphics, charset.data()[17], 0, index, false);
+                        drawCharacter(graphics, charset.data()[17], 0, index, 0, 0);
                         break;
                 }
             }
             if (index < 12 || index > 27) {
-                drawCharacter(graphics, extendedCharset.borderHorizontal(), 39, index, false);
+                drawCharacter(graphics, extendedCharset.borderHorizontal(), 39, index, 0, 0);
             }
             else {
                 switch (index) {
                     case 12:
-                        drawCharacter(graphics, charset.data()[16], 39, index, false);
+                        drawCharacter(graphics, charset.data()[16], 39, index, 0, 0);
                         break;
                     case 13:
-                        drawCharacter(graphics, charset.data()[87], 39, index, false);
+                        drawCharacter(graphics, charset.data()[87], 39, index, 0, 0);
                         break;
                     case 14:
-                        drawCharacter(graphics, charset.data()[105], 39, index, false);
+                        drawCharacter(graphics, charset.data()[105], 39, index, 0, 0);
                         break;
                     case 15:
-                        drawCharacter(graphics, charset.data()[110], 39, index, false);
+                        drawCharacter(graphics, charset.data()[110], 39, index, 0, 0);
                         break;
                     case 16:
-                        drawCharacter(graphics, charset.data()[100], 39, index, false);
+                        drawCharacter(graphics, charset.data()[100], 39, index, 0, 0);
                         break;
                     case 17:
-                        drawCharacter(graphics, charset.data()[58], 39, index, false);
+                        drawCharacter(graphics, charset.data()[58], 39, index, 0, 0);
                         break;
                     case 27:
-                        drawCharacter(graphics, charset.data()[17], 39, index, false);
+                        drawCharacter(graphics, charset.data()[17], 39, index, 0, 0);
                         break;
                 }
             }
-            drawCharacter(graphics, extendedCharset.getBorderVertical(), index, 0, false);
-            drawCharacter(graphics, extendedCharset.getBorderVertical(), index, 39, false);
+            drawCharacter(graphics, extendedCharset.borderVertical(), index, 0, 0, 0);
+            drawCharacter(graphics, extendedCharset.borderVertical(), index, 39, 0, 0);
         }
-        drawCharacter(graphics, extendedCharset.borderCornerNortheast(), 0, 39, false);
-        drawCharacter(graphics, extendedCharset.borderCornerSoutheast(), 39, 39, false);
+        drawCharacter(graphics, extendedCharset.borderCornerNortheast(), 0, 39, 0, 0);
+        drawCharacter(graphics, extendedCharset.borderCornerSoutheast(), 39, 39, 0, 0);
+
+        drawCharacter(graphics, extendedCharset.borderCornerNorthwest(), 0, 40, 0, 0);
+        drawCharacter(graphics, extendedCharset.borderCornerSouthwest(), 18, 40, 0, 0);
+        for (int row = 1; row < 18; row ++) {
+            drawCharacter(graphics, extendedCharset.borderVertical(), row, 40, 0, 0);
+            drawCharacter(graphics, extendedCharset.borderVertical(), row, 67, 0, 0);
+        }
+        for (int col = 41; col < 67; col ++) {
+            drawCharacter(graphics, extendedCharset.borderHorizontal(), 0, col, 0, 0);
+            drawCharacter(graphics, extendedCharset.borderHorizontal(), 18, col, 0, 0);
+        }
+        drawCharacter(graphics, extendedCharset.borderCornerNortheast(), 0, 67, 0, 0);
+        drawCharacter(graphics, extendedCharset.borderCornerSoutheast(), 18, 67, 0, 0);
     }
 
     private void drawBackground(Graphics graphics) {
@@ -590,36 +613,57 @@ public class GameViewRenderer {
                 (row + 1 >= Tiles.TILE_HEIGHT || col + 1 >= Tiles.TILE_WIDTH || tile[row + 1][col + 1] == Colours.COLOUR_BLACK);
     }
 
+    private void drawStatsArea(Graphics graphics) {
+        for (int row = 0; row < statsLines.size(); row ++) {
+            String textLine = statsLines.get(row);
+            for (int col = 0; col < textLine.length(); col ++) {
+                int charCode = textLine.charAt(col);
+                int[][] character = charset.data()[charCode];
+                drawCharacter(graphics, character, row, col, STATS_AREA_OFFSET_X, STATS_AREA_OFFSET_Y);
+            }
+        }
+        int inputRow = 19;
+        for (int index = 0; index < inputLine.length(); index ++) {
+            drawCharacter(graphics, charset.data()[inputLine.charAt(index)], inputRow, index, STATS_AREA_OFFSET_X, STATS_AREA_OFFSET_Y);
+        }
+        if (allowInput) {
+            int cursorCol = inputLine.length();
+            drawCharacter(graphics, charset.data()[31 - animationCycle % 4], inputRow, cursorCol, STATS_AREA_OFFSET_X, STATS_AREA_OFFSET_Y);
+        }
+        int emptyRow = 20;
+        for (int index = 0; index < 28; index ++) {
+            drawCharacter(graphics, charset.data()[32], emptyRow, index, STATS_AREA_OFFSET_X, STATS_AREA_OFFSET_Y);
+        }
+    }
+
     private void drawTextArea(Graphics graphics) {
         for (int row = 0; row < textLines.size(); row ++) {
             String textLine = textLines.get(row);
             for (int col = 0; col < textLine.length(); col ++) {
                 int charCode = textLine.charAt(col);
                 int[][] character = charset.data()[charCode];
-                drawCharacter(graphics, character, row, col, true);
+                drawCharacter(graphics, character, row, col, TEXT_AREA_OFFSET_X, TEXT_AREA_OFFSET_Y);
             }
         }
         int inputRow = 19;
         for (int index = 0; index < inputLine.length(); index ++) {
-            drawCharacter(graphics, charset.data()[inputLine.charAt(index)], inputRow, index, true);
+            drawCharacter(graphics, charset.data()[inputLine.charAt(index)], inputRow, index, TEXT_AREA_OFFSET_X, TEXT_AREA_OFFSET_Y);
         }
         if (allowInput) {
             int cursorCol = inputLine.length();
-            drawCharacter(graphics, charset.data()[31 - animationCycle % 4], inputRow, cursorCol, true);
+            drawCharacter(graphics, charset.data()[31 - animationCycle % 4], inputRow, cursorCol, TEXT_AREA_OFFSET_X, TEXT_AREA_OFFSET_Y);
         }
         int emptyRow = 20;
         for (int index = 0; index < 28; index ++) {
-            drawCharacter(graphics, charset.data()[32], emptyRow, index, true);
+            drawCharacter(graphics, charset.data()[32], emptyRow, index, TEXT_AREA_OFFSET_X, TEXT_AREA_OFFSET_Y);
         }
     }
 
-    private void drawCharacter(Graphics graphics, int[][] character, int row, int col, boolean applyOffset) {
+    private void drawCharacter(Graphics graphics, int[][] character, int row, int col, int xOffset, int yOffset) {
         int x = col * Charset.CHAR_WIDTH;
         int y = row * Charset.CHAR_HEIGHT;
-        if (applyOffset) {
-            y += TEXT_AREA_OFFSET_Y;
-            x += TEXT_AREA_OFFSET_X;
-        }
+            y += yOffset;
+            x += xOffset;
         for (int pixelY = 0; pixelY < Charset.CHAR_HEIGHT; pixelY ++) {
             for (int pixelX = 0; pixelX < Charset.CHAR_WIDTH; pixelX ++) {
                 int code = character[pixelY][pixelX];

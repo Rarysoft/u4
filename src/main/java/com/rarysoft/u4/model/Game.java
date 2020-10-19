@@ -278,6 +278,7 @@ public class Game {
 
     private void initializeDisplay() {
         informationListeners.forEach(InformationListener::initialize);
+        informationListeners.forEach(informationListener -> informationListener.playerUpdated(0, gameState.playerName(), String.format("%d%s", gameState.playerHitPoints(), gameState.playerStatus().displayName())));
     }
 
     private void updateBackground() {

@@ -30,7 +30,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.List;
 
-public class GamePanel extends JPanel implements BorderProvider, GameProvider, CommunicationProvider {
+public class GamePanel extends JPanel implements BorderProvider, GameProvider, StatisticsProvider, CommunicationProvider {
     private final GameViewRenderer gameViewRenderer;
 
     public GamePanel(GameViewRenderer gameViewRenderer) {
@@ -67,17 +67,23 @@ public class GamePanel extends JPanel implements BorderProvider, GameProvider, C
     }
 
     @Override
-    public void paint(Graphics graphics) {
-        super.paint(graphics);
-        Dimension windowSize = this.getParent().getSize();
-        gameViewRenderer.drawGameView(graphics, windowSize.width, windowSize.height);
-    }
-
-    @Override
     public void drawBorder(int phaseOfTrammel, int phaseOfFelucca, int windDirection) {
         gameViewRenderer.setPhaseOfTrammel(phaseOfTrammel);
         gameViewRenderer.setPhaseOfFelucca(phaseOfFelucca);
         gameViewRenderer.setWindDirection(windDirection);
         this.getParent().repaint();
+    }
+
+    @Override
+    public void showStatistics(List<String> textLines) {
+        gameViewRenderer.setStatistics(textLines);
+        this.getParent().repaint();
+    }
+
+    @Override
+    public void paint(Graphics graphics) {
+        super.paint(graphics);
+        Dimension windowSize = this.getParent().getSize();
+        gameViewRenderer.drawGameView(graphics, windowSize.width, windowSize.height);
     }
 }

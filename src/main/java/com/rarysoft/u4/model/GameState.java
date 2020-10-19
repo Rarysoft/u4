@@ -30,6 +30,7 @@ import com.rarysoft.u4.model.graphics.Tile;
 import com.rarysoft.u4.model.npc.WayFinder;
 import com.rarysoft.u4.model.party.Location;
 import com.rarysoft.u4.model.party.Party;
+import com.rarysoft.u4.model.party.Status;
 
 import java.util.HashSet;
 import java.util.Random;
@@ -59,6 +60,14 @@ public class GameState {
 
     public String playerName() {
         return party.getPlayer0().getName();
+    }
+
+    public int playerHitPoints() {
+        return party.getPlayer0().getHp();
+    }
+
+    public Status playerStatus() {
+        return party.getPlayer0().getStatus();
     }
 
     public int row() {

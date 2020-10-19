@@ -39,7 +39,7 @@ public class UiBuilder {
         GameViewRenderer gameViewRenderer = new GameViewRenderer(tiles, charset, new ExtendedCharset());
         GamePanel gamePanel = new GamePanel(gameViewRenderer);
         gameWindow.add(gamePanel, BorderLayout.CENTER);
-        game.addInformationListener(new CommunicationListener(gamePanel, gamePanel));
+        game.addInformationListener(new CommunicationListener(gamePanel, gamePanel, gamePanel));
         game.addViewListener(new GameListener(gamePanel));
     }
 

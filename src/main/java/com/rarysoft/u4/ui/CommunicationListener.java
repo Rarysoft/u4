@@ -34,18 +34,31 @@ public class CommunicationListener implements InformationListener {
     private static final int VISIBLE_LINES = 19;
 
     private final BorderProvider borderProvider;
+    private final StatisticsProvider statisticsProvider;
     private final CommunicationProvider communicationProvider;
 
+    private final List<String> statsLines = new ArrayList<>();
     private final List<String> textLines = new ArrayList<>();
 
-    public CommunicationListener(BorderProvider borderProvider, CommunicationProvider communicationProvider) {
+    public CommunicationListener(BorderProvider borderProvider, StatisticsProvider statisticsProvider, CommunicationProvider communicationProvider) {
         this.borderProvider = borderProvider;
+        this.statisticsProvider = statisticsProvider;
         this.communicationProvider = communicationProvider;
     }
 
     @Override
     public void initialize() {
+        for (int index = 0; index < 17; index ++) {
+            statsLines.add("");
+        }
         borderProvider.drawBorder(0, 0, 0);
+    }
+
+    @Override
+    public void playerUpdated(int index, String name, String status) {
+        String stat = separateNameFromStatus(name, status);
+        statsLines.set(index, stat);
+        statisticsProvider.showStatistics(statsLines);
     }
 
     @Override
@@ -68,6 +81,16 @@ public class CommunicationListener implements InformationListener {
     @Override
     public void environmentUpdated(int phaseOfTrammel, int phaseOfFelucca, int windDirection) {
         borderProvider.drawBorder(phaseOfTrammel, phaseOfFelucca, windDirection);
+    }
+
+    private String separateNameFromStatus(String name, String status) {
+        StringBuilder result = new StringBuilder();
+        result.append(name);
+        for (int index = 0; index < 26 - name.length() - status.length(); index ++) {
+            result.append(" ");
+        }
+        result.append(status);
+        return result.toString();
     }
 
     private List<String> wrapText(String text) {

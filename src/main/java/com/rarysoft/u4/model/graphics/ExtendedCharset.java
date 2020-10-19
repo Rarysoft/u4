@@ -410,7 +410,7 @@ public class ExtendedCharset {
         return BORDER_HORIZONTAL;
     }
 
-    public int[][] getBorderVertical() {
+    public int[][] borderVertical() {
         return BORDER_VERTICAL;
     }
 

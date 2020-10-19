@@ -21,18 +21,10 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.rarysoft.u4.model;
+package com.rarysoft.u4.ui;
 
-public interface InformationListener {
-    void initialize();
+import java.util.List;
 
-    void playerUpdated(int index, String name, String status);
-
-    void actionCompleted(String message);
-
-    void responseRequested(String message);
-
-    void inputReceived(String input);
-
-    void environmentUpdated(int phaseOfTrammel, int phaseOfFelucca, int windDirection);
+public interface StatisticsProvider {
+    void showStatistics(List<String> textLines);
 }
