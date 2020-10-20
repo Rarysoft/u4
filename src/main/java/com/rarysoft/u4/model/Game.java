@@ -26,6 +26,7 @@ package com.rarysoft.u4.model;
 import com.rarysoft.u4.i18n.Messages;
 import com.rarysoft.u4.model.npc.*;
 import com.rarysoft.u4.model.graphics.*;
+import com.rarysoft.u4.model.party.Location;
 
 import javax.swing.Timer;
 import java.util.*;
@@ -225,7 +226,7 @@ public class Game {
             gameState.changeCol(colDelta);
             if (renderedTile.tile().isPortal()) {
                 actionCompleted(messages.actionMove(actionDirection));
-                gameState.enter();
+                enterPortal();
                 actionCompleted(messages.actionEnter(gameState.location().displayName()));
                 afterPlayerMove();
             }
@@ -309,6 +310,34 @@ public class Game {
             return true;
         }
         return random.nextInt(100) < renderedTile.tile().walkability();
+    }
+
+    private void enterPortal() {
+        int row = gameState.row();
+        int col = gameState.col();
+        if (gameState.location() == Location.SURFACE) {
+            gameState.enter();
+        }
+        else if (gameState.location() == Location.CASTLE_BRITANNIA) {
+            if (gameState.tileAt(row, col).tile() == Tile.LADDER_DOWN) {
+                // TODO: need to check if this is the ladder down to Hythloth
+                gameState.descend();
+            }
+            else {
+                gameState.ascend();
+            }
+        }
+        else {
+            // if not on the surface or in LB's castle, the only other places with portals are the dungeons
+            if (gameState.tileAt(row, col).tile() == Tile.LADDER_DOWN) {
+                // TODO: need to confirm with the user that they want to use the ladder
+                gameState.ascend(); // in dungeons, we go down to higher numbered levels
+            }
+            else {
+                gameState.descend(); // in dungeons, we go up to lower numbered levels;
+            }
+            // TODO: what about ladders going up and down at the same time?
+        }
     }
 
     private RenderedTile[][] determinePlayerView(RenderedTile[][] view) {

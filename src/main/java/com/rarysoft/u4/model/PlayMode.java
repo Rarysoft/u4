@@ -26,5 +26,7 @@ package com.rarysoft.u4.model;
 public enum PlayMode {
     NORMAL,
     CONVERSATION,
-    CONVERSATION_QUERIED
+    CONVERSATION_QUERIED,
+    DUNGEON,
+    DUNGEON_ROOM
 }

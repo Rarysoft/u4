@@ -146,20 +146,32 @@ public class GameState {
     public void enter() {
         int row = party.getRow();
         int col = party.getCol();
-        if (map.location() == Location.SURFACE) {
-            Map map = maps.mapAt(row, col);
-            switchToMap(map);
-            surfaceCol = col;
-            surfaceRow = row;
-            party.setCurrentPartyLocation(map.location());
-            party.setDungeonLevel(map.level()); // Using this in all locations, not just dungeons
-            party.setRow(map.startRow());
-            party.setCol(map.startCol());
+        Map map = maps.mapAt(row, col);
+        switchToMap(map);
+        surfaceCol = col;
+        surfaceRow = row;
+        party.setCurrentPartyLocation(map.location());
+        party.setDungeonLevel(map.level()); // Using this in all locations, not just dungeons
+        party.setRow(map.startRow());
+        party.setCol(map.startCol());
+    }
+
+    public void ascend() {
+        int nextLevel = map.level() + 1;
+        Map nextLevelMap = maps.map(map.location(), nextLevel);
+        switchToMap(nextLevelMap);
+        party.setDungeonLevel(nextLevel);
+    }
+
+    public void descend() {
+        int nextLevel = map.level() - 1;
+        if (nextLevel == 0) {
+            returnToSurface();
         }
-        else if (map.location() == Location.CASTLE_BRITANNIA) {
-            if (row == 3 && (col == 3 || col == 27)) {
-                switchToMap(maps.map(Location.CASTLE_BRITANNIA, map.level() == 1 ? 2 : 1));
-            }
+        else {
+            Map nextLevelMap = maps.map(map.location(), nextLevel);
+            switchToMap(nextLevelMap);
+            party.setDungeonLevel(nextLevel);
         }
     }
 

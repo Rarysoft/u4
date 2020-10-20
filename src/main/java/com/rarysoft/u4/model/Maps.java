@@ -54,6 +54,14 @@ public class Maps {
         maps.put(LocationLevel.from(Location.TRINSIC, 1), loadMap(path(directory, "trinsic.ult"), Location.TRINSIC, 1, 184, 106, 15, 1));
         maps.put(LocationLevel.from(Location.VESPER, 1), loadMap(path(directory, "vesper.ult"), Location.VESPER, 1, 59, 201, 15, 1));
         maps.put(LocationLevel.from(Location.YEW, 1), loadMap(path(directory, "yew.ult"), Location.YEW, 1, 43, 58, 15, 1));
+        loadDungeonMaps(path(directory, "covetous.dng"), Location.COVETOUS, 27, 156).forEach(dungeonLevel -> maps.put(LocationLevel.from(dungeonLevel.location(), dungeonLevel.level()), dungeonLevel));
+        loadDungeonMaps(path(directory, "deceit.dng"), Location.DECEIT, 73, 240).forEach(dungeonLevel -> maps.put(LocationLevel.from(dungeonLevel.location(), dungeonLevel.level()), dungeonLevel));
+        loadDungeonMaps(path(directory, "despise.dng"), Location.DESPISE, 67, 91).forEach(dungeonLevel -> maps.put(LocationLevel.from(dungeonLevel.location(), dungeonLevel.level()), dungeonLevel));
+        loadDungeonMaps(path(directory, "destard.dng"), Location.DESTARD, 168, 72).forEach(dungeonLevel -> maps.put(LocationLevel.from(dungeonLevel.location(), dungeonLevel.level()), dungeonLevel));
+        // TODO: not sure how this will work yet; entrance to Hythloth is in LB's castle, not on the surface
+        loadDungeonMaps(path(directory, "hythloth.dng"), Location.HYTHLOTH, 0, 0).forEach(dungeonLevel -> maps.put(LocationLevel.from(dungeonLevel.location(), dungeonLevel.level()), dungeonLevel));
+        loadDungeonMaps(path(directory, "shame.dng"), Location.SHAME, 102, 58).forEach(dungeonLevel -> maps.put(LocationLevel.from(dungeonLevel.location(), dungeonLevel.level()), dungeonLevel));
+        loadDungeonMaps(path(directory, "wrong.dng"), Location.WRONG, 20, 126).forEach(dungeonLevel -> maps.put(LocationLevel.from(dungeonLevel.location(), dungeonLevel.level()), dungeonLevel));
         return new Maps(maps);
     }
 
@@ -79,6 +87,15 @@ public class Maps {
 
     private static Map loadMap(String mapFilename, Location id, int level, int worldRow, int worldCol, int startRow, int startCol) throws IOException {
         InputStream stream = Maps.class.getResourceAsStream(mapFilename);
-        return Settlement.fromStream(stream, id, level, worldCol, worldRow, startCol, startRow, Tile.GRASSLANDS);
+        return Settlement.fromStream(stream, id, level, worldRow, worldCol, startRow, startCol, Tile.GRASSLANDS);
+    }
+
+    private static List<Map> loadDungeonMaps(String mapFilename, Location id, int worldRow, int worldCol) throws IOException {
+        InputStream stream = Maps.class.getResourceAsStream(mapFilename);
+        List<Map> dungeonLevels = new ArrayList<>();
+        for (int index = 0; index < 8; index ++) {
+            dungeonLevels.add(DungeonLevel.fromStream(stream, id, index + 1, worldRow, worldCol));
+        }
+        return dungeonLevels;
     }
 }

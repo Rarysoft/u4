@@ -17,7 +17,7 @@ public class Settlement implements Map {
 
     private static final int NPC_COUNT = 32;
 
-    public static Settlement fromStream(InputStream stream, Location location, int level, int worldX, int worldY, int startX, int startY, Tile areaTile) throws IOException {
+    public static Settlement fromStream(InputStream stream, Location location, int level, int worldRow, int worldCol, int startRow, int startCol, Tile areaTile) throws IOException {
         Tile[][] data = new Tile[MAP_HEIGHT][MAP_WIDTH];
         for (int row = 0; row < MAP_HEIGHT; row ++) {
             for (int col = 0; col < MAP_WIDTH; col ++) {
@@ -63,30 +63,30 @@ public class Settlement implements Map {
                 people.add(new Person(Tile.forIndex(npcTiles[npc]), npcStartYs[npc], npcStartXs[npc], MovementBehaviour.forCode(npcMovementBehaviours[npc]), npcConversationIndexes[npc]));
             }
         }
-        return new Settlement(location, level, data, people, worldX, worldY, startX, startY, areaTile);
+        return new Settlement(location, level, data, people, worldRow, worldCol, startRow, startCol, areaTile);
     }
 
     private final Location location;
     private final int level;
-    private final int worldX;
-    private final int worldY;
-    private final int startX;
-    private final int startY;
+    private final int worldRow;
+    private final int worldCol;
+    private final int startRow;
+    private final int startCol;
     private final Tile areaTile;
 
     private final Tile[][] data;
 
     private final List<Person> people;
 
-    private Settlement(Location location, int level, Tile[][] data, List<Person> people, int worldX, int worldY, int startX, int startY, Tile areaTile) {
+    private Settlement(Location location, int level, Tile[][] data, List<Person> people, int worldRow, int worldCol, int startRow, int startCol, Tile areaTile) {
         this.location = location;
         this.level = level;
         this.data = data;
         this.people = people;
-        this.worldX = worldX;
-        this.worldY = worldY;
-        this.startX = startX;
-        this.startY = startY;
+        this.worldRow = worldRow;
+        this.worldCol = worldCol;
+        this.startRow = startRow;
+        this.startCol = startCol;
         this.areaTile = areaTile;
     }
 
@@ -107,22 +107,22 @@ public class Settlement implements Map {
 
     @Override
     public int worldRow() {
-        return worldY;
+        return worldRow;
     }
 
     @Override
     public int worldCol() {
-        return worldX;
+        return worldCol;
     }
 
     @Override
     public int startRow() {
-        return startY;
+        return startRow;
     }
 
     @Override
     public int startCol() {
-        return startX;
+        return startCol;
     }
 
     @Override
