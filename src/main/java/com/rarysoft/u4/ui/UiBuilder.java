@@ -24,8 +24,8 @@
 package com.rarysoft.u4.ui;
 
 import com.rarysoft.u4.model.Game;
-import com.rarysoft.u4.model.graphics.Charset;
-import com.rarysoft.u4.model.graphics.ExtendedCharset;
+import com.rarysoft.u4.ui.graphics.Charset;
+import com.rarysoft.u4.ui.graphics.ExtendedCharset;
 import com.rarysoft.u4.model.Tiles;
 
 import javax.swing.*;

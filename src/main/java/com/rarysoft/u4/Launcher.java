@@ -27,7 +27,7 @@ import com.rarysoft.u4.i18n.Messages;
 import com.rarysoft.u4.model.*;
 import com.rarysoft.u4.model.npc.DialogTemplate;
 import com.rarysoft.u4.model.npc.Dialogs;
-import com.rarysoft.u4.model.graphics.Charset;
+import com.rarysoft.u4.ui.graphics.Charset;
 import com.rarysoft.u4.model.Tiles;
 import com.rarysoft.u4.model.WayFinder;
 import com.rarysoft.u4.model.party.*;

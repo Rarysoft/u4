@@ -23,7 +23,7 @@
  */
 package com.rarysoft.u4.model;
 
-import com.rarysoft.u4.model.graphics.Charset;
+import com.rarysoft.u4.ui.graphics.Charset;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;

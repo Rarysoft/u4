@@ -23,8 +23,6 @@
  */
 package com.rarysoft.u4.model;
 
-import com.rarysoft.u4.model.graphics.Coordinate;
-import com.rarysoft.u4.model.graphics.Region;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;

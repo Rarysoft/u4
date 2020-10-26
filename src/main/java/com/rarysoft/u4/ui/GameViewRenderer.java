@@ -26,7 +26,7 @@ package com.rarysoft.u4.ui;
 import com.rarysoft.u4.model.RenderedTile;
 import com.rarysoft.u4.model.Tile;
 import com.rarysoft.u4.model.Tiles;
-import com.rarysoft.u4.model.graphics.*;
+import com.rarysoft.u4.ui.graphics.*;
 
 import java.awt.*;
 import java.awt.geom.AffineTransform;

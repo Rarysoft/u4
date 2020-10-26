@@ -1,4 +1,4 @@
-package com.rarysoft.u4.model.graphics;
+package com.rarysoft.u4.ui.graphics;
 
 import java.io.IOException;
 import java.io.InputStream;
