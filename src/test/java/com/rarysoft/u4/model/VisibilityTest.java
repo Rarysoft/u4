@@ -24,7 +24,6 @@
 package com.rarysoft.u4.model;
 
 import com.rarysoft.u4.model.graphics.Coordinate;
-import com.rarysoft.u4.model.graphics.Tile;
 import org.junit.Before;
 import org.junit.Test;
 

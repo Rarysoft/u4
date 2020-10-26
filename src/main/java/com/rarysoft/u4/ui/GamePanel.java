@@ -24,7 +24,7 @@
 package com.rarysoft.u4.ui;
 
 import com.rarysoft.u4.model.RenderedTile;
-import com.rarysoft.u4.model.graphics.Tiles;
+import com.rarysoft.u4.model.Tiles;
 
 import javax.swing.*;
 import java.awt.*;

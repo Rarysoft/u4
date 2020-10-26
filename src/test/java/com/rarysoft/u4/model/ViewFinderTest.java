@@ -23,43 +23,42 @@
  */
 package com.rarysoft.u4.model;
 
-import com.rarysoft.u4.model.graphics.Tile;
 import org.junit.Before;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class ViewFinderTest {
-    private Tile[][] area;
+    private Area<Tile> area;
 
     @Before
     public void prepareArea() {
         // prepare a large area (99 x 99) with an identifying feature around the center tile
-        area = new Tile[99][99];
+        Tile[][] tiles = new Tile[99][99];
         for (int row = 0; row < 99; row ++) {
             for (int col = 0; col < 99; col ++) {
-                area[row][col] = Tile.BRICK_FLOOR;
+                tiles[row][col] = Tile.BRICK_FLOOR;
             }
         }
-        area[49][50] = Tile.BRICK_WALL;
-        area[50][49] = Tile.BRICK_WALL;
-        area[50][51] = Tile.BRICK_WALL;
-        area[51][50] = Tile.BRICK_WALL;
+        tiles[49][50] = Tile.BRICK_WALL;
+        tiles[50][49] = Tile.BRICK_WALL;
+        tiles[50][51] = Tile.BRICK_WALL;
+        tiles[51][50] = Tile.BRICK_WALL;
+        area = new Area<>(tiles);
     }
 
     @Test
     public void viewWhenFullViewAvailableReturnsCorrectViewAroundTargetCenter() {
         ViewFinder viewFinder = new ViewFinder();
 
-        Tile[][] result = viewFinder.view(area, Tile.GRASSLANDS, 3, 50, 50);
+        Area<Tile> result = viewFinder.view(area, Tile.GRASSLANDS, 3, 50, 50);
 
         assertThat(result).isNotNull();
-        assertThat(result).hasSize(7);
+        assertThat(result.rows()).isEqualTo(7);
+        assertThat(result.cols()).isEqualTo(7);
         for (int row = 0; row < 7; row ++) {
-            Tile[] rowOfTiles = result[row];
-            assertThat(rowOfTiles).hasSize(7);
             for (int col = 0; col < 7; col ++) {
-                Tile tile = rowOfTiles[col];
+                Tile tile = result.get(row, col);
                 Tile expectedTile = Tile.BRICK_FLOOR;
                 if ((row == 2 && col == 3) || (row == 3 && (col == 2 || col == 4)) || (row == 4 && col == 3)) {
                     expectedTile = Tile.BRICK_WALL;
@@ -73,15 +72,14 @@ public class ViewFinderTest {
     public void viewWhenNorthPartUnavailableReturnsCorrectViewAroundTargetCenter() {
         ViewFinder viewFinder = new ViewFinder();
 
-        Tile[][] result = viewFinder.view(area, Tile.GRASSLANDS, 3, 1, 50);
+        Area<Tile> result = viewFinder.view(area, Tile.GRASSLANDS, 3, 1, 50);
 
         assertThat(result).isNotNull();
-        assertThat(result).hasSize(7);
+        assertThat(result.rows()).isEqualTo(7);
+        assertThat(result.cols()).isEqualTo(7);
         for (int row = 0; row < 7; row ++) {
-            Tile[] rowOfTiles = result[row];
-            assertThat(rowOfTiles).hasSize(7);
             for (int col = 0; col < 7; col ++) {
-                Tile tile = rowOfTiles[col];
+                Tile tile = result.get(row, col);
                 Tile expectedTile = Tile.BRICK_FLOOR;
                 if (row < 2) {
                     expectedTile = Tile.GRASSLANDS;
@@ -95,15 +93,14 @@ public class ViewFinderTest {
     public void viewWhenNortheastPartUnavailableReturnsCorrectViewAroundTargetCenter() {
         ViewFinder viewFinder = new ViewFinder();
 
-        Tile[][] result = viewFinder.view(area, Tile.GRASSLANDS, 3, 1, 97);
+        Area<Tile> result = viewFinder.view(area, Tile.GRASSLANDS, 3, 1, 97);
 
         assertThat(result).isNotNull();
-        assertThat(result).hasSize(7);
+        assertThat(result.rows()).isEqualTo(7);
+        assertThat(result.cols()).isEqualTo(7);
         for (int row = 0; row < 7; row ++) {
-            Tile[] rowOfTiles = result[row];
-            assertThat(rowOfTiles).hasSize(7);
             for (int col = 0; col < 7; col ++) {
-                Tile tile = rowOfTiles[col];
+                Tile tile = result.get(row, col);
                 Tile expectedTile = Tile.BRICK_FLOOR;
                 if (row < 2 || col > 4) {
                     expectedTile = Tile.GRASSLANDS;
@@ -117,15 +114,14 @@ public class ViewFinderTest {
     public void viewWhenEastPartUnavailableReturnsCorrectViewAroundTargetCenter() {
         ViewFinder viewFinder = new ViewFinder();
 
-        Tile[][] result = viewFinder.view(area, Tile.GRASSLANDS, 3, 50, 97);
+        Area<Tile> result = viewFinder.view(area, Tile.GRASSLANDS, 3, 50, 97);
 
         assertThat(result).isNotNull();
-        assertThat(result).hasSize(7);
+        assertThat(result.rows()).isEqualTo(7);
+        assertThat(result.cols()).isEqualTo(7);
         for (int row = 0; row < 7; row ++) {
-            Tile[] rowOfTiles = result[row];
-            assertThat(rowOfTiles).hasSize(7);
             for (int col = 0; col < 7; col ++) {
-                Tile tile = rowOfTiles[col];
+                Tile tile = result.get(row, col);
                 Tile expectedTile = Tile.BRICK_FLOOR;
                 if (col > 4) {
                     expectedTile = Tile.GRASSLANDS;
@@ -139,15 +135,14 @@ public class ViewFinderTest {
     public void viewWhenSoutheastPartUnavailableReturnsCorrectViewAroundTargetCenter() {
         ViewFinder viewFinder = new ViewFinder();
 
-        Tile[][] result = viewFinder.view(area, Tile.GRASSLANDS, 3, 97, 97);
+        Area<Tile> result = viewFinder.view(area, Tile.GRASSLANDS, 3, 97, 97);
 
         assertThat(result).isNotNull();
-        assertThat(result).hasSize(7);
+        assertThat(result.rows()).isEqualTo(7);
+        assertThat(result.cols()).isEqualTo(7);
         for (int row = 0; row < 7; row ++) {
-            Tile[] rowOfTiles = result[row];
-            assertThat(rowOfTiles).hasSize(7);
             for (int col = 0; col < 7; col ++) {
-                Tile tile = rowOfTiles[col];
+                Tile tile = result.get(row, col);
                 Tile expectedTile = Tile.BRICK_FLOOR;
                 if (row > 4 || col > 4) {
                     expectedTile = Tile.GRASSLANDS;
@@ -161,15 +156,14 @@ public class ViewFinderTest {
     public void viewWhenSouthPartUnavailableReturnsCorrectViewAroundTargetCenter() {
         ViewFinder viewFinder = new ViewFinder();
 
-        Tile[][] result = viewFinder.view(area, Tile.GRASSLANDS, 3, 97, 50);
+        Area<Tile> result = viewFinder.view(area, Tile.GRASSLANDS, 3, 97, 50);
 
         assertThat(result).isNotNull();
-        assertThat(result).hasSize(7);
+        assertThat(result.rows()).isEqualTo(7);
+        assertThat(result.cols()).isEqualTo(7);
         for (int row = 0; row < 7; row ++) {
-            Tile[] rowOfTiles = result[row];
-            assertThat(rowOfTiles).hasSize(7);
             for (int col = 0; col < 7; col ++) {
-                Tile tile = rowOfTiles[col];
+                Tile tile = result.get(row, col);
                 Tile expectedTile = Tile.BRICK_FLOOR;
                 if (row > 4) {
                     expectedTile = Tile.GRASSLANDS;
@@ -183,15 +177,14 @@ public class ViewFinderTest {
     public void viewWhenSouthwestPartUnavailableReturnsCorrectViewAroundTargetCenter() {
         ViewFinder viewFinder = new ViewFinder();
 
-        Tile[][] result = viewFinder.view(area, Tile.GRASSLANDS, 3, 97, 1);
+        Area<Tile> result = viewFinder.view(area, Tile.GRASSLANDS, 3, 97, 1);
 
         assertThat(result).isNotNull();
-        assertThat(result).hasSize(7);
+        assertThat(result.rows()).isEqualTo(7);
+        assertThat(result.cols()).isEqualTo(7);
         for (int row = 0; row < 7; row ++) {
-            Tile[] rowOfTiles = result[row];
-            assertThat(rowOfTiles).hasSize(7);
             for (int col = 0; col < 7; col ++) {
-                Tile tile = rowOfTiles[col];
+                Tile tile = result.get(row, col);
                 Tile expectedTile = Tile.BRICK_FLOOR;
                 if (row > 4 || col < 2) {
                     expectedTile = Tile.GRASSLANDS;
@@ -205,15 +198,14 @@ public class ViewFinderTest {
     public void viewWhenWestPartUnavailableReturnsCorrectViewAroundTargetCenter() {
         ViewFinder viewFinder = new ViewFinder();
 
-        Tile[][] result = viewFinder.view(area, Tile.GRASSLANDS, 3, 50, 1);
+        Area<Tile> result = viewFinder.view(area, Tile.GRASSLANDS, 3, 50, 1);
 
         assertThat(result).isNotNull();
-        assertThat(result).hasSize(7);
+        assertThat(result.rows()).isEqualTo(7);
+        assertThat(result.cols()).isEqualTo(7);
         for (int row = 0; row < 7; row ++) {
-            Tile[] rowOfTiles = result[row];
-            assertThat(rowOfTiles).hasSize(7);
             for (int col = 0; col < 7; col ++) {
-                Tile tile = rowOfTiles[col];
+                Tile tile = result.get(row, col);
                 Tile expectedTile = Tile.BRICK_FLOOR;
                 if (col < 2) {
                     expectedTile = Tile.GRASSLANDS;
@@ -227,15 +219,14 @@ public class ViewFinderTest {
     public void viewWhenNorthwestPartUnavailableReturnsCorrectViewAroundTargetCenter() {
         ViewFinder viewFinder = new ViewFinder();
 
-        Tile[][] result = viewFinder.view(area, Tile.GRASSLANDS, 3, 1, 1);
+        Area<Tile> result = viewFinder.view(area, Tile.GRASSLANDS, 3, 1, 1);
 
         assertThat(result).isNotNull();
-        assertThat(result).hasSize(7);
+        assertThat(result.rows()).isEqualTo(7);
+        assertThat(result.cols()).isEqualTo(7);
         for (int row = 0; row < 7; row ++) {
-            Tile[] rowOfTiles = result[row];
-            assertThat(rowOfTiles).hasSize(7);
             for (int col = 0; col < 7; col ++) {
-                Tile tile = rowOfTiles[col];
+                Tile tile = result.get(row, col);
                 Tile expectedTile = Tile.BRICK_FLOOR;
                 if (row < 2 || col < 2) {
                     expectedTile = Tile.GRASSLANDS;

@@ -135,9 +135,7 @@ public class Game {
                 if (conversation.question().isPresent()) {
                     gameState.playerQueried();
                 }
-                conversation.affectedVirtue().ifPresent(virtue -> {
-                    // TODO check conversation.virtueDelta() and apply accordingly
-                });
+                gameState.adjustKarma(Virtue.HUMILITY, conversation.humilityDelta());
                 if (conversation.healPlayer()) {
                     // TODO heal the party
                 }
@@ -170,6 +168,7 @@ public class Game {
             abandonConversation();
         }
         RenderedTile renderedTile = gameState.tileAt(gameState.row() + rowDelta, gameState.col() + colDelta);
+        Optional<Person> npc = gameState.personAt(gameState.row() + rowDelta, gameState.col() + colDelta);
         if (renderedTile.tile() == null) {
             actionCompleted(messages.actionMove(actionDirection));
             gameState.returnToSurface();
@@ -183,11 +182,11 @@ public class Game {
                     actionCompleted(messages.actionOpen(actionDirection));
                 }
                 else if (renderedTile.tile().canTalkThrough()) {
-                    RenderedTile adjacentTile = gameState.tileAt(gameState.row() + rowDelta + rowDelta, gameState.col() + colDelta + colDelta);
-                    if (adjacentTile.person().isPresent()) {
+                    Optional<Person> adjacentPerson = gameState.personAt(gameState.row() + rowDelta + rowDelta, gameState.col() + colDelta + colDelta);
+                    adjacentPerson.ifPresent(person -> {
                         actionCompleted(messages.actionTalk(actionDirection));
-                        attemptConversationWith(adjacentTile.person().get());
-                    }
+                        attemptConversationWith(person);
+                    });
                 }
                 else {
                     actionCompleted(messages.actionMove(actionDirection));
@@ -210,9 +209,9 @@ public class Game {
                 afterPlayerMove();
                 return;
             }
-            if (renderedTile.person().isPresent()) {
+            if (npc.isPresent()) {
                 actionCompleted(messages.actionTalk(actionDirection));
-                attemptConversationWith(renderedTile.person().get());
+                attemptConversationWith(npc.get());
                 afterPlayerMove();
                 return;
             }

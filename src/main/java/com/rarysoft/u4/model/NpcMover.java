@@ -21,11 +21,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.rarysoft.u4.model.npc;
+package com.rarysoft.u4.model;
 
-import com.rarysoft.u4.model.PeopleMover;
-import com.rarysoft.u4.model.ViewFinder;
-import com.rarysoft.u4.model.graphics.Tile;
+import com.rarysoft.u4.model.npc.Movement;
+import com.rarysoft.u4.model.npc.Person;
+import com.rarysoft.u4.model.npc.WayFinder;
 
 import java.util.List;
 import java.util.Random;
@@ -43,7 +43,7 @@ public class NpcMover implements PeopleMover {
         this.wayFinder = wayFinder;
     }
 
-    public void movePeople(Tile[][] area, List<Person> people, int playerRow, int playerCol, Person excluded) {
+    public void movePeople(Area<Tile> area, List<Person> people, int playerRow, int playerCol, Person excluded) {
         people.forEach(person -> {
             if (person == excluded) {
                 return;
@@ -70,7 +70,7 @@ public class NpcMover implements PeopleMover {
         });
     }
 
-    private void wander(List<Person> people, Person person, int playerRow, int playerCol, Tile[][] area) {
+    private void wander(List<Person> people, Person person, int playerRow, int playerCol, Area<Tile> area) {
         int direction = random.nextInt(9);
         // 0 = stay still
         // 1 = NW
@@ -93,7 +93,7 @@ public class NpcMover implements PeopleMover {
         }
     }
 
-    private void follow(List<Person> people, Person person, int playerRow, int playerCol, Tile[][] area) {
+    private void follow(List<Person> people, Person person, int playerRow, int playerCol, Area<Tile> area) {
         attemptToMoveTowardPlayer(
                 people,
                 person,
@@ -102,24 +102,19 @@ public class NpcMover implements PeopleMover {
                 area);
     }
 
-    private void attack(List<Person> people, Person person, int playerRow, int playerCol, Tile[][] area) {
+    private void attack(List<Person> people, Person person, int playerRow, int playerCol, Area<Tile> area) {
         // TODO: need to implement combat; for now just follow
         follow(people, person, playerRow, playerCol, area);
     }
 
-    private void attemptToMoveTo(List<Person> people, Person person, int row, int col, int playerRow, int playerCol, Tile[][] area) {
-        if (row < 0 || row >= area.length || col < 0 || col >= area[row].length) {
+    private void attemptToMoveTo(List<Person> people, Person person, int row, int col, int playerRow, int playerCol, Area<Tile> area) {
+        if (row < 0 || row >= area.rows() || col < 0 || col >= area.cols()) {
             return;
         }
         if (row == playerRow && col == playerCol) {
             return;
         }
-        Tile tile = area[row][col];
-        if (tile == Tile.HIDDEN_PASSAGE) {
-            // NPCs don't go through hidden passages
-            return;
-        }
-        int walkability = tile.walkability();
+        int walkability = area.get(row, col).walkability();
         if (walkability < 100 && random.nextInt(100) >= walkability) {
             return;
         }
@@ -129,11 +124,11 @@ public class NpcMover implements PeopleMover {
         person.moveTo(row, col);
     }
 
-    private void attemptToMoveTowardPlayer(List<Person> people, Person person, int playerRow, int playerCol, Tile[][] area) {
+    private void attemptToMoveTowardPlayer(List<Person> people, Person person, int playerRow, int playerCol, Area<Tile> area) {
         int personViewRadius = 9;
         int playerRowInPersonViewArea = playerRow - person.row() + personViewRadius;
         int playerColInPersonViewArea = playerCol - person.col() + personViewRadius;
-        Movement movement = wayFinder.selectMovementTowardTarget(viewFinder.view(area, Tile.GRASSLANDS, personViewRadius, person.row(), person.col()), playerRowInPersonViewArea, playerColInPersonViewArea);
+        Movement movement = wayFinder.selectMovementTowardTarget(viewFinder.view(area, Tile.GRASSLANDS, personViewRadius, person.row(), person.col()).map(Tile::walkability), playerRowInPersonViewArea, playerColInPersonViewArea);
         if (! movement.isStatic()) {
             attemptToMoveTo(people, person, person.row() + movement.getDeltaRow(), person.col() + movement.getDeltaCol(), playerRow, playerCol, area);
         }

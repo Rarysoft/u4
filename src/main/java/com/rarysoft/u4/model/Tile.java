@@ -1,4 +1,4 @@
-package com.rarysoft.u4.model.graphics;
+package com.rarysoft.u4.model;
 
 import java.util.stream.Stream;
 

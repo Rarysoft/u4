@@ -23,7 +23,9 @@
  */
 package com.rarysoft.u4.model.npc;
 
-import com.rarysoft.u4.model.graphics.Tile;
+import com.rarysoft.u4.model.Area;
+import com.rarysoft.u4.model.NpcMover;
+import com.rarysoft.u4.model.Tile;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -47,12 +49,12 @@ public class NpcMoverTest {
 
     @Test
     public void movePeopleWhenPersonIsFixedThenPersonStaysStill() {
-        Tile[][] area = new Tile[][] {
+        Area<Tile> area = new Area<>(new Tile[][] {
                 { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR },
                 { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR },
                 { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR }
-        };
-        Person person = new Person(Tile.CITIZEN_1, 1, 1, MovementBehaviour.FIXED, 0);
+        });
+        Person person = new Person(NonPlayerCharacter.CITIZEN, 1, 1, 1, MovementBehaviour.FIXED, 0);
         List<Person> people = Collections.singletonList(person);
 
         npcMover.movePeople(area, people, 10, 10, null);
@@ -64,12 +66,12 @@ public class NpcMoverTest {
 
     @Test
     public void movePeopleWhenPersonIsWanderButIsBlockedThenPersonStaysStill() {
-        Tile[][] area = new Tile[][] {
+        Area<Tile> area = new Area<>(new Tile[][] {
                 { Tile.BRICK_WALL, Tile.BRICK_WALL, Tile.BRICK_WALL },
                 { Tile.BRICK_WALL, Tile.BRICK_FLOOR, Tile.BRICK_WALL },
                 { Tile.BRICK_WALL, Tile.BRICK_WALL, Tile.BRICK_WALL }
-        };
-        Person person = new Person(Tile.CITIZEN_1, 1, 1, MovementBehaviour.WANDER, 0);
+        });
+        Person person = new Person(NonPlayerCharacter.CITIZEN, 1, 1, 1, MovementBehaviour.WANDER, 0);
         List<Person> people = Collections.singletonList(person);
         when(random.nextInt(9)).thenReturn(2);
 
@@ -81,12 +83,12 @@ public class NpcMoverTest {
 
     @Test
     public void movePeopleWhenPersonIsWanderAndStayIsChosenThenPersonStaysStill() {
-        Tile[][] area = new Tile[][] {
+        Area<Tile> area = new Area<>(new Tile[][] {
                 { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR },
                 { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR },
                 { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR }
-        };
-        Person person = new Person(Tile.CITIZEN_1, 1, 1, MovementBehaviour.WANDER, 0);
+        });
+        Person person = new Person(NonPlayerCharacter.CITIZEN, 1, 1, 1, MovementBehaviour.WANDER, 0);
         List<Person> people = Collections.singletonList(person);
         when(random.nextInt(9)).thenReturn(0);
 
@@ -98,12 +100,12 @@ public class NpcMoverTest {
 
     @Test
     public void movePeopleWhenPersonIsWanderAndNorthwestIsChosenThenPersonMovesNorthwest() {
-        Tile[][] area = new Tile[][] {
+        Area<Tile> area = new Area<>(new Tile[][] {
                 { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR },
                 { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR },
                 { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR }
-        };
-        Person person = new Person(Tile.CITIZEN_1, 1, 1, MovementBehaviour.WANDER, 0);
+        });
+        Person person = new Person(NonPlayerCharacter.CITIZEN, 1, 1, 1, MovementBehaviour.WANDER, 0);
         List<Person> people = Collections.singletonList(person);
         when(random.nextInt(9)).thenReturn(1);
 
@@ -115,12 +117,12 @@ public class NpcMoverTest {
 
     @Test
     public void movePeopleWhenPersonIsWanderAndNorthIsChosenThenPersonMovesNorth() {
-        Tile[][] area = new Tile[][] {
+        Area<Tile> area = new Area<>(new Tile[][] {
                 { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR },
                 { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR },
                 { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR }
-        };
-        Person person = new Person(Tile.CITIZEN_1, 1, 1, MovementBehaviour.WANDER, 0);
+        });
+        Person person = new Person(NonPlayerCharacter.CITIZEN, 1, 1, 1, MovementBehaviour.WANDER, 0);
         List<Person> people = Collections.singletonList(person);
         when(random.nextInt(9)).thenReturn(2);
 
@@ -132,12 +134,12 @@ public class NpcMoverTest {
 
     @Test
     public void movePeopleWhenPersonIsWanderAndNortheastIsChosenThenPersonMovesNortheast() {
-        Tile[][] area = new Tile[][] {
+        Area<Tile> area = new Area<>(new Tile[][] {
                 { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR },
                 { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR },
                 { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR }
-        };
-        Person person = new Person(Tile.CITIZEN_1, 1, 1, MovementBehaviour.WANDER, 0);
+        });
+        Person person = new Person(NonPlayerCharacter.CITIZEN, 1, 1, 1, MovementBehaviour.WANDER, 0);
         List<Person> people = Collections.singletonList(person);
         when(random.nextInt(9)).thenReturn(3);
 
@@ -149,12 +151,12 @@ public class NpcMoverTest {
 
     @Test
     public void movePeopleWhenPersonIsWanderAndWestIsChosenThenPersonMovesWest() {
-        Tile[][] area = new Tile[][] {
+        Area<Tile> area = new Area<>(new Tile[][] {
                 { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR },
                 { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR },
                 { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR }
-        };
-        Person person = new Person(Tile.CITIZEN_1, 1, 1, MovementBehaviour.WANDER, 0);
+        });
+        Person person = new Person(NonPlayerCharacter.CITIZEN, 1, 1, 1, MovementBehaviour.WANDER, 0);
         List<Person> people = Collections.singletonList(person);
         when(random.nextInt(9)).thenReturn(4);
 
@@ -166,12 +168,12 @@ public class NpcMoverTest {
 
     @Test
     public void movePeopleWhenPersonIsWanderAndEastIsChosenThenPersonMovesEast() {
-        Tile[][] area = new Tile[][] {
+        Area<Tile> area = new Area<>(new Tile[][] {
                 { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR },
                 { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR },
                 { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR }
-        };
-        Person person = new Person(Tile.CITIZEN_1, 1, 1, MovementBehaviour.WANDER, 0);
+        });
+        Person person = new Person(NonPlayerCharacter.CITIZEN, 1, 1, 1, MovementBehaviour.WANDER, 0);
         List<Person> people = Collections.singletonList(person);
         when(random.nextInt(9)).thenReturn(5);
 
@@ -183,12 +185,12 @@ public class NpcMoverTest {
 
     @Test
     public void movePeopleWhenPersonIsWanderAndSouthwestIsChosenThenPersonMovesSouthwest() {
-        Tile[][] area = new Tile[][] {
+        Area<Tile> area = new Area<>(new Tile[][] {
                 { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR },
                 { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR },
                 { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR }
-        };
-        Person person = new Person(Tile.CITIZEN_1, 1, 1, MovementBehaviour.WANDER, 0);
+        });
+        Person person = new Person(NonPlayerCharacter.CITIZEN, 1, 1, 1, MovementBehaviour.WANDER, 0);
         List<Person> people = Collections.singletonList(person);
         when(random.nextInt(9)).thenReturn(6);
 
@@ -200,12 +202,12 @@ public class NpcMoverTest {
 
     @Test
     public void movePeopleWhenPersonIsWanderAndSouthIsChosenThenPersonMovesSouth() {
-        Tile[][] area = new Tile[][] {
+        Area<Tile> area = new Area<>(new Tile[][] {
                 { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR },
                 { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR },
                 { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR }
-        };
-        Person person = new Person(Tile.CITIZEN_1, 1, 1, MovementBehaviour.WANDER, 0);
+        });
+        Person person = new Person(NonPlayerCharacter.CITIZEN, 1, 1, 1, MovementBehaviour.WANDER, 0);
         List<Person> people = Collections.singletonList(person);
         when(random.nextInt(9)).thenReturn(7);
 
@@ -217,12 +219,12 @@ public class NpcMoverTest {
 
     @Test
     public void movePeopleWhenPersonIsWanderAndSoutheastIsChosenThenPersonMovesSoutheast() {
-        Tile[][] area = new Tile[][] {
+        Area<Tile> area = new Area<>(new Tile[][] {
                 { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR },
                 { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR },
                 { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR }
-        };
-        Person person = new Person(Tile.CITIZEN_1, 1, 1, MovementBehaviour.WANDER, 0);
+        });
+        Person person = new Person(NonPlayerCharacter.CITIZEN, 1, 1, 1, MovementBehaviour.WANDER, 0);
         List<Person> people = Collections.singletonList(person);
         when(random.nextInt(9)).thenReturn(8);
 
@@ -234,12 +236,12 @@ public class NpcMoverTest {
 
     @Test
     public void movePeopleWhenPersonIsWanderAndTargetTileSlowsProgressThenPersonStaysStill() {
-        Tile[][] area = new Tile[][] {
+        Area<Tile> area = new Area<>(new Tile[][] {
                 { Tile.SCRUBLAND, Tile.SCRUBLAND, Tile.SCRUBLAND },
                 { Tile.SCRUBLAND, Tile.SCRUBLAND, Tile.SCRUBLAND },
                 { Tile.SCRUBLAND, Tile.SCRUBLAND, Tile.SCRUBLAND }
-        };
-        Person person = new Person(Tile.CITIZEN_1, 1, 1, MovementBehaviour.WANDER, 0);
+        });
+        Person person = new Person(NonPlayerCharacter.CITIZEN, 1, 1, 1, MovementBehaviour.WANDER, 0);
         List<Person> people = Collections.singletonList(person);
         when(random.nextInt(9)).thenReturn(2);
         when(random.nextInt(100)).thenReturn(60);
@@ -252,12 +254,12 @@ public class NpcMoverTest {
 
     @Test
     public void movePeopleWhenPersonIsWanderAndTargetTileFailsToSlowProgressThenPersonMoves() {
-        Tile[][] area = new Tile[][] {
+        Area<Tile> area = new Area<>(new Tile[][] {
                 { Tile.SCRUBLAND, Tile.SCRUBLAND, Tile.SCRUBLAND },
                 { Tile.SCRUBLAND, Tile.SCRUBLAND, Tile.SCRUBLAND },
                 { Tile.SCRUBLAND, Tile.SCRUBLAND, Tile.SCRUBLAND }
-        };
-        Person person = new Person(Tile.CITIZEN_1, 1, 1, MovementBehaviour.WANDER, 0);
+        });
+        Person person = new Person(NonPlayerCharacter.CITIZEN, 1, 1, 1, MovementBehaviour.WANDER, 0);
         List<Person> people = Collections.singletonList(person);
         when(random.nextInt(9)).thenReturn(2);
         when(random.nextInt(100)).thenReturn(59);
@@ -270,12 +272,12 @@ public class NpcMoverTest {
 
     @Test
     public void movePeopleWhenPersonIsFollowAndPlayerIsNorthOfPersonThenPersonMovesNorth() {
-        Tile[][] area = new Tile[][] {
+        Area<Tile> area = new Area<>(new Tile[][] {
                 { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR },
                 { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR },
                 { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR }
-        };
-        Person person = new Person(Tile.CITIZEN_1, 2, 1, MovementBehaviour.FOLLOW, 0);
+        });
+        Person person = new Person(NonPlayerCharacter.CITIZEN, 1, 2, 1, MovementBehaviour.FOLLOW, 0);
         List<Person> people = Collections.singletonList(person);
 
         npcMover.movePeople(area, people, 0, 1, null);
@@ -286,12 +288,12 @@ public class NpcMoverTest {
 
     @Test
     public void movePeopleWhenPersonIsFollowAndPlayerIsNorthOfPersonAndPersonIsBlockedThenPersonStaysStill() {
-        Tile[][] area = new Tile[][] {
+        Area<Tile> area = new Area<>(new Tile[][] {
                 { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR },
                 { Tile.BRICK_WALL, Tile.BRICK_WALL, Tile.BRICK_WALL },
                 { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR }
-        };
-        Person person = new Person(Tile.CITIZEN_1, 2, 1, MovementBehaviour.FOLLOW, 0);
+        });
+        Person person = new Person(NonPlayerCharacter.CITIZEN, 1, 2, 1, MovementBehaviour.FOLLOW, 0);
         List<Person> people = Collections.singletonList(person);
 
         npcMover.movePeople(area, people, 0, 1, null);
@@ -302,12 +304,12 @@ public class NpcMoverTest {
 
     @Test
     public void movePeopleWhenPersonIsFollowAndPlayerIsNorthOfPersonAndPersonIsPartiallyBlockedWithNortheastAccessThenPersonMovesNortheast() {
-        Tile[][] area = new Tile[][] {
+        Area<Tile> area = new Area<>(new Tile[][] {
                 { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR },
                 { Tile.BRICK_WALL, Tile.BRICK_WALL, Tile.BRICK_FLOOR },
                 { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR }
-        };
-        Person person = new Person(Tile.CITIZEN_1, 2, 1, MovementBehaviour.FOLLOW, 0);
+        });
+        Person person = new Person(NonPlayerCharacter.CITIZEN, 1, 2, 1, MovementBehaviour.FOLLOW, 0);
         List<Person> people = Collections.singletonList(person);
 
         npcMover.movePeople(area, people, 0, 1, null);
@@ -318,12 +320,12 @@ public class NpcMoverTest {
 
     @Test
     public void movePeopleWhenPersonIsFollowAndPlayerIsNorthOfPersonAndPersonIsPartiallyBlockedWithNorthwestAccessThenPersonMovesNorthwest() {
-        Tile[][] area = new Tile[][] {
+        Area<Tile> area = new Area<>(new Tile[][] {
                 { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR },
                 { Tile.BRICK_FLOOR, Tile.BRICK_WALL, Tile.BRICK_WALL },
                 { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR }
-        };
-        Person person = new Person(Tile.CITIZEN_1, 2, 1, MovementBehaviour.FOLLOW, 0);
+        });
+        Person person = new Person(NonPlayerCharacter.CITIZEN, 1, 2, 1, MovementBehaviour.FOLLOW, 0);
         List<Person> people = Collections.singletonList(person);
 
         npcMover.movePeople(area, people, 0, 1, null);
@@ -334,12 +336,12 @@ public class NpcMoverTest {
 
     @Test
     public void movePeopleWhenPersonIsFollowAndPlayerIsNorthOfPersonAndPersonIsPartiallyBlockedWithNortheastAndNorthwestAccessThenPersonMovesNorthwest() {
-        Tile[][] area = new Tile[][] {
+        Area<Tile> area = new Area<>(new Tile[][] {
                 { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR },
                 { Tile.BRICK_FLOOR, Tile.BRICK_WALL, Tile.BRICK_FLOOR },
                 { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR }
-        };
-        Person person = new Person(Tile.CITIZEN_1, 2, 1, MovementBehaviour.FOLLOW, 0);
+        });
+        Person person = new Person(NonPlayerCharacter.CITIZEN, 1, 2, 1, MovementBehaviour.FOLLOW, 0);
         List<Person> people = Collections.singletonList(person);
         when(random.nextBoolean()).thenReturn(true);
 
@@ -351,12 +353,12 @@ public class NpcMoverTest {
 
     @Test
     public void movePeopleWhenPersonIsFollowAndPlayerIsNorthOfPersonAndPersonIsPartiallyBlockedWithNortheastAndNorthwestAccessThenPersonMovesNortheast() {
-        Tile[][] area = new Tile[][] {
+        Area<Tile> area = new Area<>(new Tile[][] {
                 { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR },
                 { Tile.BRICK_FLOOR, Tile.BRICK_WALL, Tile.BRICK_FLOOR },
                 { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR }
-        };
-        Person person = new Person(Tile.CITIZEN_1, 2, 1, MovementBehaviour.FOLLOW, 0);
+        });
+        Person person = new Person(NonPlayerCharacter.CITIZEN, 1, 2, 1, MovementBehaviour.FOLLOW, 0);
         List<Person> people = Collections.singletonList(person);
         when(random.nextBoolean()).thenReturn(false);
 
@@ -368,12 +370,12 @@ public class NpcMoverTest {
 
     @Test
     public void movePeopleWhenPersonIsFollowAndPlayerIsNortheastOfPersonThenPersonMovesNortheast() {
-        Tile[][] area = new Tile[][] {
+        Area<Tile> area = new Area<>(new Tile[][] {
                 { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR },
                 { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR },
                 { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR }
-        };
-        Person person = new Person(Tile.CITIZEN_1, 2, 0, MovementBehaviour.FOLLOW, 0);
+        });
+        Person person = new Person(NonPlayerCharacter.CITIZEN, 1, 2, 0, MovementBehaviour.FOLLOW, 0);
         List<Person> people = Collections.singletonList(person);
 
         npcMover.movePeople(area, people, 0, 2, null);
@@ -384,12 +386,12 @@ public class NpcMoverTest {
 
     @Test
     public void movePeopleWhenPersonIsFollowAndPlayerIsNortheastOfPersonAndPersonIsBlockedOnNorthSideThenPersonMovesEast() {
-        Tile[][] area = new Tile[][] {
+        Area<Tile> area = new Area<>(new Tile[][] {
                 { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR },
                 { Tile.BRICK_WALL, Tile.BRICK_WALL, Tile.BRICK_FLOOR },
                 { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR }
-        };
-        Person person = new Person(Tile.CITIZEN_1, 2, 0, MovementBehaviour.FOLLOW, 0);
+        });
+        Person person = new Person(NonPlayerCharacter.CITIZEN, 1, 2, 0, MovementBehaviour.FOLLOW, 0);
         List<Person> people = Collections.singletonList(person);
 
         npcMover.movePeople(area, people, 0, 2, null);
@@ -400,12 +402,12 @@ public class NpcMoverTest {
 
     @Test
     public void movePeopleWhenPersonIsFollowAndPlayerIsNortheastOfPersonAndPersonIsBlockedOnEastSideThenPersonMovesNorth() {
-        Tile[][] area = new Tile[][] {
+        Area<Tile> area = new Area<>(new Tile[][] {
                 { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR },
                 { Tile.BRICK_FLOOR, Tile.BRICK_WALL, Tile.BRICK_FLOOR },
                 { Tile.BRICK_FLOOR, Tile.BRICK_WALL, Tile.BRICK_FLOOR }
-        };
-        Person person = new Person(Tile.CITIZEN_1, 2, 0, MovementBehaviour.FOLLOW, 0);
+        });
+        Person person = new Person(NonPlayerCharacter.CITIZEN, 1, 2, 0, MovementBehaviour.FOLLOW, 0);
         List<Person> people = Collections.singletonList(person);
 
         npcMover.movePeople(area, people, 0, 2, null);
@@ -416,12 +418,12 @@ public class NpcMoverTest {
 
     @Test
     public void movePeopleWhenPersonIsFollowAndPlayerIsNortheastOfPersonAndPersonIsPartiallyBlockedWithNorthAndEastAccessThenPersonMovesNorth() {
-        Tile[][] area = new Tile[][] {
+        Area<Tile> area = new Area<>(new Tile[][] {
                 { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR },
                 { Tile.BRICK_FLOOR, Tile.BRICK_WALL, Tile.BRICK_FLOOR },
                 { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR }
-        };
-        Person person = new Person(Tile.CITIZEN_1, 2, 0, MovementBehaviour.FOLLOW, 0);
+        });
+        Person person = new Person(NonPlayerCharacter.CITIZEN, 1, 2, 0, MovementBehaviour.FOLLOW, 0);
         List<Person> people = Collections.singletonList(person);
         when(random.nextBoolean()).thenReturn(true);
 
@@ -433,12 +435,12 @@ public class NpcMoverTest {
 
     @Test
     public void movePeopleWhenPersonIsFollowAndPlayerIsNortheastOfPersonAndPersonIsPartiallyBlockedWithNorthAndEastAccessThenPersonMovesEast() {
-        Tile[][] area = new Tile[][] {
+        Area<Tile> area = new Area<>(new Tile[][] {
                 { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR },
                 { Tile.BRICK_FLOOR, Tile.BRICK_WALL, Tile.BRICK_FLOOR },
                 { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR }
-        };
-        Person person = new Person(Tile.CITIZEN_1, 2, 0, MovementBehaviour.FOLLOW, 0);
+        });
+        Person person = new Person(NonPlayerCharacter.CITIZEN, 1, 2, 0, MovementBehaviour.FOLLOW, 0);
         List<Person> people = Collections.singletonList(person);
         when(random.nextBoolean()).thenReturn(false);
 
@@ -450,12 +452,12 @@ public class NpcMoverTest {
 
     @Test
     public void movePeopleWhenPersonIsFollowAndPlayerIsEastOfPersonThenPersonMovesEast() {
-        Tile[][] area = new Tile[][] {
+        Area<Tile> area = new Area<>(new Tile[][] {
                 { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR },
                 { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR },
                 { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR }
-        };
-        Person person = new Person(Tile.CITIZEN_1, 1, 0, MovementBehaviour.FOLLOW, 0);
+        });
+        Person person = new Person(NonPlayerCharacter.CITIZEN, 1, 1, 0, MovementBehaviour.FOLLOW, 0);
         List<Person> people = Collections.singletonList(person);
 
         npcMover.movePeople(area, people, 1, 2, null);
@@ -466,12 +468,12 @@ public class NpcMoverTest {
 
     @Test
     public void movePeopleWhenPersonIsFollowAndPlayerIsEastOfPersonAndPersonIsBlockedOnEastSideThenPersonStaysStill() {
-        Tile[][] area = new Tile[][] {
+        Area<Tile> area = new Area<>(new Tile[][] {
                 { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR },
                 { Tile.BRICK_FLOOR, Tile.BRICK_WALL, Tile.BRICK_FLOOR },
                 { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR }
-        };
-        Person person = new Person(Tile.CITIZEN_1, 1, 0, MovementBehaviour.FOLLOW, 0);
+        });
+        Person person = new Person(NonPlayerCharacter.CITIZEN, 1, 1, 0, MovementBehaviour.FOLLOW, 0);
         List<Person> people = Collections.singletonList(person);
 
         npcMover.movePeople(area, people, 1, 2, null);
@@ -482,12 +484,12 @@ public class NpcMoverTest {
 
     @Test
     public void movePeopleWhenPersonIsFollowAndPlayerIsEastOfPersonAndPersonIsPartiallyBlockedWithNortheastAccessThenPersonMovesNortheast() {
-        Tile[][] area = new Tile[][] {
+        Area<Tile> area = new Area<>(new Tile[][] {
                 { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR },
                 { Tile.BRICK_FLOOR, Tile.BRICK_WALL, Tile.BRICK_FLOOR },
                 { Tile.BRICK_FLOOR, Tile.BRICK_WALL, Tile.BRICK_FLOOR }
-        };
-        Person person = new Person(Tile.CITIZEN_1, 1, 0, MovementBehaviour.FOLLOW, 0);
+        });
+        Person person = new Person(NonPlayerCharacter.CITIZEN, 1, 1, 0, MovementBehaviour.FOLLOW, 0);
         List<Person> people = Collections.singletonList(person);
 
         npcMover.movePeople(area, people, 1, 2, null);
@@ -498,12 +500,12 @@ public class NpcMoverTest {
 
     @Test
     public void movePeopleWhenPersonIsFollowAndPlayerIsEastOfPersonAndPersonIsPartiallyBlockedWithSoutheastAccessThenPersonMovesSoutheast() {
-        Tile[][] area = new Tile[][] {
+        Area<Tile> area = new Area<>(new Tile[][] {
                 { Tile.BRICK_FLOOR, Tile.BRICK_WALL, Tile.BRICK_FLOOR },
                 { Tile.BRICK_FLOOR, Tile.BRICK_WALL, Tile.BRICK_FLOOR },
                 { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR }
-        };
-        Person person = new Person(Tile.CITIZEN_1, 1, 0, MovementBehaviour.FOLLOW, 0);
+        });
+        Person person = new Person(NonPlayerCharacter.CITIZEN, 1, 1, 0, MovementBehaviour.FOLLOW, 0);
         List<Person> people = Collections.singletonList(person);
 
         npcMover.movePeople(area, people, 1, 2, null);
@@ -514,12 +516,12 @@ public class NpcMoverTest {
 
     @Test
     public void movePeopleWhenPersonIsFollowAndPlayerIsEastOfPersonAndPersonIsPartiallyBlockedWithNortheastAndSoutheastAccessThenPersonMovesNortheast() {
-        Tile[][] area = new Tile[][] {
+        Area<Tile> area = new Area<>(new Tile[][] {
                 { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR },
                 { Tile.BRICK_FLOOR, Tile.BRICK_WALL, Tile.BRICK_FLOOR },
                 { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR }
-        };
-        Person person = new Person(Tile.CITIZEN_1, 1, 0, MovementBehaviour.FOLLOW, 0);
+        });
+        Person person = new Person(NonPlayerCharacter.CITIZEN, 1, 1, 0, MovementBehaviour.FOLLOW, 0);
         List<Person> people = Collections.singletonList(person);
         when(random.nextBoolean()).thenReturn(true);
 
@@ -531,12 +533,12 @@ public class NpcMoverTest {
 
     @Test
     public void movePeopleWhenPersonIsFollowAndPlayerIsEastOfPersonAndPersonIsPartiallyBlockedWithNortheastAndSoutheastAccessThenPersonMovesSoutheast() {
-        Tile[][] area = new Tile[][] {
+        Area<Tile> area = new Area<>(new Tile[][] {
                 { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR },
                 { Tile.BRICK_FLOOR, Tile.BRICK_WALL, Tile.BRICK_FLOOR },
                 { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR }
-        };
-        Person person = new Person(Tile.CITIZEN_1, 1, 0, MovementBehaviour.FOLLOW, 0);
+        });
+        Person person = new Person(NonPlayerCharacter.CITIZEN, 1, 1, 0, MovementBehaviour.FOLLOW, 0);
         List<Person> people = Collections.singletonList(person);
         when(random.nextBoolean()).thenReturn(false);
 
@@ -548,12 +550,12 @@ public class NpcMoverTest {
 
     @Test
     public void movePeopleWhenPersonIsFollowAndPlayerIsSoutheastOfPersonThenPersonMovesSoutheast() {
-        Tile[][] area = new Tile[][] {
+        Area<Tile> area = new Area<>(new Tile[][] {
                 { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR },
                 { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR },
                 { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR }
-        };
-        Person person = new Person(Tile.CITIZEN_1, 0, 0, MovementBehaviour.FOLLOW, 0);
+        });
+        Person person = new Person(NonPlayerCharacter.CITIZEN, 1, 0, 0, MovementBehaviour.FOLLOW, 0);
         List<Person> people = Collections.singletonList(person);
 
         npcMover.movePeople(area, people, 2, 2, null);
@@ -564,12 +566,12 @@ public class NpcMoverTest {
 
     @Test
     public void movePeopleWhenPersonIsFollowAndPlayerIsSoutheastOfPersonAndPersonIsBlockedOnSouthSideThenPersonMovesEast() {
-        Tile[][] area = new Tile[][] {
+        Area<Tile> area = new Area<>(new Tile[][] {
                 { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR },
                 { Tile.BRICK_WALL, Tile.BRICK_WALL, Tile.BRICK_FLOOR },
                 { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR }
-        };
-        Person person = new Person(Tile.CITIZEN_1, 0, 0, MovementBehaviour.FOLLOW, 0);
+        });
+        Person person = new Person(NonPlayerCharacter.CITIZEN, 1, 0, 0, MovementBehaviour.FOLLOW, 0);
         List<Person> people = Collections.singletonList(person);
 
         npcMover.movePeople(area, people, 2, 2, null);
@@ -580,12 +582,12 @@ public class NpcMoverTest {
 
     @Test
     public void movePeopleWhenPersonIsFollowAndPlayerIsSoutheastOfPersonAndPersonIsBlockedOnEastSideThenPersonMovesSouth() {
-        Tile[][] area = new Tile[][] {
+        Area<Tile> area = new Area<>(new Tile[][] {
                 { Tile.BRICK_FLOOR, Tile.BRICK_WALL, Tile.BRICK_FLOOR },
                 { Tile.BRICK_FLOOR, Tile.BRICK_WALL, Tile.BRICK_FLOOR },
                 { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR }
-        };
-        Person person = new Person(Tile.CITIZEN_1, 0, 0, MovementBehaviour.FOLLOW, 0);
+        });
+        Person person = new Person(NonPlayerCharacter.CITIZEN, 1, 0, 0, MovementBehaviour.FOLLOW, 0);
         List<Person> people = Collections.singletonList(person);
 
         npcMover.movePeople(area, people, 2, 2, null);
@@ -596,12 +598,12 @@ public class NpcMoverTest {
 
     @Test
     public void movePeopleWhenPersonIsFollowAndPlayerIsSoutheastOfPersonAndPersonIsPartiallyBlockedWithSouthAndEastAccessThenPersonMovesEast() {
-        Tile[][] area = new Tile[][] {
+        Area<Tile> area = new Area<>(new Tile[][] {
                 { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR },
                 { Tile.BRICK_FLOOR, Tile.BRICK_WALL, Tile.BRICK_FLOOR },
                 { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR }
-        };
-        Person person = new Person(Tile.CITIZEN_1, 0, 0, MovementBehaviour.FOLLOW, 0);
+        });
+        Person person = new Person(NonPlayerCharacter.CITIZEN, 1, 0, 0, MovementBehaviour.FOLLOW, 0);
         List<Person> people = Collections.singletonList(person);
         when(random.nextBoolean()).thenReturn(true);
 
@@ -613,12 +615,12 @@ public class NpcMoverTest {
 
     @Test
     public void movePeopleWhenPersonIsFollowAndPlayerIsSoutheastOfPersonAndPersonIsPartiallyBlockedWithSouthAndEastAccessThenPersonMovesSouth() {
-        Tile[][] area = new Tile[][] {
+        Area<Tile> area = new Area<>(new Tile[][] {
                 { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR },
                 { Tile.BRICK_FLOOR, Tile.BRICK_WALL, Tile.BRICK_FLOOR },
                 { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR }
-        };
-        Person person = new Person(Tile.CITIZEN_1, 0, 0, MovementBehaviour.FOLLOW, 0);
+        });
+        Person person = new Person(NonPlayerCharacter.CITIZEN, 1, 0, 0, MovementBehaviour.FOLLOW, 0);
         List<Person> people = Collections.singletonList(person);
         when(random.nextBoolean()).thenReturn(false);
 
@@ -630,12 +632,12 @@ public class NpcMoverTest {
 
     @Test
     public void movePeopleWhenPersonIsFollowAndPlayerIsSouthOfPersonThenPersonMovesSouth() {
-        Tile[][] area = new Tile[][] {
+        Area<Tile> area = new Area<>(new Tile[][] {
                 { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR },
                 { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR },
                 { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR }
-        };
-        Person person = new Person(Tile.CITIZEN_1, 0, 1, MovementBehaviour.FOLLOW, 0);
+        });
+        Person person = new Person(NonPlayerCharacter.CITIZEN, 1, 0, 1, MovementBehaviour.FOLLOW, 0);
         List<Person> people = Collections.singletonList(person);
 
         npcMover.movePeople(area, people, 2, 1, null);
@@ -646,12 +648,12 @@ public class NpcMoverTest {
 
     @Test
     public void movePeopleWhenPersonIsFollowAndPlayerIsSouthOfPersonAndPersonIsBlockedThenPersonStaysStill() {
-        Tile[][] area = new Tile[][] {
+        Area<Tile> area = new Area<>(new Tile[][] {
                 { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR },
                 { Tile.BRICK_WALL, Tile.BRICK_WALL, Tile.BRICK_WALL },
                 { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR }
-        };
-        Person person = new Person(Tile.CITIZEN_1, 0, 1, MovementBehaviour.FOLLOW, 0);
+        });
+        Person person = new Person(NonPlayerCharacter.CITIZEN, 1, 0, 1, MovementBehaviour.FOLLOW, 0);
         List<Person> people = Collections.singletonList(person);
 
         npcMover.movePeople(area, people, 2, 1, null);
@@ -662,12 +664,12 @@ public class NpcMoverTest {
 
     @Test
     public void movePeopleWhenPersonIsFollowAndPlayerIsSouthOfPersonAndPersonIsPartiallyBlockedWithSoutheastAccessThenPersonMovesSoutheast() {
-        Tile[][] area = new Tile[][] {
+        Area<Tile> area = new Area<>(new Tile[][] {
                 { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR },
                 { Tile.BRICK_WALL, Tile.BRICK_WALL, Tile.BRICK_FLOOR },
                 { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR }
-        };
-        Person person = new Person(Tile.CITIZEN_1, 0, 1, MovementBehaviour.FOLLOW, 0);
+        });
+        Person person = new Person(NonPlayerCharacter.CITIZEN, 1, 0, 1, MovementBehaviour.FOLLOW, 0);
         List<Person> people = Collections.singletonList(person);
 
         npcMover.movePeople(area, people, 2, 1, null);
@@ -678,12 +680,12 @@ public class NpcMoverTest {
 
     @Test
     public void movePeopleWhenPersonIsFollowAndPlayerIsSouthOfPersonAndPersonIsPartiallyBlockedWithSouthwestAccessThenPersonMovesSouthwest() {
-        Tile[][] area = new Tile[][] {
+        Area<Tile> area = new Area<>(new Tile[][] {
                 { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR },
                 { Tile.BRICK_FLOOR, Tile.BRICK_WALL, Tile.BRICK_WALL },
                 { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR }
-        };
-        Person person = new Person(Tile.CITIZEN_1, 0, 1, MovementBehaviour.FOLLOW, 0);
+        });
+        Person person = new Person(NonPlayerCharacter.CITIZEN, 1, 0, 1, MovementBehaviour.FOLLOW, 0);
         List<Person> people = Collections.singletonList(person);
 
         npcMover.movePeople(area, people, 2, 1, null);
@@ -694,12 +696,12 @@ public class NpcMoverTest {
 
     @Test
     public void movePeopleWhenPersonIsFollowAndPlayerIsSouthOfPersonAndPersonIsPartiallyBlockedWithSoutheastAndSouthwestAccessThenPersonMovesSoutheast() {
-        Tile[][] area = new Tile[][] {
+        Area<Tile> area = new Area<>(new Tile[][] {
                 { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR },
                 { Tile.BRICK_FLOOR, Tile.BRICK_WALL, Tile.BRICK_FLOOR },
                 { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR }
-        };
-        Person person = new Person(Tile.CITIZEN_1, 0, 1, MovementBehaviour.FOLLOW, 0);
+        });
+        Person person = new Person(NonPlayerCharacter.CITIZEN, 1, 0, 1, MovementBehaviour.FOLLOW, 0);
         List<Person> people = Collections.singletonList(person);
         when(random.nextBoolean()).thenReturn(true);
 
@@ -711,12 +713,12 @@ public class NpcMoverTest {
 
     @Test
     public void movePeopleWhenPersonIsFollowAndPlayerIsSouthOfPersonAndPersonIsPartiallyBlockedWithSoutheastAndSouthwestAccessThenPersonMovesSouthwest() {
-        Tile[][] area = new Tile[][] {
+        Area<Tile> area = new Area<>(new Tile[][] {
                 { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR },
                 { Tile.BRICK_FLOOR, Tile.BRICK_WALL, Tile.BRICK_FLOOR },
                 { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR }
-        };
-        Person person = new Person(Tile.CITIZEN_1, 0, 1, MovementBehaviour.FOLLOW, 0);
+        });
+        Person person = new Person(NonPlayerCharacter.CITIZEN, 1, 0, 1, MovementBehaviour.FOLLOW, 0);
         List<Person> people = Collections.singletonList(person);
         when(random.nextBoolean()).thenReturn(false);
 
@@ -728,12 +730,12 @@ public class NpcMoverTest {
 
     @Test
     public void movePeopleWhenPersonIsFollowAndPlayerIsSouthwestOfPersonThenPersonMovesSouthwest() {
-        Tile[][] area = new Tile[][] {
+        Area<Tile> area = new Area<>(new Tile[][] {
                 { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR },
                 { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR },
                 { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR }
-        };
-        Person person = new Person(Tile.CITIZEN_1, 0, 2, MovementBehaviour.FOLLOW, 0);
+        });
+        Person person = new Person(NonPlayerCharacter.CITIZEN, 1, 0, 2, MovementBehaviour.FOLLOW, 0);
         List<Person> people = Collections.singletonList(person);
 
         npcMover.movePeople(area, people, 2, 0, null);
@@ -744,12 +746,12 @@ public class NpcMoverTest {
 
     @Test
     public void movePeopleWhenPersonIsFollowAndPlayerIsSouthwestOfPersonAndPersonIsBlockedOnSouthSideThenPersonMovesWest() {
-        Tile[][] area = new Tile[][] {
+        Area<Tile> area = new Area<>(new Tile[][] {
                 { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR },
                 { Tile.BRICK_FLOOR, Tile.BRICK_WALL, Tile.BRICK_WALL },
                 { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR }
-        };
-        Person person = new Person(Tile.CITIZEN_1, 0, 2, MovementBehaviour.FOLLOW, 0);
+        });
+        Person person = new Person(NonPlayerCharacter.CITIZEN, 1, 0, 2, MovementBehaviour.FOLLOW, 0);
         List<Person> people = Collections.singletonList(person);
 
         npcMover.movePeople(area, people, 2, 0, null);
@@ -760,12 +762,12 @@ public class NpcMoverTest {
 
     @Test
     public void movePeopleWhenPersonIsFollowAndPlayerIsSouthwestOfPersonAndPersonIsBlockedOnEastSideThenPersonMovesSouth() {
-        Tile[][] area = new Tile[][] {
+        Area<Tile> area = new Area<>(new Tile[][] {
                 { Tile.BRICK_FLOOR, Tile.BRICK_WALL, Tile.BRICK_FLOOR },
                 { Tile.BRICK_FLOOR, Tile.BRICK_WALL, Tile.BRICK_FLOOR },
                 { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR }
-        };
-        Person person = new Person(Tile.CITIZEN_1, 0, 2, MovementBehaviour.FOLLOW, 0);
+        });
+        Person person = new Person(NonPlayerCharacter.CITIZEN, 1, 0, 2, MovementBehaviour.FOLLOW, 0);
         List<Person> people = Collections.singletonList(person);
 
         npcMover.movePeople(area, people, 2, 0, null);
@@ -776,12 +778,12 @@ public class NpcMoverTest {
 
     @Test
     public void movePeopleWhenPersonIsFollowAndPlayerIsSouthwestOfPersonAndPersonIsPartiallyBlockedWithSouthAndEastAccessThenPersonMovesSouth() {
-        Tile[][] area = new Tile[][] {
+        Area<Tile> area = new Area<>(new Tile[][] {
                 { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR },
                 { Tile.BRICK_FLOOR, Tile.BRICK_WALL, Tile.BRICK_FLOOR },
                 { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR }
-        };
-        Person person = new Person(Tile.CITIZEN_1, 0, 2, MovementBehaviour.FOLLOW, 0);
+        });
+        Person person = new Person(NonPlayerCharacter.CITIZEN, 1, 0, 2, MovementBehaviour.FOLLOW, 0);
         List<Person> people = Collections.singletonList(person);
         when(random.nextBoolean()).thenReturn(true);
 
@@ -793,12 +795,12 @@ public class NpcMoverTest {
 
     @Test
     public void movePeopleWhenPersonIsFollowAndPlayerIsSouthwestOfPersonAndPersonIsPartiallyBlockedWithSouthAndEastAccessThenPersonMovesWest() {
-        Tile[][] area = new Tile[][] {
+        Area<Tile> area = new Area<>(new Tile[][] {
                 { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR },
                 { Tile.BRICK_FLOOR, Tile.BRICK_WALL, Tile.BRICK_FLOOR },
                 { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR }
-        };
-        Person person = new Person(Tile.CITIZEN_1, 0, 2, MovementBehaviour.FOLLOW, 0);
+        });
+        Person person = new Person(NonPlayerCharacter.CITIZEN, 1, 0, 2, MovementBehaviour.FOLLOW, 0);
         List<Person> people = Collections.singletonList(person);
         when(random.nextBoolean()).thenReturn(false);
 
@@ -810,12 +812,12 @@ public class NpcMoverTest {
 
     @Test
     public void movePeopleWhenPersonIsFollowAndPlayerIsWestOfPersonThenPersonMovesWest() {
-        Tile[][] area = new Tile[][] {
+        Area<Tile> area = new Area<>(new Tile[][] {
                 { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR },
                 { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR },
                 { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR }
-        };
-        Person person = new Person(Tile.CITIZEN_1, 1, 2, MovementBehaviour.FOLLOW, 0);
+        });
+        Person person = new Person(NonPlayerCharacter.CITIZEN, 1, 1, 2, MovementBehaviour.FOLLOW, 0);
         List<Person> people = Collections.singletonList(person);
 
         npcMover.movePeople(area, people, 1, 0, null);
@@ -826,12 +828,12 @@ public class NpcMoverTest {
 
     @Test
     public void movePeopleWhenPersonIsFollowAndPlayerIsWestOfPersonAndPersonIsBlockedOnWestSideThenPersonStaysStill() {
-        Tile[][] area = new Tile[][] {
+        Area<Tile> area = new Area<>(new Tile[][] {
                 { Tile.BRICK_FLOOR, Tile.BRICK_WALL, Tile.BRICK_FLOOR },
                 { Tile.BRICK_FLOOR, Tile.BRICK_WALL, Tile.BRICK_FLOOR },
                 { Tile.BRICK_FLOOR, Tile.BRICK_WALL, Tile.BRICK_FLOOR }
-        };
-        Person person = new Person(Tile.CITIZEN_1, 1, 2, MovementBehaviour.FOLLOW, 0);
+        });
+        Person person = new Person(NonPlayerCharacter.CITIZEN, 1, 1, 2, MovementBehaviour.FOLLOW, 0);
         List<Person> people = Collections.singletonList(person);
 
         npcMover.movePeople(area, people, 1, 0, null);
@@ -842,12 +844,12 @@ public class NpcMoverTest {
 
     @Test
     public void movePeopleWhenPersonIsFollowAndPlayerIsWestOfPersonAndPersonIsPartiallyBlockedWithNorthWestAccessThenPersonMovesNorthwest() {
-        Tile[][] area = new Tile[][] {
+        Area<Tile> area = new Area<>(new Tile[][] {
                 { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR },
                 { Tile.BRICK_FLOOR, Tile.BRICK_WALL, Tile.BRICK_FLOOR },
                 { Tile.BRICK_FLOOR, Tile.BRICK_WALL, Tile.BRICK_FLOOR }
-        };
-        Person person = new Person(Tile.CITIZEN_1, 1, 2, MovementBehaviour.FOLLOW, 0);
+        });
+        Person person = new Person(NonPlayerCharacter.CITIZEN, 1, 1, 2, MovementBehaviour.FOLLOW, 0);
         List<Person> people = Collections.singletonList(person);
 
         npcMover.movePeople(area, people, 1, 0, null);
@@ -858,12 +860,12 @@ public class NpcMoverTest {
 
     @Test
     public void movePeopleWhenPersonIsFollowAndPlayerIsWestOfPersonAndPersonIsPartiallyBlockedWithSouthwestAccessThenPersonMovesSouthwest() {
-        Tile[][] area = new Tile[][] {
+        Area<Tile> area = new Area<>(new Tile[][] {
                 { Tile.BRICK_FLOOR, Tile.BRICK_WALL, Tile.BRICK_FLOOR },
                 { Tile.BRICK_FLOOR, Tile.BRICK_WALL, Tile.BRICK_FLOOR },
                 { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR }
-        };
-        Person person = new Person(Tile.CITIZEN_1, 1, 2, MovementBehaviour.FOLLOW, 0);
+        });
+        Person person = new Person(NonPlayerCharacter.CITIZEN, 1, 1, 2, MovementBehaviour.FOLLOW, 0);
         List<Person> people = Collections.singletonList(person);
 
         npcMover.movePeople(area, people, 1, 0, null);
@@ -874,12 +876,12 @@ public class NpcMoverTest {
 
     @Test
     public void movePeopleWhenPersonIsFollowAndPlayerIsWestOfPersonAndPersonIsPartiallyBlockedWithNorthwestAndSouthwestAccessThenPersonMovesSouthwest() {
-        Tile[][] area = new Tile[][] {
+        Area<Tile> area = new Area<>(new Tile[][] {
                 { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR },
                 { Tile.BRICK_FLOOR, Tile.BRICK_WALL, Tile.BRICK_FLOOR },
                 { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR }
-        };
-        Person person = new Person(Tile.CITIZEN_1, 1, 2, MovementBehaviour.FOLLOW, 0);
+        });
+        Person person = new Person(NonPlayerCharacter.CITIZEN, 1, 1, 2, MovementBehaviour.FOLLOW, 0);
         List<Person> people = Collections.singletonList(person);
         when(random.nextBoolean()).thenReturn(true);
 
@@ -891,12 +893,12 @@ public class NpcMoverTest {
 
     @Test
     public void movePeopleWhenPersonIsFollowAndPlayerIsWestOfPersonAndPersonIsPartiallyBlockedWithNorthwestAndSouthwestAccessThenPersonMovesNorthwest() {
-        Tile[][] area = new Tile[][] {
+        Area<Tile> area = new Area<>(new Tile[][] {
                 { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR },
                 { Tile.BRICK_FLOOR, Tile.BRICK_WALL, Tile.BRICK_FLOOR },
                 { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR }
-        };
-        Person person = new Person(Tile.CITIZEN_1, 1, 2, MovementBehaviour.FOLLOW, 0);
+        });
+        Person person = new Person(NonPlayerCharacter.CITIZEN, 1, 1, 2, MovementBehaviour.FOLLOW, 0);
         List<Person> people = Collections.singletonList(person);
         when(random.nextBoolean()).thenReturn(false);
 
@@ -908,12 +910,12 @@ public class NpcMoverTest {
 
     @Test
     public void movePeopleWhenPersonIsFollowAndPlayerIsNorthwestOfPersonThenPersonMovesNorthwest() {
-        Tile[][] area = new Tile[][] {
+        Area<Tile> area = new Area<>(new Tile[][] {
                 { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR },
                 { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR },
                 { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR }
-        };
-        Person person = new Person(Tile.CITIZEN_1, 2, 2, MovementBehaviour.FOLLOW, 0);
+        });
+        Person person = new Person(NonPlayerCharacter.CITIZEN, 1, 2, 2, MovementBehaviour.FOLLOW, 0);
         List<Person> people = Collections.singletonList(person);
 
         npcMover.movePeople(area, people, 0, 0, null);
@@ -924,12 +926,12 @@ public class NpcMoverTest {
 
     @Test
     public void movePeopleWhenPersonIsFollowAndPlayerIsNorthwestOfPersonAndPersonIsBlockedOnNorthSideThenPersonMovesWest() {
-        Tile[][] area = new Tile[][] {
+        Area<Tile> area = new Area<>(new Tile[][] {
                 { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR },
                 { Tile.BRICK_FLOOR, Tile.BRICK_WALL, Tile.BRICK_WALL },
                 { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR }
-        };
-        Person person = new Person(Tile.CITIZEN_1, 2, 2, MovementBehaviour.FOLLOW, 0);
+        });
+        Person person = new Person(NonPlayerCharacter.CITIZEN, 1, 2, 2, MovementBehaviour.FOLLOW, 0);
         List<Person> people = Collections.singletonList(person);
 
         npcMover.movePeople(area, people, 0, 0, null);
@@ -940,12 +942,12 @@ public class NpcMoverTest {
 
     @Test
     public void movePeopleWhenPersonIsFollowAndPlayerIsNorthwestOfPersonAndPersonIsBlockedOnEastSideThenPersonMovesNorth() {
-        Tile[][] area = new Tile[][] {
+        Area<Tile> area = new Area<>(new Tile[][] {
                 { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR },
                 { Tile.BRICK_FLOOR, Tile.BRICK_WALL, Tile.BRICK_FLOOR },
                 { Tile.BRICK_FLOOR, Tile.BRICK_WALL, Tile.BRICK_FLOOR }
-        };
-        Person person = new Person(Tile.CITIZEN_1, 2, 2, MovementBehaviour.FOLLOW, 0);
+        });
+        Person person = new Person(NonPlayerCharacter.CITIZEN, 1, 2, 2, MovementBehaviour.FOLLOW, 0);
         List<Person> people = Collections.singletonList(person);
 
         npcMover.movePeople(area, people, 0, 0, null);
@@ -956,12 +958,12 @@ public class NpcMoverTest {
 
     @Test
     public void movePeopleWhenPersonIsFollowAndPlayerIsNorthwestOfPersonAndPersonIsPartiallyBlockedWithNorthAndWestAccessThenPersonMovesWest() {
-        Tile[][] area = new Tile[][] {
+        Area<Tile> area = new Area<>(new Tile[][] {
                 { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR },
                 { Tile.BRICK_FLOOR, Tile.BRICK_WALL, Tile.BRICK_FLOOR },
                 { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR }
-        };
-        Person person = new Person(Tile.CITIZEN_1, 2, 2, MovementBehaviour.FOLLOW, 0);
+        });
+        Person person = new Person(NonPlayerCharacter.CITIZEN, 1, 2, 2, MovementBehaviour.FOLLOW, 0);
         List<Person> people = Collections.singletonList(person);
         when(random.nextBoolean()).thenReturn(true);
 
@@ -973,12 +975,12 @@ public class NpcMoverTest {
 
     @Test
     public void movePeopleWhenPersonIsFollowAndPlayerIsNorthwestOfPersonAndPersonIsPartiallyBlockedWithNorthAndWestAccessThenPersonMovesNorth() {
-        Tile[][] area = new Tile[][] {
+        Area<Tile> area = new Area<>(new Tile[][] {
                 { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR },
                 { Tile.BRICK_FLOOR, Tile.BRICK_WALL, Tile.BRICK_FLOOR },
                 { Tile.BRICK_FLOOR, Tile.BRICK_FLOOR, Tile.BRICK_FLOOR }
-        };
-        Person person = new Person(Tile.CITIZEN_1, 2, 2, MovementBehaviour.FOLLOW, 0);
+        });
+        Person person = new Person(NonPlayerCharacter.CITIZEN, 1, 2, 2, MovementBehaviour.FOLLOW, 0);
         List<Person> people = Collections.singletonList(person);
         when(random.nextBoolean()).thenReturn(false);
 

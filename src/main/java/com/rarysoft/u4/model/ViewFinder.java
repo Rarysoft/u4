@@ -23,23 +23,21 @@
  */
 package com.rarysoft.u4.model;
 
-import com.rarysoft.u4.model.graphics.Tile;
-
 public class ViewFinder {
-    public Tile[][] view(Tile[][] area, Tile surroundingTile, int radius, int centerRow, int centerCol) {
+    public Area<Tile> view(Tile[][] area, Tile surroundingTile, int radius, int centerRow, int centerCol) {
+        return view(new Area<>(area), surroundingTile, radius, centerRow, centerCol);
+    }
+
+    public Area<Tile> view(Area<Tile> area, Tile surroundingTile, int radius, int centerRow, int centerCol) {
         int size = radius * 2 + 1;
         Tile[][] view = new Tile[size][size];
         for (int row = 0; row < size; row ++) {
             for (int col = 0; col < size; col ++) {
                 int mapRow = centerRow - radius + row;
                 int mapCol = centerCol - radius + col;
-                view[row][col] = isWithinMapRange(area, mapRow, mapCol) ? area[mapRow][mapCol] : surroundingTile;
+                view[row][col] = area.isWithin(mapRow, mapCol) ? area.get(mapRow, mapCol) : surroundingTile;
             }
         }
-        return view;
-    }
-
-    private boolean isWithinMapRange(Tile[][] area, int row, int col) {
-        return ! (row < 0 || row >= area.length || col < 0 || col >= area[0].length);
+        return new Area<>(view);
     }
 }

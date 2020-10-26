@@ -25,14 +25,11 @@ package com.rarysoft.u4.ui;
 
 import com.rarysoft.u4.model.Game;
 import com.rarysoft.u4.model.graphics.Charset;
-import com.rarysoft.u4.model.InformationListener;
 import com.rarysoft.u4.model.graphics.ExtendedCharset;
-import com.rarysoft.u4.model.graphics.Tiles;
+import com.rarysoft.u4.model.Tiles;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.Arrays;
-import java.util.List;
 
 public class UiBuilder {
     public void buildGamePanel(JFrame gameWindow, Game game, Tiles tiles, Charset charset) {

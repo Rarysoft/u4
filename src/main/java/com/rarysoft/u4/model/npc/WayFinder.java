@@ -23,7 +23,7 @@
  */
 package com.rarysoft.u4.model.npc;
 
-import com.rarysoft.u4.model.graphics.Tile;
+import com.rarysoft.u4.model.Area;
 
 public class WayFinder {
     private static final Movement NOWHERE = new Movement(0, 0);
@@ -36,9 +36,9 @@ public class WayFinder {
     private static final Movement WEST = new Movement(0, -1);
     private static final Movement NORTHWEST = new Movement(-1, -1);
 
-    public Movement selectMovementTowardTarget(Tile[][] area, int row, int col) {
-        int centerRow = (area.length - 1) / 2;
-        int centerCol = (area[centerRow].length - 1) / 2;
+    public Movement selectMovementTowardTarget(Area<Integer> area, int row, int col) {
+        int centerRow = (area.rows() - 1) / 2;
+        int centerCol = (area.cols() - 1) / 2;
         int deltaRow = row - centerRow;
         int deltaCol = col - centerCol;
         int absDeltaRow = Math.abs(deltaRow);
@@ -92,7 +92,7 @@ public class WayFinder {
         return NOWHERE;
     }
 
-    private boolean canMove(Tile[][] area, int centerRow, int centerCol, int deltaRow, int deltaCol) {
-        return area[centerRow + deltaRow][centerCol + deltaCol].walkability() > 0;
+    private boolean canMove(Area<Integer> area, int centerRow, int centerCol, int deltaRow, int deltaCol) {
+        return area.get(centerRow + deltaRow, centerCol + deltaCol) > 0;
     }
 }

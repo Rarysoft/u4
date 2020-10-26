@@ -24,6 +24,8 @@
 package com.rarysoft.u4.ui;
 
 import com.rarysoft.u4.model.RenderedTile;
+import com.rarysoft.u4.model.Tile;
+import com.rarysoft.u4.model.Tiles;
 import com.rarysoft.u4.model.graphics.*;
 
 import java.awt.*;
@@ -213,8 +215,8 @@ public class GameViewRenderer {
                     int viewCol = col - 1;
                     drawTile(graphics, backgroundTile, viewRow, viewCol, false);
                     if (renderedTile.render()) {
-                        renderedTile.person().ifPresent(person ->
-                                drawTile(graphics, person.tile(), viewRow, viewCol, true)
+                        renderedTile.personTile().ifPresent(personTile ->
+                                drawTile(graphics, personTile, viewRow, viewCol, true)
                         );
                     }
                 }

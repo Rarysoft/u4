@@ -1,4 +1,4 @@
-package com.rarysoft.u4.model.graphics;
+package com.rarysoft.u4.model;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -8,9 +8,10 @@ public class Tiles {
     public static final int TILE_HEIGHT = 16;
 
     private static final int TILE_COUNT = 256;
+    private static final int EXTENDED_TILE_COUNT = 1;
 
     public static Tiles fromStream(InputStream stream) throws IOException {
-        int[][][] data = new int[TILE_COUNT][TILE_HEIGHT][TILE_WIDTH];
+        int[][][] data = new int[TILE_COUNT + EXTENDED_TILE_COUNT][TILE_HEIGHT][TILE_WIDTH];
         for (int tile = 0; tile < TILE_COUNT; tile ++) {
             for (int row = 0; row < TILE_HEIGHT; row ++) {
                 for (int col = 0; col < TILE_WIDTH; col +=2) {

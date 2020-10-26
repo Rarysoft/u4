@@ -1,7 +1,7 @@
 package com.rarysoft.u4.model;
 
-import com.rarysoft.u4.model.graphics.Tile;
 import com.rarysoft.u4.model.npc.MovementBehaviour;
+import com.rarysoft.u4.model.npc.NonPlayerCharacter;
 import com.rarysoft.u4.model.npc.Person;
 import com.rarysoft.u4.model.party.Location;
 
@@ -60,7 +60,14 @@ public class Settlement implements Map {
         List<Person> people = new ArrayList<>();
         for (int npc = 0; npc < NPC_COUNT; npc ++) {
             if (npcTiles[npc] > 0) {
-                people.add(new Person(Tile.forIndex(npcTiles[npc]), npcStartYs[npc], npcStartXs[npc], MovementBehaviour.forCode(npcMovementBehaviours[npc]), npcConversationIndexes[npc]));
+                NonPlayerCharacter nonPlayerCharacter = NonPlayerCharacter.CITIZEN;
+                if (npcTiles[npc] == Tile.LORD_BRITISH_1.index() || npcTiles[npc] == Tile.LORD_BRITISH_2.index()) {
+                    nonPlayerCharacter = NonPlayerCharacter.LORD_BRITISH;
+                }
+                else if (location == Location.CASTLE_BRITANNIA && npcStartYs[npc] == 27 && npcStartXs[npc] == 9) {
+                    nonPlayerCharacter = NonPlayerCharacter.HAWKWIND;
+                }
+                people.add(new Person(nonPlayerCharacter, npcTiles[npc], npcStartYs[npc], npcStartXs[npc], MovementBehaviour.forCode(npcMovementBehaviours[npc]), npcConversationIndexes[npc]));
             }
         }
         return new Settlement(location, level, data, people, worldRow, worldCol, startRow, startCol, areaTile);
@@ -72,13 +79,13 @@ public class Settlement implements Map {
     private final int worldCol;
     private final int startRow;
     private final int startCol;
-    private final Tile areaTile;
+    private final Tile surroundingTile;
 
     private final Tile[][] data;
 
     private final List<Person> people;
 
-    private Settlement(Location location, int level, Tile[][] data, List<Person> people, int worldRow, int worldCol, int startRow, int startCol, Tile areaTile) {
+    private Settlement(Location location, int level, Tile[][] data, List<Person> people, int worldRow, int worldCol, int startRow, int startCol, Tile surroundingTile) {
         this.location = location;
         this.level = level;
         this.data = data;
@@ -87,7 +94,12 @@ public class Settlement implements Map {
         this.worldCol = worldCol;
         this.startRow = startRow;
         this.startCol = startCol;
-        this.areaTile = areaTile;
+        this.surroundingTile = surroundingTile;
+    }
+
+    @Override
+    public MapType type() {
+        return MapType.SETTLEMENT;
     }
 
     @Override
@@ -101,8 +113,8 @@ public class Settlement implements Map {
     }
 
     @Override
-    public MapType type() {
-        return MapType.SETTLEMENT;
+    public Tile[][] data() {
+        return data;
     }
 
     @Override
@@ -126,6 +138,11 @@ public class Settlement implements Map {
     }
 
     @Override
+    public Tile surroundingTile() {
+        return surroundingTile;
+    }
+
+    @Override
     public List<Person> people() {
         return people;
     }
@@ -140,17 +157,7 @@ public class Settlement implements Map {
 
     @Override
     public void movePeople(PeopleMover peopleMover, int playerRow, int playerCol, Person excludedPerson) {
-        peopleMover.movePeople(data, people, playerRow, playerCol, excludedPerson);
-    }
-
-    @Override
-    public Tile[][] full() {
-        return data;
-    }
-
-    @Override
-    public Tile[][] view(ViewFinder viewFinder, int centerRow, int centerCol, int radius) {
-        return viewFinder.view(data, areaTile, radius, centerRow, centerCol);
+        peopleMover.movePeople(new Area<>(data), people, playerRow, playerCol, excludedPerson);
     }
 
     @Override

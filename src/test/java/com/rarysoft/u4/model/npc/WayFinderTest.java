@@ -23,7 +23,7 @@
  */
 package com.rarysoft.u4.model.npc;
 
-import com.rarysoft.u4.model.graphics.Tile;
+import com.rarysoft.u4.model.Area;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -32,17 +32,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class WayFinderTest {
     private final static int VIEW_SIZE = 21;
     private final static int CENTER = (VIEW_SIZE - 1) / 2;
-    private final Tile clear = Tile.GRASSLANDS;
-    private final Tile solid = Tile.MOUNTAINS;
-    private final Tile[][] area = new Tile[VIEW_SIZE][VIEW_SIZE];
+    private Area<Integer> area;
 
     @Before
     public void prepareArea() {
+        Integer[][] area = new Integer[VIEW_SIZE][VIEW_SIZE];
         for (int row = 0; row < VIEW_SIZE; row ++) {
             for (int col = 0; col < VIEW_SIZE; col ++) {
-                area[row][col] = clear;
+                area[row][col] = 100;
             }
         }
+        this.area = new Area<>(area);
     }
 
     @Test
@@ -179,7 +179,7 @@ public class WayFinderTest {
     public void selectMovementTowardTargetWhenNorthAndSlightlyEastButIsBlockedOnNorthSideReturnsLateralMovementEast() {
         WayFinder wayFinder = new WayFinder();
         for (int col = 0; col < 21; col ++) {
-            area[9][col] = solid;
+            area.set(9, col, 0);
         }
 
         Movement result = wayFinder.selectMovementTowardTarget(area, 3, 11);
@@ -193,7 +193,7 @@ public class WayFinderTest {
     public void selectMovementTowardTargetWhenNorthAndSlightlyWestButIsBlockedOnNorthSideReturnsLateralMovementWest() {
         WayFinder wayFinder = new WayFinder();
         for (int col = 0; col < 21; col ++) {
-            area[9][col] = solid;
+            area.set(9, col, 0);
         }
 
         Movement result = wayFinder.selectMovementTowardTarget(area, 3, 9);
@@ -207,7 +207,7 @@ public class WayFinderTest {
     public void selectMovementTowardTargetWhenEastAndSlightlyNorthButIsBlockedOnEastSideReturnsLateralMovementNorth() {
         WayFinder wayFinder = new WayFinder();
         for (int row = 0; row < 21; row ++) {
-            area[row][11] = solid;
+            area.set(row, 11, 0);
         }
 
         Movement result = wayFinder.selectMovementTowardTarget(area, 9, 17);
@@ -221,7 +221,7 @@ public class WayFinderTest {
     public void selectMovementTowardTargetWhenEastAndSlightlySouthButIsBlockedOnEastSideReturnsLateralMovementSouth() {
         WayFinder wayFinder = new WayFinder();
         for (int row = 0; row < 21; row ++) {
-            area[row][11] = solid;
+            area.set(row, 11, 0);
         }
 
         Movement result = wayFinder.selectMovementTowardTarget(area, 11, 17);
@@ -235,7 +235,7 @@ public class WayFinderTest {
     public void selectMovementTowardTargetWhenSouthAndSlightlyEastButIsBlockedOnSouthSideReturnsLateralMovementEast() {
         WayFinder wayFinder = new WayFinder();
         for (int col = 0; col < 21; col ++) {
-            area[11][col] = solid;
+            area.set(11, col, 0);
         }
 
         Movement result = wayFinder.selectMovementTowardTarget(area, 17, 11);
@@ -249,7 +249,7 @@ public class WayFinderTest {
     public void selectMovementTowardTargetWhenSouthAndSlightlyWestButIsBlockedOnSouthSideReturnsLateralMovementWest() {
         WayFinder wayFinder = new WayFinder();
         for (int col = 0; col < 21; col ++) {
-            area[11][col] = solid;
+            area.set(11, col, 0);
         }
 
         Movement result = wayFinder.selectMovementTowardTarget(area, 17, 9);
@@ -263,7 +263,7 @@ public class WayFinderTest {
     public void selectMovementTowardTargetWhenWestAndSlightlyNorthButIsBlockedOnWestSideReturnsLateralMovementNorth() {
         WayFinder wayFinder = new WayFinder();
         for (int row = 0; row < 21; row ++) {
-            area[row][9] = solid;
+            area.set(row, 9, 0);
         }
 
         Movement result = wayFinder.selectMovementTowardTarget(area, 9, 3);
@@ -277,7 +277,7 @@ public class WayFinderTest {
     public void selectMovementTowardTargetWhenWestAndSlightlySouthButIsBlockedOnWestSideReturnsLateralMovementSouth() {
         WayFinder wayFinder = new WayFinder();
         for (int row = 0; row < 21; row ++) {
-            area[row][9] = solid;
+            area.set(row, 9, 0);
         }
 
         Movement result = wayFinder.selectMovementTowardTarget(area, 11, 3);

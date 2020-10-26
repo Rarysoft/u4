@@ -23,44 +23,53 @@
  */
 package com.rarysoft.u4.model;
 
-import java.util.Optional;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
-public class RenderedTile {
-    private final Tile backgroundTile;
+public class Area<T> {
+    private final List<List<T>> data;
 
-    private final Tile objectTile;
-
-    private final Tile personTile;
-
-    private final boolean render;
-
-    public RenderedTile(Tile backgroundTile, Tile personTile) {
-        this.backgroundTile = backgroundTile;
-        this.objectTile = null; // TODO implement this
-        this.personTile = personTile;
-        this.render = true;
+    public Area(T[][] data) {
+        this.data = new ArrayList<>();
+        for (T[] row : data) {
+            List<T> rowData = new ArrayList<>();
+            Collections.addAll(rowData, row);
+            this.data.add(rowData);
+        }
     }
 
-    private RenderedTile(Tile backgroundTile, Tile objectTile, Tile personTile, boolean render) {
-        this.backgroundTile = backgroundTile;
-        this.objectTile = objectTile;
-        this.personTile = personTile;
-        this.render = render;
+    public Area(List<List<T>> data) {
+        this.data = data;
     }
 
-    public Tile tile() {
-        return backgroundTile;
+    public <O> Area<O> map(Function<T, O> mapper) {
+        List<List<O>> mappedData = new ArrayList<>();
+        for (List<T> row : data) {
+            mappedData.add(row.stream().map(mapper).collect(Collectors.toList()));
+        }
+        return new Area<>(mappedData);
     }
 
-    public Optional<Tile> personTile() {
-        return Optional.ofNullable(personTile);
+    public int rows() {
+        return data.size();
     }
 
-    public boolean render() {
-        return render;
+    public int cols() {
+        return data.get(0).size();
     }
 
-    public RenderedTile hidden() {
-        return new RenderedTile(backgroundTile, objectTile, personTile, false);
+    public T get(int row, int col) {
+        return data.get(row).get(col);
+    }
+
+    public void set(int row, int col, T value) {
+        data.get(row).set(col, value);
+    }
+
+    public boolean isWithin(int row, int col) {
+        return ! (row < 0 || row >= data.size() || col < 0 || col >= data.get(0).size());
     }
 }

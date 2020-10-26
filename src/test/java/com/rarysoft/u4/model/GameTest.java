@@ -26,7 +26,6 @@ package com.rarysoft.u4.model;
 import com.rarysoft.u4.i18n.Messages;
 import com.rarysoft.u4.model.npc.Dialog;
 import com.rarysoft.u4.model.npc.Dialogs;
-import com.rarysoft.u4.model.graphics.Tile;
 import com.rarysoft.u4.model.npc.NonPlayerCharacter;
 import org.junit.Before;
 import org.junit.Test;

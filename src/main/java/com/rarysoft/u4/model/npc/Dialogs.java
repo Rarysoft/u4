@@ -24,7 +24,6 @@
 package com.rarysoft.u4.model.npc;
 
 import com.rarysoft.u4.i18n.Messages;
-import com.rarysoft.u4.model.graphics.Tile;
 import com.rarysoft.u4.model.party.Location;
 
 import java.io.File;
@@ -177,25 +176,13 @@ public class Dialogs {
     }
 
     public Optional<Dialog> findCharacterConversationFor(Location location, Person person) {
-        if (person.conversationIndex() == 0 || person.tile() == Tile.LORD_BRITISH_1) {
-            return findExtendedCharacterConversationFor(location, person);
+        if (person.nonPlayerCharacter() != NonPlayerCharacter.CITIZEN) {
+            return Optional.ofNullable(npcConversations.get(person.nonPlayerCharacter()));
         }
         if (! locationConversations.containsKey(location)) {
             return Optional.empty();
         }
         List<Dialog> dialogs = locationConversations.get(location);
         return Optional.of(dialogs.get(person.conversationIndex() - 1));
-    }
-
-    private Optional<Dialog> findExtendedCharacterConversationFor(Location location, Person person) {
-        if (person.tile() == Tile.LORD_BRITISH_1) {
-            return Optional.ofNullable(npcConversations.get(NonPlayerCharacter.LORD_BRITISH));
-        }
-        if (location == Location.CASTLE_BRITANNIA) {
-            if (person.startRow() == 27 && person.startCol() == 9) {
-                return Optional.ofNullable(npcConversations.get(NonPlayerCharacter.HAWKWIND));
-            }
-        }
-        return Optional.empty();
     }
 }

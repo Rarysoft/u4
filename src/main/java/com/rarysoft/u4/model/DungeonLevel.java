@@ -23,7 +23,6 @@
  */
 package com.rarysoft.u4.model;
 
-import com.rarysoft.u4.model.graphics.Tile;
 import com.rarysoft.u4.model.npc.Person;
 import com.rarysoft.u4.model.party.Location;
 
@@ -51,56 +50,53 @@ public class DungeonLevel implements Map {
                         startCol = col;
                     }
                 }
-                data[row][col] = Tile.forIndex(dungeonTile(tile));
+                data[row][col] = dungeonTile(tile);
             }
         }
         return new DungeonLevel(location, level, data, worldRow, worldCol, startRow, startCol);
     }
 
-    private static int dungeonTile(int tile) {
+    private static Tile dungeonTile(int tile) {
         // In the original game, dungeons are rendered in 3D, so the dungeon maps use a different tile set than the
         // surface and settlement maps. For this, I'm mapping dungeon tiles to surface tiles.
         switch (tile) {
             case 0x00:  // nothing
-                return Tile.GRASSLANDS.index();
+                return Tile.TILE_FLOOR;
             case 0x10:  // ladder up
-                return Tile.LADDER_UP.index();
+                return Tile.LADDER_UP;
             case 0x20:  // ladder down
-                return Tile.LADDER_DOWN.index();
+                return Tile.LADDER_DOWN;
             case 0x30:  // ladder up and down
-                return Tile.LADDER_DOWN.index();    // TODO: how to address this properly?
+                return Tile.LADDER_DOWN;    // TODO: how to address this properly?
             case 0x40:  // treasure chest
-                return Tile.CHEST.index();
+                return Tile.CHEST;
             case 0x50:  // ceiling hole (unused?)
-                return Tile.GRASSLANDS.index();
             case 0x60:  // floor hole (unused)
-                return Tile.GRASSLANDS.index();
+                return Tile.TILE_FLOOR;
             case 0x70:  // magic orb
-                return Tile.MAGIC_SPHERE.index();
+                return Tile.MAGIC_SPHERE;
             case 0x80:  // winds/darkness trap
-                return Tile.GRASSLANDS.index();
             case 0x81:  // falling rock trap
-                return Tile.GRASSLANDS.index();
             case 0x8E:  // pit trap
-                return Tile.GRASSLANDS.index();
+                return Tile.TILE_FLOOR;
             case 0x90:  // plain fountain
             case 0x91:  // healing fountain
             case 0x92:  // acid fountain
             case 0x93:  // cure fountain
             case 0x94:  // poison fountain
-                return Tile.CHEST.index();    // TODO: how to address this properly?
+                return Tile.CHEST;    // TODO: how to address this properly?
             case 0xA0:  // poison field
-                return Tile.POISON_FIELD.index();
+                return Tile.POISON_FIELD;
             case 0xA1:  // energy field
-                return Tile.ENERGY_FIELD.index();
+                return Tile.ENERGY_FIELD;
             case 0xA2:  // fire field
-                return Tile.FIRE_FIELD.index();
+                return Tile.FIRE_FIELD;
             case 0xA3:  // sleep field
-                return Tile.SLEEP_FIELD.index();
+                return Tile.SLEEP_FIELD;
             case 0xB0:  // altar
-                return Tile.ALTAR.index();
+                return Tile.ALTAR;
             case 0xC0:  // door
-                return Tile.UNLOCKED_DOOR.index();
+                return Tile.UNLOCKED_DOOR;  // TODO: how to address this properly?
             case 0xD0:  // dungeon rooms
             case 0xD1:  // dungeon rooms
             case 0xD2:  // dungeon rooms
@@ -117,13 +113,13 @@ public class DungeonLevel implements Map {
             case 0xDD:  // dungeon rooms
             case 0xDE:  // dungeon rooms
             case 0xDF:  // dungeon rooms
-                return Tile.UNLOCKED_DOOR.index();
+                return Tile.TILE_FLOOR;
             case 0xE0:  // secret door
-                return Tile.UNLOCKED_DOOR.index();   // TODO: how to address this properly?
+                // TODO: how to address this properly?
             case 0xF0:  // wall
-                return Tile.STONE_WALL.index();
+                return Tile.BRICK_WALL;
             default:
-                return Tile.STONE_WALL.index();
+                return Tile.BRICK_WALL;
         }
     }
 
@@ -147,6 +143,11 @@ public class DungeonLevel implements Map {
     }
 
     @Override
+    public MapType type() {
+        return MapType.DUNGEON;
+    }
+
+    @Override
     public Location location() {
         return location;
     }
@@ -157,8 +158,8 @@ public class DungeonLevel implements Map {
     }
 
     @Override
-    public MapType type() {
-        return MapType.SETTLEMENT;
+    public Tile[][] data() {
+        return data;
     }
 
     @Override
@@ -182,6 +183,11 @@ public class DungeonLevel implements Map {
     }
 
     @Override
+    public Tile surroundingTile() {
+        return null;
+    }
+
+    @Override
     public List<Person> people() {
         return new ArrayList<>();
     }
@@ -193,16 +199,6 @@ public class DungeonLevel implements Map {
 
     @Override
     public void movePeople(PeopleMover peopleMover, int playerRow, int playerCol, Person excludedPerson) {
-    }
-
-    @Override
-    public Tile[][] full() {
-        return data;
-    }
-
-    @Override
-    public Tile[][] view(ViewFinder viewFinder, int centerRow, int centerCol, int radius) {
-        return viewFinder.view(data, Tile.STONE_WALL, radius, centerRow, centerCol);
     }
 
     @Override

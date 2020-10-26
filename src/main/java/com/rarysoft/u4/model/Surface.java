@@ -1,6 +1,5 @@
 package com.rarysoft.u4.model;
 
-import com.rarysoft.u4.model.graphics.Tile;
 import com.rarysoft.u4.model.npc.Person;
 import com.rarysoft.u4.model.party.Location;
 
@@ -40,6 +39,11 @@ public class Surface implements Map {
     }
 
     @Override
+    public MapType type() {
+        return MapType.WORLD;
+    }
+
+    @Override
     public Location location() {
         return Location.SURFACE;
     }
@@ -50,8 +54,8 @@ public class Surface implements Map {
     }
 
     @Override
-    public MapType type() {
-        return MapType.WORLD;
+    public Tile[][] data() {
+        return data;
     }
 
     @Override
@@ -75,6 +79,11 @@ public class Surface implements Map {
     }
 
     @Override
+    public Tile surroundingTile() {
+        return null;
+    }
+
+    @Override
     public List<Person> people() {
         return new ArrayList<>();
     }
@@ -90,30 +99,7 @@ public class Surface implements Map {
     }
 
     @Override
-    public Tile[][] full() {
-        return data;
-    }
-
-    @Override
-    public Tile[][] view(ViewFinder viewFinder, int centerRow, int centerCol, int radius) {
-        int size = radius * 2 + 1;
-        Tile[][] view = new Tile[size][size];
-        for (int row = 0; row < size; row ++) {
-            for (int col = 0; col < size; col ++) {
-                int mapRow = centerRow - radius + row;
-                int mapCol = centerCol - radius + col;
-                view[row][col] = isWithinMapRange(mapCol, mapRow) ? data[mapRow][mapCol] : Tile.DEEP_WATER;
-            }
-        }
-        return view;
-    }
-
-    @Override
     public Tile at(int row, int col) {
         return data[row][col];
-    }
-
-    private boolean isWithinMapRange(int x, int y) {
-        return ! (y < 0 || y >= MAP_HEIGHT || x < 0 || x >= MAP_WIDTH);
     }
 }

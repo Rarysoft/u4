@@ -23,7 +23,6 @@
  */
 package com.rarysoft.u4.model;
 
-import com.rarysoft.u4.model.graphics.Tile;
 import com.rarysoft.u4.model.party.Location;
 
 import java.io.File;

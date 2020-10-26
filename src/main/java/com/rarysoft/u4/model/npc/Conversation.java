@@ -23,8 +23,6 @@
  */
 package com.rarysoft.u4.model.npc;
 
-import com.rarysoft.u4.model.Virtue;
-
 import java.util.Optional;
 import java.util.Random;
 
@@ -45,8 +43,7 @@ public class Conversation {
 
     private final String response;
     private final String question;
-    private final Virtue affectedVirtue;
-    private final int virtueDelta;
+    private final int humilityDelta;
     private final boolean healPlayer;
     private final boolean endConversation;
 
@@ -63,13 +60,12 @@ public class Conversation {
         this.humilityKarma = humilityKarma;
         this.response = getConversationStarter();
         this.question = null;
-        this.affectedVirtue = null;
-        this.virtueDelta = 0;
+        this.humilityDelta = 0;
         this.healPlayer = false;
         this.endConversation = false;
     }
 
-    private Conversation(Dialog dialog, String player, int honestyKarma, int compassionKarma, int valourKarma, int justiceKarma, int sacrificeKarma, int honourKarma, int spiritualityKarma, int humilityKarma, String response, String question, Virtue affectedVirtue, int virtueDelta, boolean healPlayer, boolean endConversation) {
+    private Conversation(Dialog dialog, String player, int honestyKarma, int compassionKarma, int valourKarma, int justiceKarma, int sacrificeKarma, int honourKarma, int spiritualityKarma, int humilityKarma, String response, String question, int humilityDelta, boolean healPlayer, boolean endConversation) {
         this.dialog = dialog;
         this.player = player;
         this.honestyKarma = honestyKarma;
@@ -82,8 +78,7 @@ public class Conversation {
         this.humilityKarma = humilityKarma;
         this.response = response;
         this.question = question;
-        this.affectedVirtue = affectedVirtue;
-        this.virtueDelta = virtueDelta;
+        this.humilityDelta = humilityDelta;
         this.healPlayer = healPlayer;
         this.endConversation = endConversation;
     }
@@ -96,12 +91,8 @@ public class Conversation {
         return Optional.ofNullable(question);
     }
 
-    public Optional<Virtue> affectedVirtue() {
-        return Optional.ofNullable(affectedVirtue);
-    }
-
-    public int virtueDelta() {
-        return virtueDelta;
+    public int humilityDelta() {
+        return humilityDelta;
     }
 
     public boolean healPlayer() {
@@ -191,7 +182,6 @@ public class Conversation {
                 humilityKarma,
                 personalizeResponse(response),
                 question,
-                null,
                 0,
                 false,
                 conversationHasEnded
@@ -213,8 +203,7 @@ public class Conversation {
                     humilityKarma,
                     dialog.getYesResponse(),
                     null,
-                    dialog.responseAffectsHumility() ? Virtue.HUMILITY : null,
-                    dialog.responseAffectsHumility() ? -1 : 0,
+                    dialog.responseAffectsHumility() ? -1 : 1,
                     false,
                     false
             );
@@ -231,7 +220,6 @@ public class Conversation {
                 spiritualityKarma,
                 humilityKarma,
                 dialog.getNoResponse(),
-                null,
                 null,
                 0,
                 dialog.getNpc() == NonPlayerCharacter.LORD_BRITISH,
