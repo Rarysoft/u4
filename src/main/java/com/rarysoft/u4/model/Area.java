@@ -41,7 +41,7 @@ public class Area<T> {
         }
     }
 
-    public Area(List<List<T>> data) {
+    private Area(List<List<T>> data) {
         this.data = data;
     }
 

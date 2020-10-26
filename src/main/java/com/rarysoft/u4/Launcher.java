@@ -25,10 +25,11 @@ package com.rarysoft.u4;
 
 import com.rarysoft.u4.i18n.Messages;
 import com.rarysoft.u4.model.*;
+import com.rarysoft.u4.model.npc.DialogTemplate;
 import com.rarysoft.u4.model.npc.Dialogs;
 import com.rarysoft.u4.model.graphics.Charset;
 import com.rarysoft.u4.model.Tiles;
-import com.rarysoft.u4.model.npc.WayFinder;
+import com.rarysoft.u4.model.WayFinder;
 import com.rarysoft.u4.model.party.*;
 import com.rarysoft.u4.model.party.Character;
 import com.rarysoft.u4.ui.*;
@@ -125,7 +126,42 @@ public class Launcher {
     }
 
     private Dialogs initializeConversations(String directory, Messages messages) throws IOException {
-        return Dialogs.fromFiles(directory, messages);
+        return Dialogs.fromFiles(directory, new DialogTemplate() {
+            @Override
+            public String speakingTemplate(String pronoun) {
+                return messages.speechCitizenSpeaking(pronoun);
+            }
+
+            @Override
+            public String introTemplate(String lookResponse) {
+                return messages.speechCitizenIntro(lookResponse);
+            }
+
+            @Override
+            public String nameTemplate(String nameResponse) {
+                return messages.speechCitizenName(nameResponse);
+            }
+
+            @Override
+            public String descriptionTemplate(String lookResponse) {
+                return messages.speechCitizenDescribe(lookResponse);
+            }
+
+            @Override
+            public String noJoinTemplate() {
+                return messages.speechCitizenNoJoin();
+            }
+
+            @Override
+            public String unknownTemplate() {
+                return messages.speechCitizenUnknown();
+            }
+
+            @Override
+            public String byeTemplate() {
+                return messages.speechCitizenBye();
+            }
+        });
     }
 
     private BufferedImage initializeIcon(String filename) {

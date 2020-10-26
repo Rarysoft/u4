@@ -237,7 +237,7 @@ public class Game {
     }
 
     private void attemptConversationWith(Person person) {
-        Optional<Dialog> possibleConversation = dialogs.findCharacterConversationFor(gameState.location(), person);
+        Optional<Dialog> possibleConversation = dialogs.findCharacterConversationFor(gameState.location().code(), person);
         if (possibleConversation.isPresent()) {
             Dialog dialog = possibleConversation.get();
             Conversation conversation = new Conversation(dialog, gameState.playerName(), 0, 0, 0, 0, 0, 0, 0, 0);

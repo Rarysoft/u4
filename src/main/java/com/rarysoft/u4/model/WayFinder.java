@@ -21,9 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.rarysoft.u4.model.npc;
-
-import com.rarysoft.u4.model.Area;
+package com.rarysoft.u4.model;
 
 public class WayFinder {
     private static final Movement NOWHERE = new Movement(0, 0);

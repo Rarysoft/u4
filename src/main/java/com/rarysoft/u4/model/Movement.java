@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.rarysoft.u4.model.npc;
+package com.rarysoft.u4.model;
 
 public class Movement {
     private final int deltaRow;

@@ -25,7 +25,6 @@ package com.rarysoft.u4.model;
 
 import com.rarysoft.u4.model.npc.Dialog;
 import com.rarysoft.u4.model.npc.Person;
-import com.rarysoft.u4.model.npc.WayFinder;
 import com.rarysoft.u4.model.party.Location;
 import com.rarysoft.u4.model.party.Party;
 import com.rarysoft.u4.model.party.Status;

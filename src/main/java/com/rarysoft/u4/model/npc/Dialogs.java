@@ -23,9 +23,6 @@
  */
 package com.rarysoft.u4.model.npc;
 
-import com.rarysoft.u4.i18n.Messages;
-import com.rarysoft.u4.model.party.Location;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -33,28 +30,28 @@ import java.util.*;
 import java.util.Map;
 
 public class Dialogs {
-    private final Map<Location, List<Dialog>> locationConversations;
+    private final Map<Integer, List<Dialog>> locationConversations;
 
     private final Map<NonPlayerCharacter, Dialog> npcConversations;
 
-    public static Dialogs fromFiles(String directory, Messages messages) throws IOException {
-        Map<Location, List<Dialog>> locationConversations = new HashMap<>();
-        locationConversations.put(Location.BRITAIN, loadCharacterConversations(path(directory, "britain.tlk"), messages));
-        locationConversations.put(Location.COVE, loadCharacterConversations(path(directory, "cove.tlk"), messages));
-        locationConversations.put(Location.BUCCANEERS_DEN, loadCharacterConversations(path(directory, "den.tlk"), messages));
-        locationConversations.put(Location.EMPATH_ABBEY, loadCharacterConversations(path(directory, "empath.tlk"), messages));
-        locationConversations.put(Location.JHELOM, loadCharacterConversations(path(directory, "jhelom.tlk"), messages));
-        locationConversations.put(Location.CASTLE_BRITANNIA, loadCharacterConversations(path(directory, "lcb.tlk"), messages));
-        locationConversations.put(Location.THE_LYCAEUM, loadCharacterConversations(path(directory, "lycaeum.tlk"), messages));
-        locationConversations.put(Location.SERPENTS_HOLD, loadCharacterConversations(path(directory, "serpent.tlk"), messages));
-        locationConversations.put(Location.MAGINCIA, loadCharacterConversations(path(directory, "magincia.tlk"), messages));
-        locationConversations.put(Location.MINOC, loadCharacterConversations(path(directory, "minoc.tlk"), messages));
-        locationConversations.put(Location.MOONGLOW, loadCharacterConversations(path(directory, "moonglow.tlk"), messages));
-        locationConversations.put(Location.PAWS, loadCharacterConversations(path(directory, "paws.tlk"), messages));
-        locationConversations.put(Location.SKARA_BRAE, loadCharacterConversations(path(directory, "skara.tlk"), messages));
-        locationConversations.put(Location.TRINSIC, loadCharacterConversations(path(directory, "trinsic.tlk"), messages));
-        locationConversations.put(Location.VESPER, loadCharacterConversations(path(directory, "vesper.tlk"), messages));
-        locationConversations.put(Location.YEW, loadCharacterConversations(path(directory, "yew.tlk"), messages));
+    public static Dialogs fromFiles(String directory, DialogTemplate template) throws IOException {
+        Map<Integer, List<Dialog>> locationConversations = new HashMap<>();
+        locationConversations.put(0x01, loadCharacterConversations(path(directory, "lcb.tlk"), template));
+        locationConversations.put(0x02, loadCharacterConversations(path(directory, "lycaeum.tlk"), template));
+        locationConversations.put(0x03, loadCharacterConversations(path(directory, "empath.tlk"), template));
+        locationConversations.put(0x04, loadCharacterConversations(path(directory, "serpent.tlk"), template));
+        locationConversations.put(0x05, loadCharacterConversations(path(directory, "moonglow.tlk"), template));
+        locationConversations.put(0x06, loadCharacterConversations(path(directory, "britain.tlk"), template));
+        locationConversations.put(0x07, loadCharacterConversations(path(directory, "jhelom.tlk"), template));
+        locationConversations.put(0x08, loadCharacterConversations(path(directory, "yew.tlk"), template));
+        locationConversations.put(0x09, loadCharacterConversations(path(directory, "minoc.tlk"), template));
+        locationConversations.put(0x0A, loadCharacterConversations(path(directory, "trinsic.tlk"), template));
+        locationConversations.put(0x0B, loadCharacterConversations(path(directory, "skara.tlk"), template));
+        locationConversations.put(0x0C, loadCharacterConversations(path(directory, "magincia.tlk"), template));
+        locationConversations.put(0x0D, loadCharacterConversations(path(directory, "paws.tlk"), template));
+        locationConversations.put(0x0E, loadCharacterConversations(path(directory, "den.tlk"), template));
+        locationConversations.put(0x0F, loadCharacterConversations(path(directory, "vesper.tlk"), template));
+        locationConversations.put(0x10, loadCharacterConversations(path(directory, "cove.tlk"), template));
         Map<NonPlayerCharacter, Dialog> npcConversations = new HashMap<>();
         npcConversations.put(NonPlayerCharacter.LORD_BRITISH, DialogBuilder.buildLordBritishDialog());
         npcConversations.put(NonPlayerCharacter.HAWKWIND, DialogBuilder.buildHawkwindDialog());
@@ -65,12 +62,12 @@ public class Dialogs {
         return String.format("%s%s%s", directory, File.separator, filename);
     }
 
-    private static List<Dialog> loadCharacterConversations(String characterConversationsFilename, Messages messages) throws IOException {
+    private static List<Dialog> loadCharacterConversations(String characterConversationsFilename, DialogTemplate template) throws IOException {
         List<Dialog> dialogs = new ArrayList<>();
         InputStream stream = Dialogs.class.getResourceAsStream(characterConversationsFilename);
         boolean done = false;
         while (! done) {
-            Dialog dialog = buildCharacterConversationFromStream(stream, messages);
+            Dialog dialog = buildCharacterConversationFromStream(stream, template);
             if (dialog == null) {
                 done = true;
             }
@@ -81,7 +78,7 @@ public class Dialogs {
         return dialogs;
     }
 
-    private static Dialog buildCharacterConversationFromStream(InputStream stream, Messages messages) throws IOException {
+    private static Dialog buildCharacterConversationFromStream(InputStream stream, DialogTemplate template) throws IOException {
         int byteCount = 0;
         int questionFlag = stream.read();
         if (questionFlag == -1) {
@@ -121,19 +118,19 @@ public class Dialogs {
                 questionFlag,
                 responseAffectsHumility,
                 turnAwayProbability,
-                messages.speechCitizenIntro(withinSentence(lookResponse)),
-                conversationResponse(messages.speechCitizenName(name), pronoun, messages),
-                messages.speechCitizenDescribe(withinSentence(lookResponse)),
-                conversationResponse(jobResponse, pronoun, messages),
-                conversationResponse(healthResponse, pronoun, messages),
-                conversationResponse(messages.speechCitizenNoJoin(), pronoun, messages),
-                conversationResponse(keyword1Response, pronoun, messages),
-                conversationResponse(keyword2Response, pronoun, messages),
+                template.introTemplate(withinSentence(lookResponse)),
+                conversationResponse(template.nameTemplate(name), pronoun, template),
+                template.descriptionTemplate(withinSentence(lookResponse)),
+                conversationResponse(jobResponse, pronoun, template),
+                conversationResponse(healthResponse, pronoun, template),
+                conversationResponse(template.noJoinTemplate(), pronoun, template),
+                conversationResponse(keyword1Response, pronoun, template),
+                conversationResponse(keyword2Response, pronoun, template),
                 yesNoQuestion,
-                conversationResponse(yesResponse, pronoun, messages),
-                conversationResponse(noResponse, pronoun, messages),
-                conversationResponse(messages.speechCitizenUnknown(), pronoun, messages),
-                conversationResponse(messages.speechCitizenBye(), pronoun, messages),
+                conversationResponse(yesResponse, pronoun, template),
+                conversationResponse(noResponse, pronoun, template),
+                conversationResponse(template.unknownTemplate(), pronoun, template),
+                conversationResponse(template.byeTemplate(), pronoun, template),
                 keyword1,
                 keyword2
         );
@@ -159,8 +156,8 @@ public class Dialogs {
         return stringBuilder.toString();
     }
 
-    private static String conversationResponse(String message, String pronoun, Messages messages) {
-        return messages.speechCitizenSpeaking(pronoun) + " " + message;
+    private static String conversationResponse(String message, String pronoun, DialogTemplate template) {
+        return template.speakingTemplate(pronoun) + " " + message;
     }
 
     private static String withinSentence(String message) {
@@ -170,19 +167,19 @@ public class Dialogs {
         return message.substring(0, 1).toLowerCase() + message.substring(1);
     }
 
-    public Dialogs(Map<Location, List<Dialog>> locationConversations, Map<NonPlayerCharacter, Dialog> npcConversations) {
+    public Dialogs(Map<Integer, List<Dialog>> locationConversations, Map<NonPlayerCharacter, Dialog> npcConversations) {
         this.locationConversations = locationConversations;
         this.npcConversations = npcConversations;
     }
 
-    public Optional<Dialog> findCharacterConversationFor(Location location, Person person) {
+    public Optional<Dialog> findCharacterConversationFor(Integer locationCode, Person person) {
         if (person.nonPlayerCharacter() != NonPlayerCharacter.CITIZEN) {
             return Optional.ofNullable(npcConversations.get(person.nonPlayerCharacter()));
         }
-        if (! locationConversations.containsKey(location)) {
+        if (! locationConversations.containsKey(locationCode)) {
             return Optional.empty();
         }
-        List<Dialog> dialogs = locationConversations.get(location);
+        List<Dialog> dialogs = locationConversations.get(locationCode);
         return Optional.of(dialogs.get(person.conversationIndex() - 1));
     }
 }

@@ -23,9 +23,7 @@
  */
 package com.rarysoft.u4.model;
 
-import com.rarysoft.u4.model.npc.Movement;
 import com.rarysoft.u4.model.npc.Person;
-import com.rarysoft.u4.model.npc.WayFinder;
 
 import java.util.List;
 import java.util.Random;

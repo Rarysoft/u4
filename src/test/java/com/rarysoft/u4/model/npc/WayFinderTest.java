@@ -24,6 +24,8 @@
 package com.rarysoft.u4.model.npc;
 
 import com.rarysoft.u4.model.Area;
+import com.rarysoft.u4.model.Movement;
+import com.rarysoft.u4.model.WayFinder;
 import org.junit.Before;
 import org.junit.Test;
 
