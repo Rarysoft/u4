@@ -23,15 +23,16 @@
  */
 package com.rarysoft.u4;
 
+import com.rarysoft.u4.game.physics.ViewFinder;
 import com.rarysoft.u4.i18n.Messages;
-import com.rarysoft.u4.model.*;
-import com.rarysoft.u4.model.npc.DialogTemplate;
-import com.rarysoft.u4.model.npc.Dialogs;
+import com.rarysoft.u4.game.*;
+import com.rarysoft.u4.game.npc.DialogTemplate;
+import com.rarysoft.u4.game.npc.Dialogs;
 import com.rarysoft.u4.ui.graphics.Charset;
-import com.rarysoft.u4.model.Tiles;
-import com.rarysoft.u4.model.WayFinder;
-import com.rarysoft.u4.model.party.*;
-import com.rarysoft.u4.model.party.Character;
+import com.rarysoft.u4.game.Tiles;
+import com.rarysoft.u4.game.physics.WayFinder;
+import com.rarysoft.u4.game.party.*;
+import com.rarysoft.u4.game.party.Character;
 import com.rarysoft.u4.ui.*;
 import com.rarysoft.u4.ui.util.FrameHelper;
 
@@ -85,12 +86,7 @@ public class Launcher {
         FrameHelper.center(gameWindow);
         FrameHelper.maximize(gameWindow);
         FrameHelper.show(gameWindow);
-        Party party = new Party();
-        party.setPlayer0(new Character(20, 20, 0, 16, 14, 15, 13, 0, Weapon.HANDS, Armour.CLOTH, "Player Name", Sex.MALE, CharacterClass.BARD, Status.GOOD));
-        party.setCurrentPartyLocation(Location.SURFACE);
-        party.setDungeonLevel(1);
-        party.setRow(maps.surface().startRow());
-        party.setCol(maps.surface().startCol());
+        Party party = initializeParty("/data/party.sav");
         game.start(new GameState(maps, party));
     }
 
@@ -178,5 +174,10 @@ public class Launcher {
         Game game = new Game(messages, dialogs, new Random(), new ViewFinder(), new WayFinder());
         gameWindow.addKeyListener(new KeyboardListener(game));
         return game;
+    }
+
+    private Party initializeParty(String filename) throws IOException {
+        PartyLoader partyLoader = new PartyLoader(new CharacterLoader());
+        return partyLoader.load(Launcher.class.getResourceAsStream(filename));
     }
 }

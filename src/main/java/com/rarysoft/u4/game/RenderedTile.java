@@ -21,26 +21,46 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.rarysoft.u4.ui;
+package com.rarysoft.u4.game;
 
-import com.rarysoft.u4.game.Game;
-import com.rarysoft.u4.ui.graphics.Charset;
-import com.rarysoft.u4.ui.graphics.ExtendedCharset;
-import com.rarysoft.u4.game.Tiles;
+import java.util.Optional;
 
-import javax.swing.*;
-import java.awt.*;
+public class RenderedTile {
+    private final Tile backgroundTile;
 
-public class UiBuilder {
-    public void buildGamePanel(JFrame gameWindow, Game game, Tiles tiles, Charset charset) {
-        GameViewRenderer gameViewRenderer = new GameViewRenderer(tiles, charset, new ExtendedCharset());
-        GamePanel gamePanel = new GamePanel(gameViewRenderer);
-        gameWindow.add(gamePanel, BorderLayout.CENTER);
-        game.addInformationListener(new CommunicationListener(gamePanel, gamePanel, gamePanel));
-        game.addViewListener(new GameListener(gamePanel));
+    private final Tile objectTile;
+
+    private final Tile personTile;
+
+    private final boolean render;
+
+    public RenderedTile(Tile backgroundTile, Tile personTile) {
+        this.backgroundTile = backgroundTile;
+        this.objectTile = null; // TODO implement this
+        this.personTile = personTile;
+        this.render = true;
     }
 
-    public JFrame buildGameWindow(String title) {
-        return new JFrame(title);
+    private RenderedTile(Tile backgroundTile, Tile objectTile, Tile personTile, boolean render) {
+        this.backgroundTile = backgroundTile;
+        this.objectTile = objectTile;
+        this.personTile = personTile;
+        this.render = render;
+    }
+
+    public Tile tile() {
+        return backgroundTile;
+    }
+
+    public Optional<Tile> personTile() {
+        return Optional.ofNullable(personTile);
+    }
+
+    public boolean render() {
+        return render;
+    }
+
+    public RenderedTile hidden() {
+        return new RenderedTile(backgroundTile, objectTile, personTile, false);
     }
 }

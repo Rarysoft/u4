@@ -21,26 +21,27 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.rarysoft.u4.ui;
+package com.rarysoft.u4.game.npc;
 
-import com.rarysoft.u4.game.Game;
-import com.rarysoft.u4.ui.graphics.Charset;
-import com.rarysoft.u4.ui.graphics.ExtendedCharset;
-import com.rarysoft.u4.game.Tiles;
+import java.util.stream.Stream;
 
-import javax.swing.*;
-import java.awt.*;
+public enum MovementBehaviour {
+    FIXED(0x00),
+    WANDER(0x01),
+    FOLLOW(0x80),
+    ATTACK(0xFF);
 
-public class UiBuilder {
-    public void buildGamePanel(JFrame gameWindow, Game game, Tiles tiles, Charset charset) {
-        GameViewRenderer gameViewRenderer = new GameViewRenderer(tiles, charset, new ExtendedCharset());
-        GamePanel gamePanel = new GamePanel(gameViewRenderer);
-        gameWindow.add(gamePanel, BorderLayout.CENTER);
-        game.addInformationListener(new CommunicationListener(gamePanel, gamePanel, gamePanel));
-        game.addViewListener(new GameListener(gamePanel));
+    public static MovementBehaviour forCode(int code) {
+        return Stream.of(values()).filter(tile -> tile.code() == code).findAny().orElseThrow(IllegalArgumentException::new);
     }
 
-    public JFrame buildGameWindow(String title) {
-        return new JFrame(title);
+    private final int code;
+
+    MovementBehaviour(int code) {
+        this.code = code;
+    }
+
+    public int code() {
+        return code;
     }
 }

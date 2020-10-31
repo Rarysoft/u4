@@ -21,26 +21,55 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.rarysoft.u4.ui;
+package com.rarysoft.u4.game;
 
-import com.rarysoft.u4.game.Game;
-import com.rarysoft.u4.ui.graphics.Charset;
-import com.rarysoft.u4.ui.graphics.ExtendedCharset;
-import com.rarysoft.u4.game.Tiles;
+public class Door {
+    private final int row;
+    private final int col;
 
-import javax.swing.*;
-import java.awt.*;
+    private boolean closed;
+    private boolean locked;
 
-public class UiBuilder {
-    public void buildGamePanel(JFrame gameWindow, Game game, Tiles tiles, Charset charset) {
-        GameViewRenderer gameViewRenderer = new GameViewRenderer(tiles, charset, new ExtendedCharset());
-        GamePanel gamePanel = new GamePanel(gameViewRenderer);
-        gameWindow.add(gamePanel, BorderLayout.CENTER);
-        game.addInformationListener(new CommunicationListener(gamePanel, gamePanel, gamePanel));
-        game.addViewListener(new GameListener(gamePanel));
+    private int closeTurnCounter;
+
+    public Door(int row, int col, boolean closed, boolean locked) {
+        this.row = row;
+        this.col = col;
+        this.closed = closed;
+        this.locked = locked;
     }
 
-    public JFrame buildGameWindow(String title) {
-        return new JFrame(title);
+    public int getRow() {
+        return row;
+    }
+
+    public int getCol() {
+        return col;
+    }
+
+    public boolean isClosed() {
+        return closed;
+    }
+
+    public boolean isLocked() {
+        return locked;
+    }
+
+    public void open(int turns) {
+        closed = false;
+        closeTurnCounter = turns;
+    }
+
+    public void unlock() {
+        locked = false;
+    }
+
+    public void turnCompleted() {
+        if (closeTurnCounter > 0) {
+            closeTurnCounter --;
+            if (closeTurnCounter == 0) {
+                closed = true;
+            }
+        }
     }
 }

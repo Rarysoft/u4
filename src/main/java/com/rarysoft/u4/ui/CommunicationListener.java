@@ -23,8 +23,7 @@
  */
 package com.rarysoft.u4.ui;
 
-import com.rarysoft.u4.model.InformationListener;
-import com.rarysoft.u4.model.RenderedTile;
+import com.rarysoft.u4.game.InformationListener;
 
 import java.util.ArrayList;
 import java.util.List;

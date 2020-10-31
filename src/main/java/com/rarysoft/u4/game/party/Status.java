@@ -21,26 +21,36 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.rarysoft.u4.ui;
+package com.rarysoft.u4.game.party;
 
-import com.rarysoft.u4.game.Game;
-import com.rarysoft.u4.ui.graphics.Charset;
-import com.rarysoft.u4.ui.graphics.ExtendedCharset;
-import com.rarysoft.u4.game.Tiles;
+public enum Status {
+    GOOD("G"),
+    POISONED("P"),
+    SLEEPING("S"),
+    DEAD("D");
 
-import javax.swing.*;
-import java.awt.*;
+    private final String displayName;
 
-public class UiBuilder {
-    public void buildGamePanel(JFrame gameWindow, Game game, Tiles tiles, Charset charset) {
-        GameViewRenderer gameViewRenderer = new GameViewRenderer(tiles, charset, new ExtendedCharset());
-        GamePanel gamePanel = new GamePanel(gameViewRenderer);
-        gameWindow.add(gamePanel, BorderLayout.CENTER);
-        game.addInformationListener(new CommunicationListener(gamePanel, gamePanel, gamePanel));
-        game.addViewListener(new GameListener(gamePanel));
+    public static Status forCode(String code) {
+        switch (code) {
+            case "G":
+                return GOOD;
+            case "P":
+                return POISONED;
+            case "S":
+                return SLEEPING;
+            case "D":
+                return DEAD;
+            default:
+                throw new RuntimeException("Unknown status: " + code);
+        }
     }
 
-    public JFrame buildGameWindow(String title) {
-        return new JFrame(title);
+    Status(String displayName) {
+        this.displayName = displayName;
+    }
+
+    public String displayName() {
+        return displayName;
     }
 }

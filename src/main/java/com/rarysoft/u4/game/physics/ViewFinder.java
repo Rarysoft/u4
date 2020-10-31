@@ -21,26 +21,26 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.rarysoft.u4.ui;
+package com.rarysoft.u4.game.physics;
 
-import com.rarysoft.u4.game.Game;
-import com.rarysoft.u4.ui.graphics.Charset;
-import com.rarysoft.u4.ui.graphics.ExtendedCharset;
-import com.rarysoft.u4.game.Tiles;
+import com.rarysoft.u4.game.Area;
+import com.rarysoft.u4.game.Tile;
 
-import javax.swing.*;
-import java.awt.*;
-
-public class UiBuilder {
-    public void buildGamePanel(JFrame gameWindow, Game game, Tiles tiles, Charset charset) {
-        GameViewRenderer gameViewRenderer = new GameViewRenderer(tiles, charset, new ExtendedCharset());
-        GamePanel gamePanel = new GamePanel(gameViewRenderer);
-        gameWindow.add(gamePanel, BorderLayout.CENTER);
-        game.addInformationListener(new CommunicationListener(gamePanel, gamePanel, gamePanel));
-        game.addViewListener(new GameListener(gamePanel));
+public class ViewFinder {
+    public Area<Tile> view(Tile[][] area, Tile surroundingTile, int radius, int centerRow, int centerCol) {
+        return view(new Area<>(area), surroundingTile, radius, centerRow, centerCol);
     }
 
-    public JFrame buildGameWindow(String title) {
-        return new JFrame(title);
+    public Area<Tile> view(Area<Tile> area, Tile surroundingTile, int radius, int centerRow, int centerCol) {
+        int size = radius * 2 + 1;
+        Tile[][] view = new Tile[size][size];
+        for (int row = 0; row < size; row ++) {
+            for (int col = 0; col < size; col ++) {
+                int mapRow = centerRow - radius + row;
+                int mapCol = centerCol - radius + col;
+                view[row][col] = area.isWithin(mapRow, mapCol) ? area.get(mapRow, mapCol) : surroundingTile;
+            }
+        }
+        return new Area<>(view);
     }
 }

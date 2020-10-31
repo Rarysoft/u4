@@ -23,7 +23,7 @@
  */
 package com.rarysoft.u4.ui;
 
-import com.rarysoft.u4.model.RenderedTile;
+import com.rarysoft.u4.game.RenderedTile;
 
 public interface GameProvider {
     void showGameView(RenderedTile[][] background, int animationCycle);

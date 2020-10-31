@@ -23,7 +23,7 @@
  */
 package com.rarysoft.u4.ui;
 
-import com.rarysoft.u4.model.Game;
+import com.rarysoft.u4.game.Game;
 
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;

@@ -21,26 +21,20 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.rarysoft.u4.ui;
+package com.rarysoft.u4.game.npc;
 
-import com.rarysoft.u4.game.Game;
-import com.rarysoft.u4.ui.graphics.Charset;
-import com.rarysoft.u4.ui.graphics.ExtendedCharset;
-import com.rarysoft.u4.game.Tiles;
+public interface DialogTemplate {
+    String speakingTemplate(String pronoun);
 
-import javax.swing.*;
-import java.awt.*;
+    String introTemplate(String lookResponse);
 
-public class UiBuilder {
-    public void buildGamePanel(JFrame gameWindow, Game game, Tiles tiles, Charset charset) {
-        GameViewRenderer gameViewRenderer = new GameViewRenderer(tiles, charset, new ExtendedCharset());
-        GamePanel gamePanel = new GamePanel(gameViewRenderer);
-        gameWindow.add(gamePanel, BorderLayout.CENTER);
-        game.addInformationListener(new CommunicationListener(gamePanel, gamePanel, gamePanel));
-        game.addViewListener(new GameListener(gamePanel));
-    }
+    String nameTemplate(String nameResponse);
 
-    public JFrame buildGameWindow(String title) {
-        return new JFrame(title);
-    }
+    String descriptionTemplate(String lookResponse);
+
+    String noJoinTemplate();
+
+    String unknownTemplate();
+
+    String byeTemplate();
 }

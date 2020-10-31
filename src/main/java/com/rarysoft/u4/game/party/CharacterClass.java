@@ -21,26 +21,48 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.rarysoft.u4.ui;
+package com.rarysoft.u4.game.party;
 
-import com.rarysoft.u4.game.Game;
-import com.rarysoft.u4.ui.graphics.Charset;
-import com.rarysoft.u4.ui.graphics.ExtendedCharset;
-import com.rarysoft.u4.game.Tiles;
+public enum CharacterClass {
+    MAGE("Mage"),
+    BARD("Bard"),
+    FIGHTER("Fighter"),
+    DRUID("Druid"),
+    TINKER("Tinker"),
+    PALADIN("Paladin"),
+    RANGER("Ranger"),
+    SHEPHERD("Shepherd");
 
-import javax.swing.*;
-import java.awt.*;
+    private final String displayName;
 
-public class UiBuilder {
-    public void buildGamePanel(JFrame gameWindow, Game game, Tiles tiles, Charset charset) {
-        GameViewRenderer gameViewRenderer = new GameViewRenderer(tiles, charset, new ExtendedCharset());
-        GamePanel gamePanel = new GamePanel(gameViewRenderer);
-        gameWindow.add(gamePanel, BorderLayout.CENTER);
-        game.addInformationListener(new CommunicationListener(gamePanel, gamePanel, gamePanel));
-        game.addViewListener(new GameListener(gamePanel));
+    public static CharacterClass forCode(int code) {
+        switch (code) {
+            case 0:
+                return MAGE;
+            case 1:
+                return BARD;
+            case 2:
+                return FIGHTER;
+            case 3:
+                return DRUID;
+            case 4:
+                return TINKER;
+            case 5:
+                return PALADIN;
+            case 6:
+                return RANGER;
+            case 7:
+                return SHEPHERD;
+            default:
+                throw new RuntimeException("Unknown character class: " + code);
+        }
     }
 
-    public JFrame buildGameWindow(String title) {
-        return new JFrame(title);
+    CharacterClass(String displayName) {
+        this.displayName = displayName;
+    }
+
+    public String displayName() {
+        return displayName;
     }
 }

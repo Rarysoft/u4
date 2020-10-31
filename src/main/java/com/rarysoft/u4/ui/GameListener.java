@@ -23,8 +23,8 @@
  */
 package com.rarysoft.u4.ui;
 
-import com.rarysoft.u4.model.RenderedTile;
-import com.rarysoft.u4.model.ViewListener;
+import com.rarysoft.u4.game.RenderedTile;
+import com.rarysoft.u4.game.ViewListener;
 
 public class GameListener implements ViewListener {
     private final GameProvider gameProvider;
