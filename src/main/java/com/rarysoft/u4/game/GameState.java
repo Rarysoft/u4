@@ -25,16 +25,13 @@ package com.rarysoft.u4.game;
 
 import com.rarysoft.u4.game.npc.Dialog;
 import com.rarysoft.u4.game.npc.Person;
+import com.rarysoft.u4.game.party.Character;
 import com.rarysoft.u4.game.party.Location;
 import com.rarysoft.u4.game.party.Party;
-import com.rarysoft.u4.game.party.Status;
 import com.rarysoft.u4.game.physics.ViewFinder;
 import com.rarysoft.u4.game.physics.WayFinder;
 
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 
 public class GameState {
     private final Maps maps;
@@ -60,12 +57,21 @@ public class GameState {
         return party.getPlayer0().getName();
     }
 
-    public int playerHitPoints() {
-        return party.getPlayer0().getHp();
-    }
-
-    public Status playerStatus() {
-        return party.getPlayer0().getStatus();
+    public List<Character> charactersInParty() {
+        List<Character> charactersInParty = new ArrayList<>();
+        for (int index = 0; index < party.getNumberOfCharacters(); index ++) {
+            charactersInParty.add(
+                    index == 0 ? party.getPlayer0() :
+                            index == 1 ? party.getPlayer1() :
+                                    index == 2 ? party.getPlayer2() :
+                                            index == 3 ? party.getPlayer3() :
+                                                    index == 4 ? party.getPlayer4() :
+                                                            index == 5 ? party.getPlayer5() :
+                                                                    index == 6 ? party.getPlayer6() :
+                                                                            party.getPlayer7()
+            );
+        }
+        return charactersInParty;
     }
 
     public int row() {

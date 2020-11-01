@@ -23,6 +23,7 @@
  */
 package com.rarysoft.u4.game;
 
+import com.rarysoft.u4.game.party.Character;
 import com.rarysoft.u4.game.physics.ViewFinder;
 import com.rarysoft.u4.game.physics.WayFinder;
 import com.rarysoft.u4.i18n.Messages;
@@ -261,7 +262,12 @@ public class Game {
 
     private void initializeDisplay() {
         informationListeners.forEach(InformationListener::initialize);
-        informationListeners.forEach(informationListener -> informationListener.playerUpdated(0, gameState.playerName(), String.format("%d%s", gameState.playerHitPoints(), gameState.playerStatus().displayName())));
+        List<Character> characters = gameState.charactersInParty();
+        for (int index = 0; index < characters.size(); index ++) {
+            Character character = characters.get(index);
+            int characterIndex = index;
+            informationListeners.forEach(informationListener -> informationListener.playerUpdated(characterIndex, character.getName(), String.format("%d%s", character.getHp(), character.getStatus().displayName())));
+        }
     }
 
     private void updateBackground() {

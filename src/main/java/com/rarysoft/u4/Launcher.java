@@ -80,13 +80,13 @@ public class Launcher {
         UiBuilder uiBuilder = new UiBuilder();
         JFrame gameWindow = uiBuilder.buildGameWindow(messages.windowTitle());
         Game game = initializeGame(messages, gameWindow, dialogs);
+        Party party = initializeParty("/data/party.sav");
         uiBuilder.buildGamePanel(gameWindow, game, tiles, charset);
         gameWindow.setIconImage(icon);
         FrameHelper.enableExitOnClose(gameWindow);
         FrameHelper.center(gameWindow);
         FrameHelper.maximize(gameWindow);
         FrameHelper.show(gameWindow);
-        Party party = initializeParty("/data/party.sav");
         game.start(new GameState(maps, party));
     }
 
