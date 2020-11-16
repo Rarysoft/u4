@@ -99,6 +99,10 @@ public class Conversation {
         return healPlayer;
     }
 
+    public boolean endConversation() {
+        return endConversation;
+    }
+
     public Conversation forInput(String input) {
         String playerInput = input.toUpperCase();
         if (playerInput.length() > 4) {

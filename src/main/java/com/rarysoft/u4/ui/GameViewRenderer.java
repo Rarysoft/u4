@@ -624,18 +624,6 @@ public class GameViewRenderer {
                 drawCharacter(graphics, character, row, col, STATS_AREA_OFFSET_X, STATS_AREA_OFFSET_Y);
             }
         }
-        int inputRow = 19;
-        for (int index = 0; index < inputLine.length(); index ++) {
-            drawCharacter(graphics, charset.data()[inputLine.charAt(index)], inputRow, index, STATS_AREA_OFFSET_X, STATS_AREA_OFFSET_Y);
-        }
-        if (allowInput) {
-            int cursorCol = inputLine.length();
-            drawCharacter(graphics, charset.data()[31 - animationCycle % 4], inputRow, cursorCol, STATS_AREA_OFFSET_X, STATS_AREA_OFFSET_Y);
-        }
-        int emptyRow = 20;
-        for (int index = 0; index < 28; index ++) {
-            drawCharacter(graphics, charset.data()[32], emptyRow, index, STATS_AREA_OFFSET_X, STATS_AREA_OFFSET_Y);
-        }
     }
 
     private void drawTextArea(Graphics graphics) {
@@ -654,10 +642,6 @@ public class GameViewRenderer {
         if (allowInput) {
             int cursorCol = inputLine.length();
             drawCharacter(graphics, charset.data()[31 - animationCycle % 4], inputRow, cursorCol, TEXT_AREA_OFFSET_X, TEXT_AREA_OFFSET_Y);
-        }
-        int emptyRow = 20;
-        for (int index = 0; index < 28; index ++) {
-            drawCharacter(graphics, charset.data()[32], emptyRow, index, TEXT_AREA_OFFSET_X, TEXT_AREA_OFFSET_Y);
         }
     }
 

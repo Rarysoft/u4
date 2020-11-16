@@ -123,10 +123,11 @@ public class Game {
 
     public void onUserInput(char input) {
         if (gameState.inConversation()) {
-            if (input == '\n') {
+            if (input == '\n' || gameState.inConversationRespondingYesOrNo()) {
                 Dialog dialog = gameState.dialog();
                 Conversation conversation;
                 if (gameState.inConversationRespondingYesOrNo()) {
+                    gameState.addToOngoingInput(input);
                     conversation = new Conversation(dialog, gameState.playerName(), 0, 0, 0, 0, 0, 0, 0, 0).forResponse(gameState.input());
                     gameState.queryAnswered();
                 }
@@ -135,17 +136,20 @@ public class Game {
                 }
                 conversation.response().ifPresent(response -> {
                     String question = conversation.question().orElse(null);
-                    sayAndPrompt(gameState.input(), response, question);
+                    if (conversation.endConversation()) {
+                        say(gameState.input(), response);
+                        endConversation();
+                    }
+                    else {
+                        sayAndPrompt(gameState.input(), response, question);
+                        if (conversation.question().isPresent()) {
+                            gameState.playerQueried();
+                        }
+                    }
                 });
-                if (conversation.question().isPresent()) {
-                    gameState.playerQueried();
-                }
                 gameState.adjustKarma(Virtue.HUMILITY, conversation.humilityDelta());
                 if (conversation.healPlayer()) {
                     // TODO heal the party
-                }
-                if (! conversation.response().isPresent()) {
-                    endConversation();
                 }
                 gameState.resetInput();
                 afterPlayerMove();
@@ -298,6 +302,10 @@ public class Game {
 
     private void type(String input) {
         informationListeners.forEach(displayListener -> displayListener.inputReceived(input));
+    }
+
+    private void say(String input, String response) {
+        spokenTo(input + "\n\n" + response + "\n\n");
     }
 
     private void sayAndPrompt(String input, String response, String question) {

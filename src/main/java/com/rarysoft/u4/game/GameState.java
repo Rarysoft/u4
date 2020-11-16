@@ -211,7 +211,9 @@ public class GameState {
     }
 
     public void revertLastInput() {
-        this.input = this.input.substring(0, this.input.length() - 1);
+        if (! this.input.isEmpty()) {
+            this.input = this.input.substring(0, this.input.length() - 1);
+        }
     }
 
     public void resetInput() {
