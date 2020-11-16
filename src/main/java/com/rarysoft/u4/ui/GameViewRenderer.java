@@ -363,6 +363,7 @@ public class GameViewRenderer {
             case AVATAR:
             case LYIN_DOWN:
             case ANKH:
+            case CHEST:
                 code = tiles.data()[tile.index()][row][col];
                 if (code == Colours.COLOUR_BLACK && drawInForeground) {
                     if (isNotAdjacentToForeground(tiles.data()[tile.index()], row, col)) {
