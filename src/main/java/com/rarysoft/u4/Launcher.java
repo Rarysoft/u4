@@ -24,6 +24,9 @@
 package com.rarysoft.u4;
 
 import com.rarysoft.u4.game.physics.ViewFinder;
+import com.rarysoft.u4.game.u5.U5MapEnhancer;
+import com.rarysoft.u4.game.u5.U5SurfaceMapper;
+import com.rarysoft.u4.game.u5.U5TileMapper;
 import com.rarysoft.u4.i18n.Messages;
 import com.rarysoft.u4.game.*;
 import com.rarysoft.u4.game.npc.DialogTemplate;
@@ -32,15 +35,13 @@ import com.rarysoft.u4.ui.graphics.Charset;
 import com.rarysoft.u4.game.Tiles;
 import com.rarysoft.u4.game.physics.WayFinder;
 import com.rarysoft.u4.game.party.*;
-import com.rarysoft.u4.game.party.Character;
 import com.rarysoft.u4.ui.*;
 import com.rarysoft.u4.ui.util.FrameHelper;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -72,10 +73,13 @@ public class Launcher {
     public void run() throws IOException {
         initializeLogFile();
         Messages messages = initializeMessages("i18n/messages");
-        Tiles tiles = initializeTiles("/data/shapes.ega");
+//        Tiles tiles = initializeTiles("/data/shapes.ega");
+        Tiles tiles = initializeTiles("/data/u5.ega");
         Charset charset = initializeCharset("/data/charset.ega");
         BufferedImage icon = initializeIcon("/images/ankh.png");
         Maps maps = initializeMaps("/data");
+//        MapEnhancer mapEnhancer = new DefaultMapEnhancer();
+        MapEnhancer mapEnhancer = new U5MapEnhancer();
         Dialogs dialogs = initializeConversations("/data", messages);
         UiBuilder uiBuilder = new UiBuilder();
         JFrame gameWindow = uiBuilder.buildGameWindow(messages.windowTitle());
@@ -87,7 +91,7 @@ public class Launcher {
         FrameHelper.center(gameWindow);
         FrameHelper.maximize(gameWindow);
         FrameHelper.show(gameWindow);
-        game.start(new GameState(maps, party));
+        game.start(new GameState(mapEnhancer, maps, party));
     }
 
     private void initializeLogFile() {
@@ -110,7 +114,8 @@ public class Launcher {
     }
 
     private Tiles initializeTiles(String filename) throws IOException {
-        return Tiles.fromStream(Launcher.class.getResourceAsStream(filename));
+//        return Tiles.fromStream(Launcher.class.getResourceAsStream(filename));
+        return Tiles.fromStream(Launcher.class.getResourceAsStream(filename), new U5TileMapper());
     }
 
     private Charset initializeCharset(String filename) throws IOException {
@@ -118,7 +123,8 @@ public class Launcher {
     }
 
     private Maps initializeMaps(String directory) throws IOException {
-        return Maps.fromFiles(directory);
+//        return Maps.fromFiles(directory);
+        return Maps.fromFiles(directory, new U5SurfaceMapper());
     }
 
     private Dialogs initializeConversations(String directory, Messages messages) throws IOException {

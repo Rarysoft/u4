@@ -69,7 +69,7 @@ public class GameTest {
     @Before
     public void initializeGame() {
         game.addInformationListener(informationListener);
-        RenderedTile empty = new RenderedTile(Tile.BRICK_FLOOR, null);
+        RenderedTile empty = new RenderedTile().withBaseTile(Tile.BRICK_FLOOR);
         RenderedTile[] emptyRow = new RenderedTile[] {
                 empty, empty, empty, empty, empty, empty, empty, empty, empty, empty,
                 empty,

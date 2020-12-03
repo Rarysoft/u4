@@ -32,19 +32,19 @@ public class AreaTest {
     public void mapWhenAreaOfRenderedTileMappedToTileReturnsCorrectAreaOfTile() {
         RenderedTile[][] renderedTiles = new RenderedTile[][] {
                 {
-                    new RenderedTile(Tile.GRASSLANDS, null),
-                    new RenderedTile(Tile.SCRUBLAND, null),
-                    new RenderedTile(Tile.MOUNTAINS, null)
+                    new RenderedTile().withBaseTile(Tile.GRASSLANDS),
+                    new RenderedTile().withBaseTile(Tile.SCRUBLAND),
+                    new RenderedTile().withBaseTile(Tile.MOUNTAINS)
                 },
                 {
-                    new RenderedTile(Tile.BRICK_FLOOR, null),
-                    new RenderedTile(Tile.BRICK_WALL, null),
-                    new RenderedTile(Tile.LOCKED_DOOR, null)
+                    new RenderedTile().withBaseTile(Tile.BRICK_FLOOR),
+                    new RenderedTile().withBaseTile(Tile.BRICK_WALL),
+                    new RenderedTile().withBaseTile(Tile.LOCKED_DOOR)
                 }
         };
         Area<RenderedTile> area = new Area<>(renderedTiles);
 
-        Area<Tile> result = area.map(RenderedTile::tile);
+        Area<Tile> result = area.map(renderedTile -> renderedTile.baseTiles().get(0));
 
         assertThat(result).isNotNull();
         assertThat(result.rows()).isEqualTo(2);

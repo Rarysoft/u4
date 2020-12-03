@@ -34,8 +34,12 @@ public class Maps {
     private final HashMap<LocationLevel, Map> maps;
 
     public static Maps fromFiles(String directory) throws IOException {
+        return fromFiles(directory, null);
+    }
+
+    public static Maps fromFiles(String directory, SurfaceMapper surfaceMapper) throws IOException {
         HashMap<LocationLevel, Map> maps = new HashMap<>();
-        maps.put(LocationLevel.from(Location.SURFACE, 0), Surface.fromStream(Maps.class.getResourceAsStream(path(directory, "world.map"))));
+        maps.put(LocationLevel.from(Location.SURFACE, 0), Surface.fromStream(Maps.class.getResourceAsStream(path(directory, "world.map")), surfaceMapper));
         maps.put(LocationLevel.from(Location.BRITAIN, 0), loadMap(path(directory, "britain.ult"), Location.BRITAIN, 0, 106, 82, 15, 1));
         maps.put(LocationLevel.from(Location.COVE, 0), loadMap(path(directory, "cove.ult"), Location.COVE, 0, 90, 136, 15, 1));
         maps.put(LocationLevel.from(Location.BUCCANEERS_DEN, 0), loadMap(path(directory, "den.ult"), Location.BUCCANEERS_DEN, 0, 158, 136, 15, 1));
@@ -58,7 +62,7 @@ public class Maps {
         loadDungeonMaps(path(directory, "despise.dng"), Location.DESPISE, 67, 91).forEach(dungeonLevel -> maps.put(LocationLevel.from(dungeonLevel.location(), dungeonLevel.level()), dungeonLevel));
         loadDungeonMaps(path(directory, "destard.dng"), Location.DESTARD, 168, 72).forEach(dungeonLevel -> maps.put(LocationLevel.from(dungeonLevel.location(), dungeonLevel.level()), dungeonLevel));
         // TODO: not sure how this will work yet; entrance to Hythloth is in LB's castle, not on the surface
-        loadDungeonMaps(path(directory, "hythloth.dng"), Location.HYTHLOTH, 0, 0).forEach(dungeonLevel -> maps.put(LocationLevel.from(dungeonLevel.location(), dungeonLevel.level()), dungeonLevel));
+        loadDungeonMaps(path(directory, "hythloth.dng"), Location.HYTHLOTH, -1, -1).forEach(dungeonLevel -> maps.put(LocationLevel.from(dungeonLevel.location(), dungeonLevel.level()), dungeonLevel));
         loadDungeonMaps(path(directory, "shame.dng"), Location.SHAME, 102, 58).forEach(dungeonLevel -> maps.put(LocationLevel.from(dungeonLevel.location(), dungeonLevel.level()), dungeonLevel));
         loadDungeonMaps(path(directory, "wrong.dng"), Location.WRONG, 20, 126).forEach(dungeonLevel -> maps.put(LocationLevel.from(dungeonLevel.location(), dungeonLevel.level()), dungeonLevel));
         return new Maps(maps);

@@ -39,4 +39,5 @@ files from their own original Ultima IV game disk into the `src/main/resources/d
 * Leave dialog with non-player character by just walking away
 * Open doors by bumping into them
 * Climb ladders by walking onto the tile
+* Include the option to use other tile sets, including a modified Ultima V tile set
 * more to come...

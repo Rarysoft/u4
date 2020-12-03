@@ -34,6 +34,7 @@ import com.rarysoft.u4.game.physics.WayFinder;
 import java.util.*;
 
 public class GameState {
+    private final MapEnhancer mapEnhancer;
     private final Maps maps;
     private final Party party;
 
@@ -45,11 +46,13 @@ public class GameState {
 
     private Set<Door> doors;
 
-    public GameState(Maps maps, Party party) {
+    public GameState(MapEnhancer mapEnhancer, Maps maps, Party party) {
+        this.mapEnhancer = mapEnhancer;
         this.maps = maps;
         this.map = maps.map(party.getCurrentPartyLocation(), party.getDungeonLevel());
         this.party = party;
         this.playMode = PlayMode.NORMAL;
+//        this.playMode = PlayMode.DEV_MAP_VIEW;
         switchToMap(this.map);
     }
 
@@ -94,6 +97,10 @@ public class GameState {
         return playMode == PlayMode.CONVERSATION || playMode == PlayMode.CONVERSATION_QUERIED;
     }
 
+    public boolean inDevMapView() {
+        return playMode == PlayMode.DEV_MAP_VIEW;
+    }
+
     public boolean inConversationRespondingYesOrNo() {
         return playMode == PlayMode.CONVERSATION_QUERIED;
     }
@@ -131,7 +138,7 @@ public class GameState {
             for (int viewCol = 0; viewCol < mapView.cols(); viewCol ++) {
                 int mapRow = row - radius + viewRow;
                 int mapCol = col - radius + viewCol;
-                RenderedTile renderedTile = renderedTile(mapView.get(viewRow, viewCol), mapRow, mapCol);
+                RenderedTile renderedTile = renderedTile(map.data(), mapView.get(viewRow, viewCol), mapRow, mapCol);
                 view[viewRow][viewCol] = renderedTile;
             }
         }
@@ -139,7 +146,7 @@ public class GameState {
     }
 
     public RenderedTile tileAt(int row, int col) {
-        return renderedTile(map.at(row, col), row, col);
+        return renderedTile(map.data(), map.at(row, col), row, col);
     }
 
     public Optional<Person> personAt(int row, int col) {
@@ -269,15 +276,17 @@ public class GameState {
         prepareDoors(map);
     }
 
-    private RenderedTile renderedTile(Tile tile, int row, int col) {
+    private RenderedTile renderedTile(Tile[][] data, Tile tile, int row, int col) {
         Tile tileToRender = tile;
         if (tile == Tile.UNLOCKED_DOOR || tile == Tile.LOCKED_DOOR) {
             if (isDoorOpen(row, col)) {
                 tileToRender = Tile.BRICK_FLOOR;
             }
         }
-        Tile personTile = map.personAt(row, col).map(Person::tileIndex).map(Tile::forIndex).orElse(null);
-        return new RenderedTile(tileToRender, personTile);
+        Tile overlayTile = mapEnhancer.overlayTile(map, data, tileToRender, row, col).orElse(null);
+        Tile groundTile = (tileToRender != null && tileToRender.isRenderedAtopNearbyGroundTile()) ? guessGroundTile(data, row, col) : null;
+        Tile personTile = (row == party.getRow() && col == party.getCol()) ? Tile.AVATAR : map.personAt(row, col).map(Person::tileIndex).map(Tile::forIndex).orElse(null);
+        return new RenderedTile().withBaseTile(groundTile).withBaseTile(tileToRender).withBaseTile(overlayTile).withTransientTile(personTile);
     }
 
     private void prepareDoors(Map map) {
@@ -300,6 +309,31 @@ public class GameState {
 
     private boolean isDoorOpen(int row, int col) {
         return doors.stream().filter(door -> door.getRow() == row && door.getCol() == col).map(Door::isClosed).anyMatch(doorIsClosed -> ! doorIsClosed);
+    }
+
+    private Tile guessGroundTile(Tile[][] background, int row, int col) {
+        java.util.List<Tile> groundTiles = new ArrayList<>();
+        List<Integer> counts = new ArrayList<>();
+        for (int surroundingRow = (row >= 0 ? row - 1 : row); surroundingRow < (row + 1 < background.length ? row + 1 : row) + 1; surroundingRow ++) {
+            for (int surroundingCol = (col >= 0 ? col - 1 : col); surroundingCol < (col + 1 < background[surroundingRow].length ? col + 1 : col) + 1; surroundingCol ++) {
+                Tile tile = Optional.ofNullable(background[surroundingRow][surroundingCol]).orElse(Tile.GRASSLANDS);
+                if (tile.isGroundTile()) {
+                    int tileIndex = groundTiles.indexOf(tile);
+                    if (tileIndex > -1) {
+                        counts.set(tileIndex, counts.get(tileIndex) + 1);
+                    }
+                    else {
+                        groundTiles.add(tile);
+                        counts.add(1);
+                    }
+                }
+            }
+        }
+        int highestCount = counts.stream().mapToInt(count -> count).max().orElse(0);
+        if (highestCount == 0) {
+            return null;
+        }
+        return groundTiles.get(counts.indexOf(highestCount));
     }
 
     private void updateMoonPhases() {

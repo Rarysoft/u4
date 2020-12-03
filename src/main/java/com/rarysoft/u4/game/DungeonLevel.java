@@ -153,6 +153,16 @@ public class DungeonLevel implements Map {
     }
 
     @Override
+    public int width() {
+        return MAP_WIDTH;
+    }
+
+    @Override
+    public int height() {
+        return MAP_HEIGHT;
+    }
+
+    @Override
     public int level() {
         return level;
     }

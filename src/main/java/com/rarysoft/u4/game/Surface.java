@@ -18,6 +18,10 @@ public class Surface implements Map {
     private static final int CHUNK_HEIGHT = 32;
 
     public static Surface fromStream(InputStream stream) throws IOException {
+        return fromStream(stream, null);
+    }
+
+    public static Surface fromStream(InputStream stream, SurfaceMapper surfaceMapper) throws IOException {
         Tile[][] data = new Tile[MAP_HEIGHT][MAP_WIDTH];
         for (int chunkRow = 0; chunkRow < CHUNK_ROWS; chunkRow ++) {
             for (int chunk = 0; chunk < CHUNK_COLUMNS; chunk ++) {
@@ -28,6 +32,9 @@ public class Surface implements Map {
                     }
                 }
             }
+        }
+        if (surfaceMapper != null) {
+            return new Surface(surfaceMapper.map(data));
         }
         return new Surface(data);
     }
@@ -46,6 +53,16 @@ public class Surface implements Map {
     @Override
     public Location location() {
         return Location.SURFACE;
+    }
+
+    @Override
+    public int width() {
+        return MAP_WIDTH;
+    }
+
+    @Override
+    public int height() {
+        return MAP_HEIGHT;
     }
 
     @Override

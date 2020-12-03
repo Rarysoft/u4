@@ -37,9 +37,7 @@ import javax.swing.Timer;
 import java.util.*;
 
 public class Game {
-    // Note: view radius is one larger than what will actually be shown on screen, which allows the display to do
-    // some necessary analysis on the tiles around each visible tile
-    private static final int VIEW_RADIUS = 10;
+    private static final int VIEW_RADIUS = 9;
 
     private final Messages messages;
 
@@ -173,24 +171,30 @@ public class Game {
     }
 
     private void attemptMove(int rowDelta, int colDelta, String actionDirection) {
+        if (gameState.inDevMapView()) {
+            gameState.changeRow(rowDelta);
+            gameState.changeCol(colDelta);
+            actionCompleted("Row: " + gameState.row() + " Col: " + gameState.col());
+            return;
+        }
         if (gameState.inConversation()) {
             abandonConversation();
         }
         RenderedTile renderedTile = gameState.tileAt(gameState.row() + rowDelta, gameState.col() + colDelta);
         Optional<Person> npc = gameState.personAt(gameState.row() + rowDelta, gameState.col() + colDelta);
-        if (renderedTile.tile() == null) {
+        if (renderedTile.baseTiles().isEmpty()) {
             actionCompleted(messages.actionMove(actionDirection));
             gameState.returnToSurface();
             actionCompleted(messages.actionExit());
             afterPlayerMove();
         }
         else {
-            if (renderedTile.tile().walkability() == 0) {
-                if (renderedTile.tile() == Tile.UNLOCKED_DOOR) {
+            if (renderedTile.walkability() == 0) {
+                if (renderedTile.baseTiles().contains(Tile.UNLOCKED_DOOR)) {
                     gameState.openDoor(gameState.row() + rowDelta, gameState.col() + colDelta);
                     actionCompleted(messages.actionOpen(actionDirection));
                 }
-                else if (renderedTile.tile().canTalkThrough()) {
+                else if (renderedTile.canTalkThrough()) {
                     Optional<Person> adjacentPerson = gameState.personAt(gameState.row() + rowDelta + rowDelta, gameState.col() + colDelta + colDelta);
                     adjacentPerson.ifPresent(person -> {
                         actionCompleted(messages.actionTalk(actionDirection));
@@ -205,14 +209,14 @@ public class Game {
                 return;
             }
             // Special case: don't allow northward exit from LB's castle
-            if (rowDelta == -1 && gameState.tileAt(gameState.row(), gameState.col()).tile() == Tile.CASTLE_BRITANNIA_ENTRANCE) {
+            if (rowDelta == -1 && gameState.tileAt(gameState.row(), gameState.col()).baseTiles().contains(Tile.CASTLE_BRITANNIA_ENTRANCE)) {
                 actionCompleted(messages.actionMove(actionDirection));
                 moveBlocked();
                 afterPlayerMove();
                 return;
             }
             // Special case: don't allow entry to LB's castle from the north
-            if (rowDelta == 1 && renderedTile.tile() == Tile.CASTLE_BRITANNIA_ENTRANCE) {
+            if (rowDelta == 1 && renderedTile.baseTiles().contains(Tile.CASTLE_BRITANNIA_ENTRANCE)) {
                 actionCompleted(messages.actionMove(actionDirection));
                 moveBlocked();
                 afterPlayerMove();
@@ -232,7 +236,7 @@ public class Game {
             }
             gameState.changeRow(rowDelta);
             gameState.changeCol(colDelta);
-            if (renderedTile.tile().isPortal()) {
+            if (renderedTile.isPortal()) {
                 actionCompleted(messages.actionMove(actionDirection));
                 enterPortal();
                 actionCompleted(messages.actionEnter(gameState.location().displayName()));
@@ -322,11 +326,11 @@ public class Game {
         gameState.endConversation();
     }
 
-    private boolean allowWalkTo(RenderedTile renderedTile) {
-        if (renderedTile.tile().walkability() == 100) {
+    private boolean allowWalkTo(RenderedTile tile) {
+        if (tile.walkability() == 100) {
             return true;
         }
-        return random.nextInt(100) < renderedTile.tile().walkability();
+        return random.nextInt(100) < tile.walkability();
     }
 
     private void enterPortal() {
@@ -336,7 +340,7 @@ public class Game {
             gameState.enter();
         }
         else if (gameState.location() == Location.CASTLE_BRITANNIA) {
-            if (gameState.tileAt(row, col).tile() == Tile.LADDER_DOWN) {
+            if (gameState.tileAt(row, col).baseTiles().contains(Tile.LADDER_DOWN)) {
                 // TODO: need to check if this is the ladder down to Hythloth
                 gameState.descend();
             }
@@ -346,7 +350,7 @@ public class Game {
         }
         else {
             // if not on the surface or in LB's castle, the only other places with portals are the dungeons
-            if (gameState.tileAt(row, col).tile() == Tile.LADDER_DOWN) {
+            if (gameState.tileAt(row, col).baseTiles().contains(Tile.LADDER_DOWN)) {
                 // TODO: need to confirm with the user that they want to use the ladder
                 gameState.ascend(); // in dungeons, we go down to higher numbered levels
             }
@@ -382,7 +386,7 @@ public class Game {
         Tile[][] tileView = new Tile[view.length][view[0].length];
         for (int row = 0; row < view.length; row ++) {
             for (int col = 0; col < view[row].length; col ++) {
-                tileView[row][col] = view[row][col].tile();
+                tileView[row][col] = view[row][col].bottomTile().orElse(null);
             }
         }
         return tileView;
@@ -391,31 +395,31 @@ public class Game {
     private boolean isInStandardView(int row, int col) {
         // Eliminate corners to make a circular view; this could be done mathematically, but brute force is simple
         switch (row) {
-            case 1:
-            case 19:
-                return col > 8 && col < 12;
-            case 2:
+            case 0:
             case 18:
-                return col > 6 && col < 14;
-            case 3:
+                return col > 7 && col < 11;
+            case 1:
             case 17:
-                return col > 4 && col < 16;
-            case 4:
+                return col > 5 && col < 13;
+            case 2:
             case 16:
-                return col > 3 && col < 17;
-            case 5:
-            case 6:
+                return col > 3 && col < 15;
+            case 3:
             case 15:
+                return col > 2 && col < 16;
+            case 4:
+            case 5:
             case 14:
-                return col > 2 && col < 18;
-            case 7:
-            case 8:
             case 13:
+                return col > 1 && col < 17;
+            case 6:
+            case 7:
             case 12:
-                return col > 1 && col < 19;
+            case 11:
+                return col > 0 && col < 18;
+            case 8:
             case 9:
             case 10:
-            case 11:
                 return true;
             default:
                 return false;

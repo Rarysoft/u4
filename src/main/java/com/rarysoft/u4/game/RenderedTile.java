@@ -23,44 +23,87 @@
  */
 package com.rarysoft.u4.game;
 
-import java.util.Optional;
+import java.util.*;
 
 public class RenderedTile {
-    private final Tile backgroundTile;
+    private final List<Tile> baseTiles;
 
-    private final Tile objectTile;
-
-    private final Tile personTile;
+    private final Tile transientTile;
 
     private final boolean render;
 
-    public RenderedTile(Tile backgroundTile, Tile personTile) {
-        this.backgroundTile = backgroundTile;
-        this.objectTile = null; // TODO implement this
-        this.personTile = personTile;
+    public RenderedTile() {
+        this.baseTiles = new ArrayList<>();
+        this.transientTile = null;
         this.render = true;
     }
 
-    private RenderedTile(Tile backgroundTile, Tile objectTile, Tile personTile, boolean render) {
-        this.backgroundTile = backgroundTile;
-        this.objectTile = objectTile;
-        this.personTile = personTile;
+    private RenderedTile(List<Tile> baseTiles, Tile transientTile, boolean render) {
+        this.baseTiles = baseTiles;
+        this.transientTile = transientTile;
         this.render = render;
     }
 
-    public Tile tile() {
-        return backgroundTile;
+    public List<Tile> baseTiles() {
+        return this.baseTiles;
     }
 
-    public Optional<Tile> personTile() {
-        return Optional.ofNullable(personTile);
+    public Optional<Tile> transientTile() {
+        return Optional.ofNullable(transientTile);
+    }
+
+    public Optional<Tile> bottomTile() {
+        if (baseTiles.isEmpty()) {
+            return Optional.empty();
+        }
+        return Optional.of(baseTiles.get(0));
     }
 
     public boolean render() {
         return render;
     }
 
+    public int walkability() {
+        int walkability = 0;
+        for (Tile tile : baseTiles) {
+            if (tile.walkability() > walkability) {
+                walkability = tile.walkability();
+            }
+        }
+        return walkability;
+    }
+
+    public boolean canTalkThrough() {
+        for (Tile tile : baseTiles) {
+            if (tile.canTalkThrough()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean isPortal() {
+        for (Tile tile : baseTiles) {
+            if (tile.isPortal()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public RenderedTile withBaseTile(Tile baseTile) {
+        List<Tile> newBaseTiles = new ArrayList<>(this.baseTiles);
+        if (baseTile != null) {
+            newBaseTiles.add(baseTile);
+        }
+        return new RenderedTile(newBaseTiles, transientTile, render);
+    }
+
+    public RenderedTile withTransientTile(Tile transientTile) {
+        return new RenderedTile(baseTiles, transientTile, render);
+    }
+
     public RenderedTile hidden() {
-        return new RenderedTile(backgroundTile, objectTile, personTile, false);
+        return new RenderedTile(baseTiles, transientTile, false);
     }
 }

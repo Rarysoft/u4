@@ -11,6 +11,10 @@ public interface Map {
 
     Location location();
 
+    int width();
+
+    int height();
+
     int level();
 
     Tile[][] data();

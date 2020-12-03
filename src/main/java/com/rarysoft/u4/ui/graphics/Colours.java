@@ -19,7 +19,9 @@ public class Colours {
     public static final Color BRIGHT_MAGENTA = new Color(0xFF55FF);
     public static final Color BRIGHT_YELLOW = new Color(0xFFFF55);
     public static final Color BRIGHT_WHITE = new Color(0xFFFFFF);
+    public static final Color TRANSPARENT = new Color(0x00000000, true);
 
+    public static final int COLOUR_TRANSPARENT = -1;
     public static final int COLOUR_BLACK = 0;
     public static final int COLOUR_BLUE = 1;
     public static final int COLOUR_GREEN = 2;
@@ -53,6 +55,7 @@ public class Colours {
             BRIGHT_RED,
             BRIGHT_MAGENTA,
             BRIGHT_YELLOW,
-            BRIGHT_WHITE
+            BRIGHT_WHITE,
+            TRANSPARENT
     };
 }
