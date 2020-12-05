@@ -23,7 +23,6 @@
  */
 package com.rarysoft.u4;
 
-import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -31,11 +30,9 @@ import java.io.OutputStream;
 public class BmpToEgaConverter {
     public static void main(String[] args) {
         try {
-            InputStream in = Launcher.class.getResourceAsStream("/data/u5.bmp");
-            OutputStream out = new FileOutputStream(new File("src/main/resources/data/u5.ega"));
-            for (int headerByteToSkip = 0; headerByteToSkip < 54; headerByteToSkip ++) {
-                in.read();
-            }
+            InputStream in = Launcher.class.getResourceAsStream("/data/u5/tiles.bmp");
+            OutputStream out = new FileOutputStream("src/main/resources/data/tiles.ega");
+            in.skip(54);
             int[] pixels = new int[131072];
             for (int pixel = 0; pixel < 131072; pixel ++) {
                 int b = in.read();

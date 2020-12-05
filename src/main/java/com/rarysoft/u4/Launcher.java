@@ -54,7 +54,7 @@ public class Launcher {
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             try {
-                new Launcher().run();
+                new Launcher().run(args != null && args.length > 0 && args[0].equalsIgnoreCase("u5"));
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -70,16 +70,14 @@ public class Launcher {
      * <li>The icon <code>${project.dir}/images/icon.png</code> is used.</li>
      * <li>The main window is displayed centered on the user's screen.</li>
      */
-    public void run() throws IOException {
+    public void run(boolean useU5TileSet) throws IOException {
         initializeLogFile();
         Messages messages = initializeMessages("i18n/messages");
-//        Tiles tiles = initializeTiles("/data/shapes.ega");
-        Tiles tiles = initializeTiles("/data/u5.ega");
+        Tiles tiles = initializeTiles(useU5TileSet ? "/data/u5/tiles.ega" : "/data/shapes.ega", useU5TileSet);
         Charset charset = initializeCharset("/data/charset.ega");
         BufferedImage icon = initializeIcon("/images/ankh.png");
-        Maps maps = initializeMaps("/data");
-//        MapEnhancer mapEnhancer = new DefaultMapEnhancer();
-        MapEnhancer mapEnhancer = new U5MapEnhancer();
+        Maps maps = initializeMaps("/data", useU5TileSet);
+        MapEnhancer mapEnhancer = useU5TileSet ? new U5MapEnhancer() : new DefaultMapEnhancer();
         Dialogs dialogs = initializeConversations("/data", messages);
         UiBuilder uiBuilder = new UiBuilder();
         JFrame gameWindow = uiBuilder.buildGameWindow(messages.windowTitle());
@@ -113,18 +111,16 @@ public class Launcher {
         return new Messages(filename);
     }
 
-    private Tiles initializeTiles(String filename) throws IOException {
-//        return Tiles.fromStream(Launcher.class.getResourceAsStream(filename));
-        return Tiles.fromStream(Launcher.class.getResourceAsStream(filename), new U5TileMapper());
+    private Tiles initializeTiles(String filename, boolean useU5TileSet) throws IOException {
+        return Tiles.fromStream(Launcher.class.getResourceAsStream(filename), useU5TileSet ? new U5TileMapper() : new DefaultTileMapper());
     }
 
     private Charset initializeCharset(String filename) throws IOException {
         return Charset.fromStream(Launcher.class.getResourceAsStream(filename));
     }
 
-    private Maps initializeMaps(String directory) throws IOException {
-//        return Maps.fromFiles(directory);
-        return Maps.fromFiles(directory, new U5SurfaceMapper());
+    private Maps initializeMaps(String directory, boolean useU5TileSet) throws IOException {
+        return Maps.fromFiles(directory, useU5TileSet ? new U5SurfaceMapper() : null);
     }
 
     private Dialogs initializeConversations(String directory, Messages messages) throws IOException {

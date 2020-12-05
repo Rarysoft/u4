@@ -363,33 +363,23 @@ public class Game {
 
     private RenderedTile[][] determinePlayerView(RenderedTile[][] view) {
         int size = view.length;
-        for (int row = 0; row < size; row ++) {
-            for (int col = 0; col < size; col ++) {
-                if (! isInStandardView(row, col)) {
+        for (int row = 0; row < size; row++) {
+            for (int col = 0; col < size; col++) {
+                if (!isInStandardView(row, col)) {
                     view[row][col] = view[row][col].hidden();
                 }
             }
         }
         Visibility visibility = new Visibility();
-        for (int row = 0; row < size; row ++) {
-            for (int col = 0; col < size; col ++) {
-                if (view[row][col].render() && visibility.isVisibleFromCenter(tileView(view), Coordinate.forRowCol(row, col))) {
+        for (int row = 0; row < size; row++) {
+            for (int col = 0; col < size; col++) {
+                if (view[row][col].render() && visibility.isVisibleFromCenter(view, Coordinate.forRowCol(row, col))) {
                     continue;
                 }
                 view[row][col] = view[row][col].hidden();
             }
         }
         return view;
-    }
-
-    private Tile[][] tileView(RenderedTile[][] view) {
-        Tile[][] tileView = new Tile[view.length][view[0].length];
-        for (int row = 0; row < view.length; row ++) {
-            for (int col = 0; col < view[row].length; col ++) {
-                tileView[row][col] = view[row][col].bottomTile().orElse(null);
-            }
-        }
-        return tileView;
     }
 
     private boolean isInStandardView(int row, int col) {

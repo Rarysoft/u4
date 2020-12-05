@@ -52,13 +52,6 @@ public class RenderedTile {
         return Optional.ofNullable(transientTile);
     }
 
-    public Optional<Tile> bottomTile() {
-        if (baseTiles.isEmpty()) {
-            return Optional.empty();
-        }
-        return Optional.of(baseTiles.get(0));
-    }
-
     public boolean render() {
         return render;
     }
@@ -73,13 +66,22 @@ public class RenderedTile {
         return walkability;
     }
 
+    public boolean isOpaque() {
+        for (Tile tile : baseTiles) {
+            if (tile.isOpaque()) {
+                return true;
+            }
+        }
+        return transientTile != null && transientTile.isOpaque();
+    }
+
     public boolean canTalkThrough() {
         for (Tile tile : baseTiles) {
             if (tile.canTalkThrough()) {
                 return true;
             }
         }
-        return false;
+        return transientTile != null && transientTile.canTalkThrough();
     }
 
     public boolean isPortal() {
@@ -88,7 +90,7 @@ public class RenderedTile {
                 return true;
             }
         }
-        return false;
+        return transientTile != null && transientTile.isPortal();
     }
 
     public RenderedTile withBaseTile(Tile baseTile) {

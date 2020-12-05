@@ -26,7 +26,7 @@ package com.rarysoft.u4.game;
 import java.math.BigDecimal;
 
 public class Visibility {
-    public boolean isVisibleFromCenter(Tile[][] area, Coordinate coordinate) {
+    public boolean isVisibleFromCenter(RenderedTile[][] area, Coordinate coordinate) {
         if (area[coordinate.row()][coordinate.col()] == null) {
             return true;
         }
@@ -119,7 +119,7 @@ public class Visibility {
         return false;
     }
 
-    private Coordinate[] findTargetCoordinates(Tile[][] area, Coordinate coordinate) {
+    private Coordinate[] findTargetCoordinates(RenderedTile[][] area, Coordinate coordinate) {
         Coordinate[] alternativeTargetCoordinates;
         // We'll look for a sight-line to three different points in the tile
         switch (coordinate.region()) {
@@ -157,7 +157,7 @@ public class Visibility {
         }
     }
 
-    private Coordinate[] findAlternativeTargetCoordinates(Tile[][] area, Coordinate colAdjacentCoordinate, Coordinate rowAdjacentCoordinate, Coordinate cornerAdjacentCoordinate) {
+    private Coordinate[] findAlternativeTargetCoordinates(RenderedTile[][] area, Coordinate colAdjacentCoordinate, Coordinate rowAdjacentCoordinate, Coordinate cornerAdjacentCoordinate) {
         // Special case: if the two adjacent on the visible side are opaque but the corner one is not, this will be
         // visible if one of the adjacent tiles is visible, determined by whichever is not center-aligned
         if (area[colAdjacentCoordinate.row()][colAdjacentCoordinate.col()].isOpaque() &&
@@ -176,7 +176,7 @@ public class Visibility {
         return slope.multiply(BigDecimal.valueOf(x)).setScale(0, BigDecimal.ROUND_HALF_UP).intValue();
     }
 
-    private boolean isBlocked(Tile[][] area, Coordinate targetCoordinate, int passingThroughX, int passingThroughY) {
+    private boolean isBlocked(RenderedTile[][] area, Coordinate targetCoordinate, int passingThroughX, int passingThroughY) {
         Coordinate passingThroughCoordinate = Coordinate.forXY(passingThroughX, passingThroughY);
         if (passingThroughCoordinate.isCenter() || passingThroughCoordinate.isSameRowCol(targetCoordinate)) {
             // The tile can't be blocked by the player or by itself

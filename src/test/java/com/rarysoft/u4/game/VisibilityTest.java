@@ -31,9 +31,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class VisibilityTest {
     private final static int VIEW_SIZE = 21;
     private final static int CENTER = (VIEW_SIZE - 1) / 2;
-    private final Tile clear = Tile.GRASSLANDS;
-    private final Tile solid = Tile.MOUNTAINS;
-    private final Tile[][] area = new Tile[VIEW_SIZE][VIEW_SIZE];
+    private final RenderedTile clear = new RenderedTile().withBaseTile(Tile.GRASSLANDS);
+    private final RenderedTile solid = new RenderedTile().withBaseTile(Tile.MOUNTAINS);
+    private final RenderedTile[][] area = new RenderedTile[VIEW_SIZE][VIEW_SIZE];
 
     @Before
     public void prepareArea() {
@@ -140,7 +140,91 @@ public class VisibilityTest {
     }
 
     @Test
-    public void isVisibleFromCenterHasNoBlockingTileReturnsTrue() {
+    public void isVisibleFromCenterWhenTargetIsAlongsideNorthernRowOfBlockingTilesReturnsTrue() {
+        for (int col = 0; col < VIEW_SIZE; col ++) {
+            area[CENTER - 1][col] = solid;
+        }
+
+        for (int row = CENTER - 1; row < VIEW_SIZE; row ++) {
+            for (int col = 0; col < VIEW_SIZE; col ++) {
+                Visibility visibility = new Visibility();
+                if (row == CENTER - 1) {
+                    if (col > 3 && col < VIEW_SIZE - 4) {
+                        assertThat(visibility.isVisibleFromCenter(area, Coordinate.forRowCol(row, col))).isTrue();
+                    }
+                }
+                else {
+                    assertThat(visibility.isVisibleFromCenter(area, Coordinate.forRowCol(row, col))).isTrue();
+                }
+            }
+        }
+    }
+
+    @Test
+    public void isVisibleFromCenterWhenTargetIsAlongsideEasternRowOfBlockingTilesReturnsTrue() {
+        for (int row = 0; row < VIEW_SIZE; row ++) {
+            area[row][CENTER + 1] = solid;
+        }
+
+        for (int row = 0; row < VIEW_SIZE; row ++) {
+            for (int col = 0; col <= CENTER + 1; col ++) {
+                Visibility visibility = new Visibility();
+                if (col == CENTER + 1) {
+                    if (row > 3 && row < VIEW_SIZE - 4) {
+                        assertThat(visibility.isVisibleFromCenter(area, Coordinate.forRowCol(row, col))).isTrue();
+                    }
+                }
+                else {
+                    assertThat(visibility.isVisibleFromCenter(area, Coordinate.forRowCol(row, col))).isTrue();
+                }
+            }
+        }
+    }
+
+    @Test
+    public void isVisibleFromCenterWhenTargetIsAlongsideSouthernRowOfBlockingTilesReturnsTrue() {
+        for (int col = 0; col < VIEW_SIZE; col ++) {
+            area[CENTER + 1][col] = solid;
+        }
+
+        for (int row = 0; row <= CENTER + 1; row ++) {
+            for (int col = 0; col < VIEW_SIZE; col ++) {
+                Visibility visibility = new Visibility();
+                if (row == CENTER + 1) {
+                    if (col > 3 && col < VIEW_SIZE - 4) {
+                        assertThat(visibility.isVisibleFromCenter(area, Coordinate.forRowCol(row, col))).isTrue();
+                    }
+                }
+                else {
+                    assertThat(visibility.isVisibleFromCenter(area, Coordinate.forRowCol(row, col))).isTrue();
+                }
+            }
+        }
+    }
+
+    @Test
+    public void isVisibleFromCenterWhenTargetIsAlongsideWesternRowOfBlockingTilesReturnsTrue() {
+        for (int row = 0; row < VIEW_SIZE; row ++) {
+            area[row][CENTER - 1] = solid;
+        }
+
+        for (int row = 0; row < VIEW_SIZE; row ++) {
+            for (int col = CENTER - 1; col < VIEW_SIZE; col ++) {
+                Visibility visibility = new Visibility();
+                if (col == CENTER - 1) {
+                    if (row > 3 && row < VIEW_SIZE - 4) {
+                        assertThat(visibility.isVisibleFromCenter(area, Coordinate.forRowCol(row, col))).isTrue();
+                    }
+                }
+                else {
+                    assertThat(visibility.isVisibleFromCenter(area, Coordinate.forRowCol(row, col))).isTrue();
+                }
+            }
+        }
+    }
+
+    @Test
+    public void isVisibleFromCenterWhenHasNoBlockingTileReturnsTrue() {
         area[0][1] = solid;
         area[1][0] = solid;
         area[1][8] = solid;
@@ -205,7 +289,7 @@ public class VisibilityTest {
     }
 
     @Test
-    public void isVisibleFromCenterHasBlockingTileReturnsFalse() {
+    public void isVisibleFromCenterWhenHasBlockingTileReturnsFalse() {
         area[1][1] = solid;
         area[2][9] = solid;
         area[5][7] = solid;

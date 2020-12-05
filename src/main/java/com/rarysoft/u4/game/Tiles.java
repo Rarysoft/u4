@@ -8,12 +8,6 @@ public class Tiles {
     public static final int TILE_HEIGHT = 16;
     public static final int FRAME_COUNT = 16;
 
-    private static final int TILE_COUNT = 256;
-
-    public static Tiles fromStream(InputStream stream) throws IOException {
-        return Tiles.fromStream(stream, TILE_COUNT, new DefaultTileMapper());
-    }
-
     public static Tiles fromStream(InputStream stream, TileMapper tileMapper) throws IOException {
         return Tiles.fromStream(stream, tileMapper.tileCount(), tileMapper);
     }
