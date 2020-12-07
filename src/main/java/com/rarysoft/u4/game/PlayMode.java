@@ -28,6 +28,5 @@ public enum PlayMode {
     CONVERSATION,
     CONVERSATION_QUERIED,
     DUNGEON,
-    DUNGEON_ROOM,
-    DEV_MAP_VIEW
+    DUNGEON_ROOM
 }

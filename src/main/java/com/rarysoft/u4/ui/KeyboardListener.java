@@ -107,6 +107,12 @@ public class KeyboardListener extends KeyAdapter {
             case KeyEvent.VK_Z:
                 game.onUserInput(event.getKeyChar());
                 break;
+            case KeyEvent.VK_F1:
+                game.onFunctionKeyPressed(1);
+                break;
+            case KeyEvent.VK_F2:
+                game.onFunctionKeyPressed(2);
+                break;
             default:
                 break;
         }

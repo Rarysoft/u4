@@ -52,7 +52,6 @@ public class GameState {
         this.map = maps.map(party.getCurrentPartyLocation(), party.getDungeonLevel());
         this.party = party;
         this.playMode = PlayMode.NORMAL;
-//        this.playMode = PlayMode.DEV_MAP_VIEW;
         switchToMap(this.map);
     }
 
@@ -95,10 +94,6 @@ public class GameState {
 
     public boolean inConversation() {
         return playMode == PlayMode.CONVERSATION || playMode == PlayMode.CONVERSATION_QUERIED;
-    }
-
-    public boolean inDevMapView() {
-        return playMode == PlayMode.DEV_MAP_VIEW;
     }
 
     public boolean inConversationRespondingYesOrNo() {

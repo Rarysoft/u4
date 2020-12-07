@@ -87,6 +87,19 @@ public class Game {
         updateBackground();
     }
 
+    public void onFunctionKeyPressed(int function) {
+        switch (function) {
+            case 1:
+                DevMode.toggleMapBrowsing();
+                break;
+            case 2:
+                DevMode.toggleFullVisibility();
+                break;
+            default:
+                break;
+        }
+    }
+
     public void onNorthPressed() {
         attemptMove(-1, 0, "north");
     }
@@ -171,7 +184,7 @@ public class Game {
     }
 
     private void attemptMove(int rowDelta, int colDelta, String actionDirection) {
-        if (gameState.inDevMapView()) {
+        if (DevMode.isMapBrowsingEnabled()) {
             gameState.changeRow(rowDelta);
             gameState.changeCol(colDelta);
             actionCompleted("Row: " + gameState.row() + " Col: " + gameState.col());
@@ -365,8 +378,10 @@ public class Game {
         int size = view.length;
         for (int row = 0; row < size; row++) {
             for (int col = 0; col < size; col++) {
-                if (!isInStandardView(row, col)) {
-                    view[row][col] = view[row][col].hidden();
+                if (! isInStandardView(row, col)) {
+                    if (! DevMode.isFullVisibilityEnabled()) {
+                        view[row][col] = view[row][col].hidden();
+                    }
                 }
             }
         }
@@ -376,7 +391,9 @@ public class Game {
                 if (view[row][col].render() && visibility.isVisibleFromCenter(view, Coordinate.forRowCol(row, col))) {
                     continue;
                 }
-                view[row][col] = view[row][col].hidden();
+                if (! DevMode.isFullVisibilityEnabled()) {
+                    view[row][col] = view[row][col].hidden();
+                }
             }
         }
         return view;
