@@ -33,10 +33,6 @@ import java.util.*;
 public class Maps {
     private final HashMap<LocationLevel, Map> maps;
 
-    public static Maps fromFiles(String directory) throws IOException {
-        return fromFiles(directory, null);
-    }
-
     public static Maps fromFiles(String directory, SurfaceMapper surfaceMapper) throws IOException {
         HashMap<LocationLevel, Map> maps = new HashMap<>();
         maps.put(LocationLevel.from(Location.SURFACE, 0), Surface.fromStream(Maps.class.getResourceAsStream(path(directory, "world.map")), surfaceMapper));
@@ -93,11 +89,15 @@ public class Maps {
         return Settlement.fromStream(stream, id, level, worldRow, worldCol, startRow, startCol, Tile.GRASSLANDS);
     }
 
-    private static List<Map> loadDungeonMaps(String mapFilename, Location id, int worldRow, int worldCol) throws IOException {
+    private static List<? extends Map> loadDungeonMaps(String mapFilename, Location id, int worldRow, int worldCol) throws IOException {
         InputStream stream = Maps.class.getResourceAsStream(mapFilename);
-        List<Map> dungeonLevels = new ArrayList<>();
+        List<DungeonLevel> dungeonLevels = new ArrayList<>();
         for (int index = 0; index < 8; index ++) {
             dungeonLevels.add(DungeonLevel.fromStream(stream, id, index, worldRow, worldCol));
+        }
+        for (int index = 0; index < 16; index ++) {
+            DungeonRoom room = DungeonRoom.fromStream(stream, index);
+            dungeonLevels.forEach(level -> level.overlayRoom(room));
         }
         return dungeonLevels;
     }

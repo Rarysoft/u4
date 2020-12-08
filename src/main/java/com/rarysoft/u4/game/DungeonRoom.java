@@ -23,11 +23,38 @@
  */
 package com.rarysoft.u4.game;
 
-import java.util.Optional;
+import java.io.IOException;
+import java.io.InputStream;
 
-public class DefaultMapEnhancer implements MapEnhancer {
-    @Override
-    public Optional<Tile> overlayTile(Map map, Tile[][] data, Tile tile, int row, int col) {
-        return Optional.empty();
+public class DungeonRoom {
+    private static final int MAP_HEIGHT = 11;
+    private static final int MAP_WIDTH = 11;
+
+    private final int roomNumber;
+    private final Tile[][] data;
+
+    public static DungeonRoom fromStream(InputStream stream, int roomNumber) throws IOException {
+        stream.skip(0x80);    // TODO: for now just skipping these details; need to implement later
+        Tile[][] data = new Tile[MAP_HEIGHT][MAP_WIDTH];
+        for (int row = 0; row < MAP_HEIGHT; row ++) {
+            for (int col = 0; col < MAP_WIDTH; col ++) {
+                data[row][col] = Tile.forIndex(stream.read());
+            }
+        }
+        stream.skip(0x07);  // unused bytes
+        return new DungeonRoom(roomNumber, data);
+    }
+
+    private DungeonRoom(int roomNumber, Tile[][] data) {
+        this.roomNumber = roomNumber;
+        this.data = data;
+    }
+
+    public int roomNumber() {
+        return roomNumber;
+    }
+
+    public Tile[][] data() {
+        return data;
     }
 }
