@@ -38,11 +38,22 @@ public class DungeonLevel implements Map {
     private static final int ROOM_WIDTH_SCALE = 11;
     private static final int ROOM_HEIGHT_SCALE = 11;
     private static final int BORDER_WIDTH = 1;
-    private static final int BORDER_HEIGHT = 1;
     private static final int MAP_WIDTH = BORDER_WIDTH + INPUT_WIDTH * ROOM_WIDTH_SCALE + BORDER_WIDTH;
-    private static final int MAP_HEIGHT = BORDER_HEIGHT + INPUT_HEIGHT * ROOM_HEIGHT_SCALE + BORDER_HEIGHT;
+    private static final int MAP_HEIGHT = BORDER_WIDTH + INPUT_HEIGHT * ROOM_HEIGHT_SCALE + BORDER_WIDTH;
     private static final int CENTER_ROW = (ROOM_HEIGHT_SCALE - 1) / 2;
     private static final int CENTER_COL = (ROOM_WIDTH_SCALE - 1) / 2;
+
+    public static int heightScale() {
+        return ROOM_HEIGHT_SCALE;
+    }
+
+    public static int widthScale() {
+        return ROOM_WIDTH_SCALE;
+    }
+
+    public static int borderWidth() {
+        return BORDER_WIDTH;
+    }
 
     public static DungeonLevel fromStream(InputStream stream, Location location, int level, int worldRow, int worldCol) throws IOException {
         Tile[][] data = new Tile[MAP_HEIGHT][MAP_WIDTH];
@@ -118,7 +129,7 @@ public class DungeonLevel implements Map {
                 return fillAreaWithDifferentCenterTile(Tile.TILE_FLOOR, Tile.ALTAR);
             case 0xC0:  // door
                 // this will be modified later
-                return fillAreaWithDifferentCenterTile(Tile.TILE_FLOOR, Tile.UNLOCKED_DOOR);
+                return fillArea(Tile.UNLOCKED_DOOR);
             case 0xD0:  // dungeon rooms
                 // this is a placeholder for the room and will be modifier later
                 return fillAreaWithDifferentCenterTile(Tile.TILE_FLOOR, Tile.A);
@@ -169,7 +180,7 @@ public class DungeonLevel implements Map {
                 return fillAreaWithDifferentCenterTile(Tile.TILE_FLOOR, Tile.P);
             case 0xE0:  // secret door
                 // this will be modified later
-                return fillAreaWithDifferentCenterTile(Tile.TILE_FLOOR, Tile.HIDDEN_PASSAGE);
+                return fillArea(Tile.HIDDEN_PASSAGE);
             case 0xF0:  // wall
                 return fillArea(Tile.BRICK_WALL);
             default:
@@ -349,5 +360,9 @@ public class DungeonLevel implements Map {
                 data[mapRow][mapCol] = roomTile;
             }
         }
+    }
+
+    public void enhanceMap(DungeonMapEnhancer dungeonMapEnhancer) {
+        dungeonMapEnhancer.enhance(this.data);
     }
 }

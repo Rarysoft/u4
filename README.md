@@ -40,4 +40,6 @@ files from their own original Ultima IV game disk into the `src/main/resources/d
 * Open doors by bumping into them
 * Climb ladders by walking onto the tile
 * Include the option to use other tile sets, including a modified Ultima V tile set
+* Render dungeons in 2D style like the rest of the game, exploding each tile into an 11x11 grid, and
+  seamlessly integrating dungeon rooms into the rest of the dungeon map
 * more to come...

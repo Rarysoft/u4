@@ -99,6 +99,8 @@ public class Maps {
             DungeonRoom room = DungeonRoom.fromStream(stream, index);
             dungeonLevels.forEach(level -> level.overlayRoom(room));
         }
+        DungeonMapEnhancer dungeonMapEnhancer = new DefaultDungeonMapEnhancer();
+        dungeonLevels.forEach(level -> dungeonMapEnhancer.enhance(level.data()));
         return dungeonLevels;
     }
 }
