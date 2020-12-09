@@ -376,11 +376,13 @@ public class Game {
 
     private RenderedTile[][] determinePlayerView(RenderedTile[][] view) {
         int size = view.length;
-        for (int row = 0; row < size; row++) {
-            for (int col = 0; col < size; col++) {
-                if (! isInStandardView(row, col)) {
-                    if (! DevMode.isFullVisibilityEnabled()) {
-                        view[row][col] = view[row][col].hidden();
+        if (gameState.location() == Location.SURFACE) {
+            for (int row = 0; row < size; row++) {
+                for (int col = 0; col < size; col++) {
+                    if (!isInStandardView(row, col)) {
+                        if (!DevMode.isFullVisibilityEnabled()) {
+                            view[row][col] = view[row][col].hidden();
+                        }
                     }
                 }
             }
