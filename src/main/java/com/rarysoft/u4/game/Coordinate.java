@@ -28,7 +28,7 @@ import java.math.BigDecimal;
 public class Coordinate {
     private static final int TILE_SIZE = 11;
     private static final int TILE_RADIUS = (TILE_SIZE - 1) / 2;
-    private static final int CENTER_INDEX = 10;
+    private static final int CENTER_INDEX = 9;
     private static final int MIN_INDEX = 0;
     private static final int MAX_INDEX = CENTER_INDEX * 2;
     private static final int MIN_COORD = -CENTER_INDEX * TILE_SIZE - 5;

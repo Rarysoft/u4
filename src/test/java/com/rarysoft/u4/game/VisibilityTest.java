@@ -29,7 +29,7 @@ import org.junit.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class VisibilityTest {
-    private final static int VIEW_SIZE = 21;
+    private final static int VIEW_SIZE = 19;
     private final static int CENTER = (VIEW_SIZE - 1) / 2;
     private final RenderedTile clear = new RenderedTile().withBaseTile(Tile.GRASSLANDS);
     private final RenderedTile solid = new RenderedTile().withBaseTile(Tile.MOUNTAINS);
@@ -145,16 +145,19 @@ public class VisibilityTest {
             area[CENTER - 1][col] = solid;
         }
 
-        for (int row = CENTER - 1; row < VIEW_SIZE; row ++) {
+        for (int row = 0; row < VIEW_SIZE; row ++) {
             for (int col = 0; col < VIEW_SIZE; col ++) {
                 Visibility visibility = new Visibility();
-                if (row == CENTER - 1) {
+                if (row > CENTER - 1) {
+                    assertThat(visibility.isVisibleFromCenter(area, Coordinate.forRowCol(row, col))).isTrue();
+                }
+                else if (row == CENTER - 1) {
                     if (col > 3 && col < VIEW_SIZE - 4) {
                         assertThat(visibility.isVisibleFromCenter(area, Coordinate.forRowCol(row, col))).isTrue();
                     }
                 }
                 else {
-                    assertThat(visibility.isVisibleFromCenter(area, Coordinate.forRowCol(row, col))).isTrue();
+                    assertThat(visibility.isVisibleFromCenter(area, Coordinate.forRowCol(row, col))).isFalse();
                 }
             }
         }
@@ -167,15 +170,18 @@ public class VisibilityTest {
         }
 
         for (int row = 0; row < VIEW_SIZE; row ++) {
-            for (int col = 0; col <= CENTER + 1; col ++) {
+            for (int col = 0; col < VIEW_SIZE; col ++) {
                 Visibility visibility = new Visibility();
-                if (col == CENTER + 1) {
+                if (col < CENTER + 1) {
+                    assertThat(visibility.isVisibleFromCenter(area, Coordinate.forRowCol(row, col))).isTrue();
+                }
+                else if (col == CENTER + 1) {
                     if (row > 3 && row < VIEW_SIZE - 4) {
                         assertThat(visibility.isVisibleFromCenter(area, Coordinate.forRowCol(row, col))).isTrue();
                     }
                 }
                 else {
-                    assertThat(visibility.isVisibleFromCenter(area, Coordinate.forRowCol(row, col))).isTrue();
+                    assertThat(visibility.isVisibleFromCenter(area, Coordinate.forRowCol(row, col))).isFalse();
                 }
             }
         }
@@ -187,16 +193,19 @@ public class VisibilityTest {
             area[CENTER + 1][col] = solid;
         }
 
-        for (int row = 0; row <= CENTER + 1; row ++) {
+        for (int row = 0; row < VIEW_SIZE; row ++) {
             for (int col = 0; col < VIEW_SIZE; col ++) {
                 Visibility visibility = new Visibility();
-                if (row == CENTER + 1) {
+                if (row < CENTER + 1) {
+                    assertThat(visibility.isVisibleFromCenter(area, Coordinate.forRowCol(row, col))).isTrue();
+                }
+                else if (row == CENTER + 1) {
                     if (col > 3 && col < VIEW_SIZE - 4) {
                         assertThat(visibility.isVisibleFromCenter(area, Coordinate.forRowCol(row, col))).isTrue();
                     }
                 }
                 else {
-                    assertThat(visibility.isVisibleFromCenter(area, Coordinate.forRowCol(row, col))).isTrue();
+                    assertThat(visibility.isVisibleFromCenter(area, Coordinate.forRowCol(row, col))).isFalse();
                 }
             }
         }
@@ -209,15 +218,18 @@ public class VisibilityTest {
         }
 
         for (int row = 0; row < VIEW_SIZE; row ++) {
-            for (int col = CENTER - 1; col < VIEW_SIZE; col ++) {
+            for (int col = 0; col < VIEW_SIZE; col ++) {
                 Visibility visibility = new Visibility();
-                if (col == CENTER - 1) {
+                if (col > CENTER - 1) {
+                    assertThat(visibility.isVisibleFromCenter(area, Coordinate.forRowCol(row, col))).isTrue();
+                }
+                else if (col == CENTER - 1) {
                     if (row > 3 && row < VIEW_SIZE - 4) {
                         assertThat(visibility.isVisibleFromCenter(area, Coordinate.forRowCol(row, col))).isTrue();
                     }
                 }
                 else {
-                    assertThat(visibility.isVisibleFromCenter(area, Coordinate.forRowCol(row, col))).isTrue();
+                    assertThat(visibility.isVisibleFromCenter(area, Coordinate.forRowCol(row, col))).isFalse();
                 }
             }
         }
@@ -227,125 +239,125 @@ public class VisibilityTest {
     public void isVisibleFromCenterWhenHasNoBlockingTileReturnsTrue() {
         area[0][1] = solid;
         area[1][0] = solid;
-        area[1][8] = solid;
-        area[3][6] = solid;
-        area[6][3] = solid;
-        area[8][1] = solid;
+        area[1][7] = solid;
+        area[2][5] = solid;
+        area[5][2] = solid;
+        area[7][1] = solid;
 
-        area[0][19] = solid;
-        area[1][20] = solid;
-        area[1][12] = solid;
-        area[3][14] = solid;
-        area[6][17] = solid;
-        area[8][19] = solid;
+        area[0][17] = solid;
+        area[1][18] = solid;
+        area[1][11] = solid;
+        area[2][13] = solid;
+        area[5][16] = solid;
+        area[7][17] = solid;
 
-        area[20][1] = solid;
-        area[19][0] = solid;
-        area[19][8] = solid;
-        area[17][6] = solid;
-        area[14][3] = solid;
-        area[12][1] = solid;
+        area[18][1] = solid;
+        area[17][0] = solid;
+        area[17][7] = solid;
+        area[16][5] = solid;
+        area[13][2] = solid;
+        area[11][1] = solid;
 
-        area[20][19] = solid;
-        area[19][20] = solid;
-        area[19][12] = solid;
-        area[17][14] = solid;
-        area[14][17] = solid;
-        area[12][19] = solid;
+        area[18][17] = solid;
+        area[17][18] = solid;
+        area[17][11] = solid;
+        area[16][13] = solid;
+        area[13][16] = solid;
+        area[11][17] = solid;
 
         Visibility visibility = new Visibility();
 
         assertThat(visibility.isVisibleFromCenter(area, Coordinate.forRowCol(0, 0))).isTrue();
-        assertThat(visibility.isVisibleFromCenter(area, Coordinate.forRowCol(0, 8))).isTrue();
-        assertThat(visibility.isVisibleFromCenter(area, Coordinate.forRowCol(2, 6))).isTrue();
-        assertThat(visibility.isVisibleFromCenter(area, Coordinate.forRowCol(3, 5))).isTrue();
-        assertThat(visibility.isVisibleFromCenter(area, Coordinate.forRowCol(5, 3))).isTrue();
-        assertThat(visibility.isVisibleFromCenter(area, Coordinate.forRowCol(6, 2))).isTrue();
-        assertThat(visibility.isVisibleFromCenter(area, Coordinate.forRowCol(8, 0))).isTrue();
+        assertThat(visibility.isVisibleFromCenter(area, Coordinate.forRowCol(0, 7))).isTrue();
+        assertThat(visibility.isVisibleFromCenter(area, Coordinate.forRowCol(1, 5))).isTrue();
+        assertThat(visibility.isVisibleFromCenter(area, Coordinate.forRowCol(2, 4))).isTrue();
+        assertThat(visibility.isVisibleFromCenter(area, Coordinate.forRowCol(4, 2))).isTrue();
+        assertThat(visibility.isVisibleFromCenter(area, Coordinate.forRowCol(5, 1))).isTrue();
+        assertThat(visibility.isVisibleFromCenter(area, Coordinate.forRowCol(7, 0))).isTrue();
 
-        assertThat(visibility.isVisibleFromCenter(area, Coordinate.forRowCol(0, 20))).isTrue();
-        assertThat(visibility.isVisibleFromCenter(area, Coordinate.forRowCol(0, 12))).isTrue();
+        assertThat(visibility.isVisibleFromCenter(area, Coordinate.forRowCol(0, 18))).isTrue();
+        assertThat(visibility.isVisibleFromCenter(area, Coordinate.forRowCol(0, 11))).isTrue();
+        assertThat(visibility.isVisibleFromCenter(area, Coordinate.forRowCol(1, 13))).isTrue();
         assertThat(visibility.isVisibleFromCenter(area, Coordinate.forRowCol(2, 14))).isTrue();
-        assertThat(visibility.isVisibleFromCenter(area, Coordinate.forRowCol(3, 15))).isTrue();
+        assertThat(visibility.isVisibleFromCenter(area, Coordinate.forRowCol(4, 16))).isTrue();
         assertThat(visibility.isVisibleFromCenter(area, Coordinate.forRowCol(5, 17))).isTrue();
-        assertThat(visibility.isVisibleFromCenter(area, Coordinate.forRowCol(6, 18))).isTrue();
-        assertThat(visibility.isVisibleFromCenter(area, Coordinate.forRowCol(8, 20))).isTrue();
+        assertThat(visibility.isVisibleFromCenter(area, Coordinate.forRowCol(7, 18))).isTrue();
 
-        assertThat(visibility.isVisibleFromCenter(area, Coordinate.forRowCol(20, 0))).isTrue();
-        assertThat(visibility.isVisibleFromCenter(area, Coordinate.forRowCol(20, 8))).isTrue();
-        assertThat(visibility.isVisibleFromCenter(area, Coordinate.forRowCol(18, 6))).isTrue();
+        assertThat(visibility.isVisibleFromCenter(area, Coordinate.forRowCol(18, 0))).isTrue();
+        assertThat(visibility.isVisibleFromCenter(area, Coordinate.forRowCol(18, 7))).isTrue();
         assertThat(visibility.isVisibleFromCenter(area, Coordinate.forRowCol(17, 5))).isTrue();
-        assertThat(visibility.isVisibleFromCenter(area, Coordinate.forRowCol(15, 3))).isTrue();
+        assertThat(visibility.isVisibleFromCenter(area, Coordinate.forRowCol(16, 4))).isTrue();
         assertThat(visibility.isVisibleFromCenter(area, Coordinate.forRowCol(14, 2))).isTrue();
-        assertThat(visibility.isVisibleFromCenter(area, Coordinate.forRowCol(12, 0))).isTrue();
+        assertThat(visibility.isVisibleFromCenter(area, Coordinate.forRowCol(13, 1))).isTrue();
+        assertThat(visibility.isVisibleFromCenter(area, Coordinate.forRowCol(11, 0))).isTrue();
 
-        assertThat(visibility.isVisibleFromCenter(area, Coordinate.forRowCol(20, 20))).isTrue();
-        assertThat(visibility.isVisibleFromCenter(area, Coordinate.forRowCol(20, 12))).isTrue();
-        assertThat(visibility.isVisibleFromCenter(area, Coordinate.forRowCol(18, 14))).isTrue();
-        assertThat(visibility.isVisibleFromCenter(area, Coordinate.forRowCol(17, 15))).isTrue();
-        assertThat(visibility.isVisibleFromCenter(area, Coordinate.forRowCol(15, 17))).isTrue();
-        assertThat(visibility.isVisibleFromCenter(area, Coordinate.forRowCol(14, 18))).isTrue();
-        assertThat(visibility.isVisibleFromCenter(area, Coordinate.forRowCol(12, 20))).isTrue();
+        assertThat(visibility.isVisibleFromCenter(area, Coordinate.forRowCol(18, 18))).isTrue();
+        assertThat(visibility.isVisibleFromCenter(area, Coordinate.forRowCol(18, 11))).isTrue();
+        assertThat(visibility.isVisibleFromCenter(area, Coordinate.forRowCol(17, 13))).isTrue();
+        assertThat(visibility.isVisibleFromCenter(area, Coordinate.forRowCol(16, 14))).isTrue();
+        assertThat(visibility.isVisibleFromCenter(area, Coordinate.forRowCol(14, 16))).isTrue();
+        assertThat(visibility.isVisibleFromCenter(area, Coordinate.forRowCol(13, 17))).isTrue();
+        assertThat(visibility.isVisibleFromCenter(area, Coordinate.forRowCol(11, 18))).isTrue();
     }
 
     @Test
     public void isVisibleFromCenterWhenHasBlockingTileReturnsFalse() {
         area[1][1] = solid;
-        area[2][9] = solid;
-        area[5][7] = solid;
-        area[5][8] = solid;
-        area[7][5] = solid;
-        area[8][5] = solid;
-        area[9][2] = solid;
+        area[2][8] = solid;
+        area[4][6] = solid;
+        area[4][7] = solid;
+        area[6][4] = solid;
+        area[7][4] = solid;
+        area[8][2] = solid;
 
-        area[1][19] = solid;
-        area[2][11] = solid;
-        area[5][13] = solid;
-        area[5][12] = solid;
-        area[7][15] = solid;
-        area[8][15] = solid;
-        area[9][18] = solid;
+        area[1][17] = solid;
+        area[2][10] = solid;
+        area[4][12] = solid;
+        area[4][11] = solid;
+        area[6][14] = solid;
+        area[7][14] = solid;
+        area[8][16] = solid;
 
-        area[19][1] = solid;
-        area[18][9] = solid;
-        area[15][7] = solid;
-        area[15][8] = solid;
-        area[13][5] = solid;
-        area[12][5] = solid;
-        area[11][2] = solid;
+        area[17][1] = solid;
+        area[16][8] = solid;
+        area[14][6] = solid;
+        area[14][7] = solid;
+        area[12][4] = solid;
+        area[11][4] = solid;
+        area[10][2] = solid;
 
-        area[19][19] = solid;
-        area[18][11] = solid;
-        area[15][13] = solid;
-        area[15][12] = solid;
-        area[13][15] = solid;
-        area[12][15] = solid;
-        area[11][18] = solid;
+        area[17][17] = solid;
+        area[16][10] = solid;
+        area[14][12] = solid;
+        area[14][11] = solid;
+        area[12][14] = solid;
+        area[11][14] = solid;
+        area[10][16] = solid;
 
         Visibility visibility = new Visibility();
 
         assertThat(visibility.isVisibleFromCenter(area, Coordinate.forRowCol(0, 0))).isFalse();
-        assertThat(visibility.isVisibleFromCenter(area, Coordinate.forRowCol(1, 9))).isFalse();
-        assertThat(visibility.isVisibleFromCenter(area, Coordinate.forRowCol(4, 7))).isFalse();
-        assertThat(visibility.isVisibleFromCenter(area, Coordinate.forRowCol(7, 4))).isFalse();
-        assertThat(visibility.isVisibleFromCenter(area, Coordinate.forRowCol(9, 1))).isFalse();
+        assertThat(visibility.isVisibleFromCenter(area, Coordinate.forRowCol(1, 8))).isFalse();
+        assertThat(visibility.isVisibleFromCenter(area, Coordinate.forRowCol(3, 6))).isFalse();
+        assertThat(visibility.isVisibleFromCenter(area, Coordinate.forRowCol(6, 3))).isFalse();
+        assertThat(visibility.isVisibleFromCenter(area, Coordinate.forRowCol(8, 1))).isFalse();
 
-        assertThat(visibility.isVisibleFromCenter(area, Coordinate.forRowCol(0, 20))).isFalse();
-        assertThat(visibility.isVisibleFromCenter(area, Coordinate.forRowCol(1, 11))).isFalse();
-        assertThat(visibility.isVisibleFromCenter(area, Coordinate.forRowCol(4, 13))).isFalse();
-        assertThat(visibility.isVisibleFromCenter(area, Coordinate.forRowCol(7, 16))).isFalse();
-        assertThat(visibility.isVisibleFromCenter(area, Coordinate.forRowCol(9, 19))).isFalse();
+        assertThat(visibility.isVisibleFromCenter(area, Coordinate.forRowCol(0, 18))).isFalse();
+        assertThat(visibility.isVisibleFromCenter(area, Coordinate.forRowCol(1, 10))).isFalse();
+        assertThat(visibility.isVisibleFromCenter(area, Coordinate.forRowCol(3, 12))).isFalse();
+        assertThat(visibility.isVisibleFromCenter(area, Coordinate.forRowCol(6, 15))).isFalse();
+        assertThat(visibility.isVisibleFromCenter(area, Coordinate.forRowCol(8, 17))).isFalse();
 
-        assertThat(visibility.isVisibleFromCenter(area, Coordinate.forRowCol(20, 0))).isFalse();
-        assertThat(visibility.isVisibleFromCenter(area, Coordinate.forRowCol(19, 9))).isFalse();
-        assertThat(visibility.isVisibleFromCenter(area, Coordinate.forRowCol(16, 7))).isFalse();
-        assertThat(visibility.isVisibleFromCenter(area, Coordinate.forRowCol(13, 4))).isFalse();
-        assertThat(visibility.isVisibleFromCenter(area, Coordinate.forRowCol(11, 1))).isFalse();
+        assertThat(visibility.isVisibleFromCenter(area, Coordinate.forRowCol(18, 0))).isFalse();
+        assertThat(visibility.isVisibleFromCenter(area, Coordinate.forRowCol(17, 8))).isFalse();
+        assertThat(visibility.isVisibleFromCenter(area, Coordinate.forRowCol(15, 6))).isFalse();
+        assertThat(visibility.isVisibleFromCenter(area, Coordinate.forRowCol(12, 3))).isFalse();
+        assertThat(visibility.isVisibleFromCenter(area, Coordinate.forRowCol(10, 1))).isFalse();
 
-        assertThat(visibility.isVisibleFromCenter(area, Coordinate.forRowCol(20, 20))).isFalse();
-        assertThat(visibility.isVisibleFromCenter(area, Coordinate.forRowCol(19, 11))).isFalse();
-        assertThat(visibility.isVisibleFromCenter(area, Coordinate.forRowCol(16, 13))).isFalse();
-        assertThat(visibility.isVisibleFromCenter(area, Coordinate.forRowCol(13, 16))).isFalse();
-        assertThat(visibility.isVisibleFromCenter(area, Coordinate.forRowCol(11, 19))).isFalse();
+        assertThat(visibility.isVisibleFromCenter(area, Coordinate.forRowCol(18, 18))).isFalse();
+        assertThat(visibility.isVisibleFromCenter(area, Coordinate.forRowCol(17, 10))).isFalse();
+        assertThat(visibility.isVisibleFromCenter(area, Coordinate.forRowCol(15, 12))).isFalse();
+        assertThat(visibility.isVisibleFromCenter(area, Coordinate.forRowCol(12, 15))).isFalse();
+        assertThat(visibility.isVisibleFromCenter(area, Coordinate.forRowCol(10, 17))).isFalse();
     }
 }
