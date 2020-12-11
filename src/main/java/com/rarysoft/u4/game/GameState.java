@@ -169,7 +169,16 @@ public class GameState {
     public void descend() {
         int nextLevel = map.level() - 1;
         if (nextLevel < 0) {
-            returnToSurface();
+            // special case: there's a ladder in LB's castle that leads down to Hythloth
+            if (location() == Location.CASTLE_BRITANNIA && party.getRow() == 2 && party.getCol() == 7) {
+                switchToMap(maps.map(Location.HYTHLOTH, 0));
+                party.setRow(61);
+                party.setCol(61);
+                party.setDungeonLevel(0);
+            }
+            else {
+                returnToSurface();
+            }
         }
         else {
             Map nextLevelMap = maps.map(map.location(), nextLevel);

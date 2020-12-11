@@ -354,7 +354,6 @@ public class Game {
         }
         else if (gameState.location() == Location.CASTLE_BRITANNIA) {
             if (gameState.tileAt(row, col).baseTiles().contains(Tile.LADDER_DOWN)) {
-                // TODO: need to check if this is the ladder down to Hythloth
                 gameState.descend();
             }
             else {
@@ -364,13 +363,11 @@ public class Game {
         else {
             // if not on the surface or in LB's castle, the only other places with portals are the dungeons
             if (gameState.tileAt(row, col).baseTiles().contains(Tile.LADDER_DOWN)) {
-                // TODO: need to confirm with the user that they want to use the ladder
                 gameState.ascend(); // in dungeons, we go down to higher numbered levels
             }
             else {
                 gameState.descend(); // in dungeons, we go up to lower numbered levels;
             }
-            // TODO: what about ladders going up and down at the same time?
         }
     }
 
