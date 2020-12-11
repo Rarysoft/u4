@@ -24,6 +24,7 @@
 package com.rarysoft.u4.game;
 
 import com.rarysoft.u4.game.party.Character;
+import com.rarysoft.u4.game.party.Status;
 import com.rarysoft.u4.game.physics.ViewFinder;
 import com.rarysoft.u4.game.physics.WayFinder;
 import com.rarysoft.u4.i18n.Messages;
@@ -249,6 +250,15 @@ public class Game {
             }
             gameState.changeRow(rowDelta);
             gameState.changeCol(colDelta);
+            if (renderedTile.baseTiles().contains(Tile.POISON_FIELD)) {
+                applyPoison();
+            }
+            if (renderedTile.baseTiles().contains(Tile.SLEEP_FIELD)) {
+                applySleep();
+            }
+            if (renderedTile.baseTiles().contains(Tile.FIRE_FIELD)) {
+                applyFire();
+            }
             if (renderedTile.isPortal()) {
                 actionCompleted(messages.actionMove(actionDirection));
                 enterPortal();
@@ -283,6 +293,10 @@ public class Game {
 
     private void initializeDisplay() {
         informationListeners.forEach(InformationListener::initialize);
+        updateCharacters();
+    }
+
+    private void updateCharacters() {
         List<Character> characters = gameState.charactersInParty();
         for (int index = 0; index < characters.size(); index ++) {
             Character character = characters.get(index);
@@ -344,6 +358,53 @@ public class Game {
             return true;
         }
         return random.nextInt(100) < tile.walkability();
+    }
+
+    private void applyPoison() {
+        // I don't know the actual algorithm used in the original U4, so this will have to suffice.
+        // Each character will have a 20% chance of being poisoned.
+        // Perhaps character level and/or stats should play into this in some way.....
+        for (Character character : gameState.charactersInParty()) {
+            if (character.getStatus() != Status.POISONED) {
+                if (random.nextInt(100) < 20) {
+                    character.setStatus(Status.POISONED);
+                }
+            }
+        }
+    }
+
+    private void applySleep() {
+        // I don't know the actual algorithm used in the original U4, so this will have to suffice.
+        // Each character will have a 20% chance of falling asleep.
+        // Perhaps character level and/or stats should play into this in some way.....
+        for (Character character : gameState.charactersInParty()) {
+            if (character.getStatus() != Status.SLEEPING) {
+                if (random.nextInt(100) < 20) {
+                    character.setStatus(Status.SLEEPING);
+                }
+            }
+        }
+    }
+
+    private void applyFire() {
+        // I don't know the actual algorithm used in the original U4, so this will have to suffice.
+        // Each character will take random damage between 5 and 30 points.
+        // Perhaps character level and/or stats should play into this in some way.....
+        for (Character character : gameState.charactersInParty()) {
+            int damage = (random.nextInt(25) + 5) + 1;
+            applyDamage(character, damage);
+        }
+    }
+
+    private void applyDamage(Character character, int damage) {
+        int currentHp = character.getHp();
+        if (currentHp < damage) {
+            character.setHp(0);
+            character.setStatus(Status.DEAD);
+        }
+        else {
+            character.setHp(currentHp - damage);
+        }
     }
 
     private void enterPortal() {
@@ -434,6 +495,7 @@ public class Game {
 
     private void afterPlayerMove() {
         gameState.postTurnUpdates(random, viewFinder, wayFinder);
+        updateCharacters();
         updateBackground();
     }
 }

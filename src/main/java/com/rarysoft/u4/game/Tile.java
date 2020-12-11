@@ -72,7 +72,7 @@ public enum Tile {
     MOONGATE_3(66, false, 0, false, false, false, false, false),
     MOONGATE_4(67, false, 100, false, true, false, false, false),
     POISON_FIELD(68, false, 100, true, false, false, false, false),
-    ENERGY_FIELD(69, false, 100, true, false, false, false, false),
+    ENERGY_FIELD(69, false, 0, true, false, false, false, false),
     FIRE_FIELD(70, false, 100, true, false, false, false, false),
     SLEEP_FIELD(71, false, 100, true, false, false, false, false),
     SOLID_BARRIER(72, false, 0, false, false, false, false, false),

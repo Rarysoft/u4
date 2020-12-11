@@ -44,6 +44,10 @@ public class DefaultTileMapper implements TileMapper {
                     case DEEP_WATER:
                     case MEDIUM_WATER:
                     case SHALLOW_WATER:
+                    case POISON_FIELD:
+                    case ENERGY_FIELD:
+                    case FIRE_FIELD:
+                    case SLEEP_FIELD:
                         mappedTiles[tileIndex][frameIndex] = TileEnhancer.animateDescending(tileData, frameIndex);
                         break;
 
