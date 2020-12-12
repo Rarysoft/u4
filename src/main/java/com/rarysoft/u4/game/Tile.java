@@ -6,7 +6,7 @@ public enum Tile {
     DEEP_WATER(0, false, 0, true, false, false, false, false),
     MEDIUM_WATER(1, false, 0, true, false, false, false, false),
     SHALLOW_WATER(2, false, 0, true, false, false, false, false),
-    SWAMP(3, false, 90, false, true, false, false, false),
+    SWAMP(3, false, 90, false, false, false, false, false),
     GRASSLANDS(4, false, 100, true, false, false, false, false),
     SCRUBLAND(5, false, 60, true, false, false, false, false),
     FOREST(6, false, 78, true, false, true, false, false),

@@ -250,15 +250,6 @@ public class Game {
             }
             gameState.changeRow(rowDelta);
             gameState.changeCol(colDelta);
-            if (renderedTile.baseTiles().contains(Tile.POISON_FIELD)) {
-                applyPoison();
-            }
-            if (renderedTile.baseTiles().contains(Tile.SLEEP_FIELD)) {
-                applySleep();
-            }
-            if (renderedTile.baseTiles().contains(Tile.FIRE_FIELD)) {
-                applyFire();
-            }
             if (renderedTile.isPortal()) {
                 actionCompleted(messages.actionMove(actionDirection));
                 enterPortal();
@@ -365,7 +356,7 @@ public class Game {
         // Each character will have a 20% chance of being poisoned.
         // Perhaps character level and/or stats should play into this in some way.....
         for (Character character : gameState.charactersInParty()) {
-            if (character.getStatus() != Status.POISONED) {
+            if (character.getStatus() == Status.GOOD) {
                 if (random.nextInt(100) < 20) {
                     character.setStatus(Status.POISONED);
                 }
@@ -375,11 +366,10 @@ public class Game {
 
     private void applySleep() {
         // I don't know the actual algorithm used in the original U4, so this will have to suffice.
-        // Each character will have a 20% chance of falling asleep.
         // Perhaps character level and/or stats should play into this in some way.....
         for (Character character : gameState.charactersInParty()) {
-            if (character.getStatus() != Status.SLEEPING) {
-                if (random.nextInt(100) < 20) {
+            if (character.getStatus() == Status.GOOD) {
+                if (random.nextInt(100) < Effects.SLEEP_PERCENTAGE) {
                     character.setStatus(Status.SLEEPING);
                 }
             }
@@ -388,22 +378,43 @@ public class Game {
 
     private void applyFire() {
         // I don't know the actual algorithm used in the original U4, so this will have to suffice.
-        // Each character will take random damage between 5 and 30 points.
         // Perhaps character level and/or stats should play into this in some way.....
         for (Character character : gameState.charactersInParty()) {
-            int damage = (random.nextInt(25) + 5) + 1;
+            int damage = (random.nextInt(Effects.FIRE_DAMAGE_MAXIMUM - Effects.FIRE_DAMAGE_MINIMUM) + Effects.FIRE_DAMAGE_MINIMUM) + 1;
             applyDamage(character, damage);
         }
     }
 
     private void applyDamage(Character character, int damage) {
+        int damageToApply = damage;
         int currentHp = character.getHp();
         if (currentHp < damage) {
-            character.setHp(0);
+            damageToApply = currentHp;
+        }
+        character.setHp(currentHp - damageToApply);
+        if (character.getHp() == 0) {
             character.setStatus(Status.DEAD);
         }
-        else {
-            character.setHp(currentHp - damage);
+    }
+
+    private void applyTerrainEffects() {
+        RenderedTile renderedTile = gameState.tileAt(gameState.row(), gameState.col());
+        if (renderedTile.baseTiles().contains(Tile.SWAMP) || renderedTile.baseTiles().contains(Tile.POISON_FIELD)) {
+            applyPoison();
+        }
+        if (renderedTile.baseTiles().contains(Tile.SLEEP_FIELD)) {
+            applySleep();
+        }
+        if (renderedTile.baseTiles().contains(Tile.FIRE_FIELD)) {
+            applyFire();
+        }
+    }
+
+    private void applyCharacterDamage() {
+        for (Character character : gameState.charactersInParty()) {
+            if (character.getStatus() == Status.POISONED) {
+                applyDamage(character, Effects.POISON_DAMAGE_PER_TURN);
+            }
         }
     }
 
@@ -495,6 +506,8 @@ public class Game {
 
     private void afterPlayerMove() {
         gameState.postTurnUpdates(random, viewFinder, wayFinder);
+        applyTerrainEffects();
+        applyCharacterDamage();
         updateCharacters();
         updateBackground();
     }
