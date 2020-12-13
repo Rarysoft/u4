@@ -28,6 +28,7 @@ import com.rarysoft.u4.game.npc.Person;
 import com.rarysoft.u4.game.party.Character;
 import com.rarysoft.u4.game.party.Location;
 import com.rarysoft.u4.game.party.Party;
+import com.rarysoft.u4.game.party.Status;
 import com.rarysoft.u4.game.physics.ViewFinder;
 import com.rarysoft.u4.game.physics.WayFinder;
 
@@ -60,20 +61,7 @@ public class GameState {
     }
 
     public List<Character> charactersInParty() {
-        List<Character> charactersInParty = new ArrayList<>();
-        for (int index = 0; index < party.getNumberOfCharacters(); index ++) {
-            charactersInParty.add(
-                    index == 0 ? party.getPlayer0() :
-                            index == 1 ? party.getPlayer1() :
-                                    index == 2 ? party.getPlayer2() :
-                                            index == 3 ? party.getPlayer3() :
-                                                    index == 4 ? party.getPlayer4() :
-                                                            index == 5 ? party.getPlayer5() :
-                                                                    index == 6 ? party.getPlayer6() :
-                                                                            party.getPlayer7()
-            );
-        }
-        return charactersInParty;
+        return allActiveCharacters();
     }
 
     public int row() {
@@ -271,6 +259,47 @@ public class GameState {
             default:
                 break;
         }
+    }
+
+    public void initiateResurrection() {
+        this.playMode = PlayMode.DEAD;
+    }
+
+    public void completeResurrection() {
+        allActiveCharacters().forEach(character -> {
+            character.setHp(character.getMaxHp());
+            character.setStatus(Status.GOOD);
+        });
+        party.setCurrentPartyLocation(Location.CASTLE_BRITANNIA);
+        party.setDungeonLevel(1);
+        party.setRow(8);
+        party.setCol(19);
+        switchToMap(maps.map(Location.CASTLE_BRITANNIA, 1));
+        party.setDungeonRow(map.worldRow());
+        party.setDungeonCol(map.worldCol());
+        // TODO: remove some items from inventory
+        playMode = PlayMode.NORMAL;
+    }
+
+    public boolean isResurrecting() {
+        return this.playMode == PlayMode.DEAD;
+    }
+
+    private List<Character> allActiveCharacters() {
+        List<Character> charactersInParty = new ArrayList<>();
+        for (int index = 0; index < party.getNumberOfCharacters(); index ++) {
+            charactersInParty.add(
+                    index == 0 ? party.getPlayer0() :
+                            index == 1 ? party.getPlayer1() :
+                                    index == 2 ? party.getPlayer2() :
+                                            index == 3 ? party.getPlayer3() :
+                                                    index == 4 ? party.getPlayer4() :
+                                                            index == 5 ? party.getPlayer5() :
+                                                                    index == 6 ? party.getPlayer6() :
+                                                                            party.getPlayer7()
+            );
+        }
+        return charactersInParty;
     }
 
     private void switchToMap(Map map) {

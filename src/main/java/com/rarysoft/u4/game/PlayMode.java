@@ -28,5 +28,6 @@ public enum PlayMode {
     CONVERSATION,
     CONVERSATION_QUERIED,
     DUNGEON,
-    DUNGEON_ROOM
+    DUNGEON_ROOM,
+    DEAD
 }

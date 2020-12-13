@@ -34,7 +34,6 @@ import com.rarysoft.u4.game.npc.Dialogs;
 import com.rarysoft.u4.game.npc.Person;
 import com.rarysoft.u4.game.party.Location;
 
-import javax.swing.Timer;
 import java.util.*;
 
 public class Game {
@@ -54,6 +53,8 @@ public class Game {
 
     private final WayFinder wayFinder;
 
+    private final Timer timer;
+
     private GameState gameState;
 
     private int animationCycle;
@@ -66,6 +67,7 @@ public class Game {
         this.random = random;
         this.viewFinder = viewFinder;
         this.wayFinder = wayFinder;
+        this.timer = new Timer("Main Timer");
     }
 
     public void addInformationListener(InformationListener informationListener) {
@@ -178,10 +180,13 @@ public class Game {
 
     private void initializeAnimation() {
         animationCycle = 0;
-        new Timer(200, event -> {
-            animationCycle = animationCycle + 1 < 16 ? animationCycle + 1 : 0;
-            updateBackground();
-        }).start();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                animationCycle = animationCycle + 1 < 16 ? animationCycle + 1 : 0;
+                updateBackground();
+            }
+        }, 0, 200);
     }
 
     private void attemptMove(int rowDelta, int colDelta, String actionDirection) {
@@ -189,6 +194,9 @@ public class Game {
             gameState.changeRow(rowDelta);
             gameState.changeCol(colDelta);
             actionCompleted("Row: " + gameState.row() + " Col: " + gameState.col());
+            return;
+        }
+        if (gameState.isResurrecting()) {
             return;
         }
         if (gameState.inConversation()) {
@@ -448,7 +456,7 @@ public class Game {
         if (gameState.location() == Location.SURFACE) {
             for (int row = 0; row < size; row++) {
                 for (int col = 0; col < size; col++) {
-                    if (!isInStandardView(row, col)) {
+                    if (!isInStandardView(row, col) || gameState.isResurrecting()) {
                         if (!DevMode.isFullVisibilityEnabled()) {
                             view[row][col] = view[row][col].hidden();
                         }
@@ -509,6 +517,32 @@ public class Game {
         applyTerrainEffects();
         applyCharacterDamage();
         updateCharacters();
+        checkForAndHandlePartyDeath();
         updateBackground();
+    }
+
+    private void checkForAndHandlePartyDeath() {
+        for (Character character : gameState.charactersInParty()) {
+            if (character.getStatus() != Status.DEAD) {
+                return;
+            }
+        }
+        gameState.initiateResurrection();
+        List<String> resurrectionMessages = this.messages.messageResurrection(gameState.playerName());
+        for (int index = 0; index < resurrectionMessages.size(); index ++) {
+            boolean lastMessage = index == resurrectionMessages.size() - 1;
+            String message = resurrectionMessages.get(index);
+            timer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    informationListeners.forEach(displayListener -> displayListener.actionCompleted(message));
+                    if (lastMessage) {
+                        gameState.completeResurrection();
+                        updateBackground();
+                        updateCharacters();
+                    }
+                }
+            }, 2000L * index);
+        }
     }
 }

@@ -23,7 +23,10 @@
  */
 package com.rarysoft.u4.i18n;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.ResourceBundle;
+import java.util.stream.Collectors;
 
 public class Messages {
     private final ResourceBundle resourceBundle;
@@ -98,5 +101,9 @@ public class Messages {
 
     public String speechCitizenBye() {
         return resourceBundle.getString("speech.citizen.bye");
+    }
+
+    public List<String> messageResurrection(String name) {
+        return Arrays.stream(resourceBundle.getString("message.resurrection").split(",")).map(message -> message.replace("{name}", name)).collect(Collectors.toList());
     }
 }
