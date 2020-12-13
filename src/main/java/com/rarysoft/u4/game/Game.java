@@ -176,6 +176,11 @@ public class Game {
             }
             type(gameState.input());
         }
+        else {
+            if (input == ' ') {
+                pass();
+            }
+        }
     }
 
     private void initializeAnimation() {
@@ -189,14 +194,19 @@ public class Game {
         }, 0, 200);
     }
 
+    private void pass() {
+        actionCompleted(messages.actionPass());
+        afterPlayerMove();
+    }
+
     private void attemptMove(int rowDelta, int colDelta, String actionDirection) {
+        if (isEntirePartyIncapacitated()) {
+            return;
+        }
         if (DevMode.isMapBrowsingEnabled()) {
             gameState.changeRow(rowDelta);
             gameState.changeCol(colDelta);
             actionCompleted("Row: " + gameState.row() + " Col: " + gameState.col());
-            return;
-        }
-        if (gameState.isResurrecting()) {
             return;
         }
         if (gameState.inConversation()) {
@@ -516,33 +526,72 @@ public class Game {
         gameState.postTurnUpdates(random, viewFinder, wayFinder);
         applyTerrainEffects();
         applyCharacterDamage();
+        attemptToAwakenSleepingCharacters();
         updateCharacters();
         checkForAndHandlePartyDeath();
+        checkForAndHandlePartySleeping();
         updateBackground();
     }
 
-    private void checkForAndHandlePartyDeath() {
+    private void attemptToAwakenSleepingCharacters() {
         for (Character character : gameState.charactersInParty()) {
-            if (character.getStatus() != Status.DEAD) {
-                return;
+            if (character.getStatus() == Status.SLEEPING) {
+                if (random.nextInt(100) < Effects.SLEEP_PERCENTAGE) {
+                    character.setStatus(Status.GOOD);
+                }
             }
         }
-        gameState.initiateResurrection();
-        List<String> resurrectionMessages = this.messages.messageResurrection(gameState.playerName());
-        for (int index = 0; index < resurrectionMessages.size(); index ++) {
-            boolean lastMessage = index == resurrectionMessages.size() - 1;
-            String message = resurrectionMessages.get(index);
+    }
+
+    private void checkForAndHandlePartyDeath() {
+        if (isEntirePartyStatus(Status.DEAD)) {
+            gameState.initiateResurrection();
+            List<String> resurrectionMessages = this.messages.messageResurrection(gameState.playerName());
+            for (int index = 0; index < resurrectionMessages.size(); index ++) {
+                boolean lastMessage = index == resurrectionMessages.size() - 1;
+                String message = resurrectionMessages.get(index);
+                timer.schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        informationListeners.forEach(displayListener -> displayListener.actionCompleted(message));
+                        if (lastMessage) {
+                            gameState.completeResurrection();
+                            updateBackground();
+                            updateCharacters();
+                        }
+                    }
+                }, 2000L * index);
+            }
+        }
+    }
+
+    private void checkForAndHandlePartySleeping() {
+        if (isEntirePartyStatus(Status.SLEEPING)) {
             timer.schedule(new TimerTask() {
                 @Override
                 public void run() {
-                    informationListeners.forEach(displayListener -> displayListener.actionCompleted(message));
-                    if (lastMessage) {
-                        gameState.completeResurrection();
-                        updateBackground();
-                        updateCharacters();
-                    }
+                    pass();
+                    checkForAndHandlePartySleeping();
                 }
-            }, 2000L * index);
+            }, 500);
         }
+    }
+
+    private boolean isEntirePartyStatus(Status status) {
+        for (Character character : gameState.charactersInParty()) {
+            if (character.getStatus() != status) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private boolean isEntirePartyIncapacitated() {
+        for (Character character : gameState.charactersInParty()) {
+            if (character.getStatus() != Status.SLEEPING && character.getStatus() != Status.DEAD) {
+                return false;
+            }
+        }
+        return true;
     }
 }

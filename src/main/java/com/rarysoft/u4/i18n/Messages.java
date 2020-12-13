@@ -39,6 +39,10 @@ public class Messages {
         return resourceBundle.getString("window.title");
     }
 
+    public String actionPass() {
+        return resourceBundle.getString("action.pass");
+    }
+
     public String actionMove(String direction) {
         return resourceBundle.getString("action.move").replace("{direction}", direction);
     }
