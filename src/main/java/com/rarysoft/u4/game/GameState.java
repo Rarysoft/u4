@@ -54,7 +54,6 @@ public class GameState {
         this.maps = maps;
         this.map = maps.map(party.getCurrentPartyLocation(), party.getDungeonLevel());
         this.party = party;
-        this.party.setKeys(1);
         this.playMode = PlayMode.NORMAL;
         switchToMap(this.map);
     }
