@@ -201,22 +201,22 @@ public class U5TileMapper implements TileMapper {
             mappedData[Tile.MISSILE.index()] = framesForStillTile(TileEnhancer.enhance(Tile.MISSILE, data[0][0]));
             mappedData[Tile.MAGIC_SPHERE.index()] = framesForStillTile(TileEnhancer.enhance(Tile.MAGIC_SPHERE, data[0][0]));
             mappedData[Tile.ATTACK_FLASH.index()] = framesForStillTile(TileEnhancer.enhance(Tile.ATTACK_FLASH, data[0][0]));
-            mappedData[Tile.GUARD_1.index()] = framesForStillTile(TileEnhancer.enhance(Tile.GUARD_1, data[368][0]));
-            mappedData[Tile.GUARD_2.index()] = framesForStillTile(TileEnhancer.enhance(Tile.GUARD_2, data[369][0]));
-            mappedData[Tile.CITIZEN_1.index()] = framesForStillTile(TileEnhancer.enhance(Tile.CITIZEN_1, data[0][0]));
-            mappedData[Tile.CITIZEN_2.index()] = framesForStillTile(TileEnhancer.enhance(Tile.CITIZEN_2, data[0][0]));
-            mappedData[Tile.SINGING_BARD_1.index()] = framesForStillTile(TileEnhancer.enhance(Tile.SINGING_BARD_1, data[0][0]));
-            mappedData[Tile.SINGING_BARD_2.index()] = framesForStillTile(TileEnhancer.enhance(Tile.SINGING_BARD_2, data[0][0]));
-            mappedData[Tile.JESTER_1.index()] = framesForStillTile(TileEnhancer.enhance(Tile.JESTER_1, data[0][0]));
-            mappedData[Tile.JESTER_2.index()] = framesForStillTile(TileEnhancer.enhance(Tile.JESTER_2, data[0][0]));
-            mappedData[Tile.BEGGAR_1.index()] = framesForStillTile(TileEnhancer.enhance(Tile.BEGGAR_1, data[0][0]));
-            mappedData[Tile.BEGGAR_2.index()] = framesForStillTile(TileEnhancer.enhance(Tile.BEGGAR_2, data[0][0]));
-            mappedData[Tile.CHILD_1.index()] = framesForStillTile(TileEnhancer.enhance(Tile.CHILD_1, data[0][0]));
-            mappedData[Tile.CHILD_2.index()] = framesForStillTile(TileEnhancer.enhance(Tile.CHILD_2, data[0][0]));
-            mappedData[Tile.BULL_1.index()] = framesForStillTile(TileEnhancer.enhance(Tile.BULL_1, data[0][0]));
-            mappedData[Tile.BULL_2.index()] = framesForStillTile(TileEnhancer.enhance(Tile.BULL_2, data[0][0]));
-            mappedData[Tile.LORD_BRITISH_1.index()] = framesForStillTile(TileEnhancer.enhance(Tile.LORD_BRITISH_1, data[0][0]));
-            mappedData[Tile.LORD_BRITISH_2.index()] = framesForStillTile(TileEnhancer.enhance(Tile.LORD_BRITISH_2, data[0][0]));
+            mappedData[Tile.GUARD_1.index()] = framesForRotatingAnimatedTile(TileEnhancer.enhance(Tile.GUARD_1, data[368][0]), TileEnhancer.enhance(Tile.GUARD_1, data[369][0]), TileEnhancer.enhance(Tile.GUARD_1, data[370][0]), TileEnhancer.enhance(Tile.GUARD_1, data[371][0]));
+            mappedData[Tile.GUARD_2.index()] = framesForRotatingAnimatedTile(TileEnhancer.enhance(Tile.GUARD_2, data[369][0]), TileEnhancer.enhance(Tile.GUARD_1, data[370][0]), TileEnhancer.enhance(Tile.GUARD_2, data[371][0]), TileEnhancer.enhance(Tile.GUARD_1, data[368][0]));
+            mappedData[Tile.CITIZEN_1.index()] = framesForRotatingAnimatedTile(TileEnhancer.enhance(Tile.CITIZEN_1, data[336][0]), TileEnhancer.enhance(Tile.CITIZEN_1, data[337][0]), TileEnhancer.enhance(Tile.CITIZEN_1, data[338][0]), TileEnhancer.enhance(Tile.CITIZEN_1, data[339][0]));
+            mappedData[Tile.CITIZEN_2.index()] = framesForRotatingAnimatedTile(TileEnhancer.enhance(Tile.CITIZEN_2, data[340][0]), TileEnhancer.enhance(Tile.CITIZEN_2, data[341][0]), TileEnhancer.enhance(Tile.CITIZEN_2, data[342][0]), TileEnhancer.enhance(Tile.CITIZEN_2, data[343][0]));
+            mappedData[Tile.SINGING_BARD_1.index()] = framesForRotatingAnimatedTile(TileEnhancer.enhance(Tile.SINGING_BARD_1, data[348][0]), TileEnhancer.enhance(Tile.SINGING_BARD_2, data[349][0]), TileEnhancer.enhance(Tile.SINGING_BARD_1, data[350][0]), TileEnhancer.enhance(Tile.SINGING_BARD_2, data[351][0]));
+            mappedData[Tile.SINGING_BARD_2.index()] = framesForRotatingAnimatedTile(TileEnhancer.enhance(Tile.SINGING_BARD_2, data[349][0]), TileEnhancer.enhance(Tile.SINGING_BARD_1, data[350][0]), TileEnhancer.enhance(Tile.SINGING_BARD_2, data[351][0]), TileEnhancer.enhance(Tile.SINGING_BARD_1, data[348][0]));
+            mappedData[Tile.JESTER_1.index()] = framesForRotatingAnimatedTile(TileEnhancer.enhance(Tile.JESTER_1, data[344][0]), TileEnhancer.enhance(Tile.JESTER_2, data[345][0]), TileEnhancer.enhance(Tile.JESTER_1, data[346][0]), TileEnhancer.enhance(Tile.JESTER_2, data[347][0]));
+            mappedData[Tile.JESTER_2.index()] = framesForRotatingAnimatedTile(TileEnhancer.enhance(Tile.JESTER_2, data[345][0]), TileEnhancer.enhance(Tile.JESTER_1, data[346][0]), TileEnhancer.enhance(Tile.JESTER_2, data[347][0]), TileEnhancer.enhance(Tile.JESTER_1, data[344][0]));
+            mappedData[Tile.BEGGAR_1.index()] = framesForRotatingAnimatedTile(TileEnhancer.enhance(Tile.BEGGAR_1, data[364][0]), TileEnhancer.enhance(Tile.BEGGAR_2, data[365][0]), TileEnhancer.enhance(Tile.BEGGAR_1, data[366][0]), TileEnhancer.enhance(Tile.BEGGAR_2, data[367][0]));
+            mappedData[Tile.BEGGAR_2.index()] = framesForRotatingAnimatedTile(TileEnhancer.enhance(Tile.BEGGAR_2, data[365][0]), TileEnhancer.enhance(Tile.BEGGAR_1, data[366][0]), TileEnhancer.enhance(Tile.BEGGAR_1, data[367][0]), TileEnhancer.enhance(Tile.BEGGAR_2, data[364][0]));
+            mappedData[Tile.CHILD_1.index()] = framesForRotatingAnimatedTile(TileEnhancer.enhance(Tile.CHILD_1, data[360][0]), TileEnhancer.enhance(Tile.CHILD_2, data[361][0]), TileEnhancer.enhance(Tile.CHILD_1, data[362][0]), TileEnhancer.enhance(Tile.CHILD_2, data[363][0]));
+            mappedData[Tile.CHILD_2.index()] = framesForRotatingAnimatedTile(TileEnhancer.enhance(Tile.CHILD_2, data[361][0]), TileEnhancer.enhance(Tile.CHILD_1, data[362][0]), TileEnhancer.enhance(Tile.CHILD_2, data[363][0]), TileEnhancer.enhance(Tile.CHILD_1, data[360][0]));
+            mappedData[Tile.BULL_1.index()] = framesForRotatingAnimatedTile(TileEnhancer.enhance(Tile.BULL_1, data[0][0]), TileEnhancer.enhance(Tile.BULL_2, data[0][0]));
+            mappedData[Tile.BULL_2.index()] = framesForRotatingAnimatedTile(TileEnhancer.enhance(Tile.BULL_2, data[0][0]), TileEnhancer.enhance(Tile.BULL_1, data[0][0]));
+            mappedData[Tile.LORD_BRITISH_1.index()] = framesForRotatingAnimatedTile(TileEnhancer.enhance(Tile.LORD_BRITISH_1, data[380][0]), TileEnhancer.enhance(Tile.LORD_BRITISH_2, data[381][0]), TileEnhancer.enhance(Tile.LORD_BRITISH_1, data[382][0]), TileEnhancer.enhance(Tile.LORD_BRITISH_2, data[383][0]));
+            mappedData[Tile.LORD_BRITISH_2.index()] = framesForRotatingAnimatedTile(TileEnhancer.enhance(Tile.LORD_BRITISH_2, data[381][0]), TileEnhancer.enhance(Tile.LORD_BRITISH_1, data[382][0]), TileEnhancer.enhance(Tile.LORD_BRITISH_2, data[383][0]), TileEnhancer.enhance(Tile.LORD_BRITISH_1, data[380][0]));
             mappedData[Tile.A.index()] = framesForStillTile(TileEnhancer.enhance(Tile.A, data[0][0]));
             mappedData[Tile.B.index()] = framesForStillTile(TileEnhancer.enhance(Tile.B, data[0][0]));
             mappedData[Tile.C.index()] = framesForStillTile(TileEnhancer.enhance(Tile.C, data[0][0]));
@@ -243,10 +243,10 @@ public class U5TileMapper implements TileMapper {
             mappedData[Tile.X.index()] = framesForStillTile(TileEnhancer.enhance(Tile.X, data[0][0]));
             mappedData[Tile.Y.index()] = framesForStillTile(TileEnhancer.enhance(Tile.Y, data[0][0]));
             mappedData[Tile.Z.index()] = framesForStillTile(TileEnhancer.enhance(Tile.Z, data[0][0]));
-            mappedData[Tile.SPACE.index()] = framesForStillTile(TileEnhancer.enhance(Tile.SPACE, data[0][0]));
-            mappedData[Tile.RIGHT.index()] = framesForStillTile(TileEnhancer.enhance(Tile.RIGHT, data[0][0]));
-            mappedData[Tile.LEFT.index()] = framesForStillTile(TileEnhancer.enhance(Tile.LEFT, data[0][0]));
-            mappedData[Tile.WINDOW.index()] = framesForStillTile(TileEnhancer.enhance(Tile.WINDOW, data[0][0]));
+            mappedData[Tile.SPACE.index()] = framesForStillTile(TileEnhancer.enhance(Tile.SPACE, data[149][0]));
+            mappedData[Tile.RIGHT.index()] = framesForStillTile(TileEnhancer.enhance(Tile.RIGHT, data[150][0]));
+            mappedData[Tile.LEFT.index()] = framesForStillTile(TileEnhancer.enhance(Tile.LEFT, data[148][0]));
+            mappedData[Tile.WINDOW.index()] = framesForStillTile(TileEnhancer.enhance(Tile.WINDOW, data[75][0]));
             mappedData[Tile.BLANK.index()] = framesForStillTile(TileEnhancer.enhance(Tile.BLANK, data[0][0]));
             mappedData[Tile.BRICK_WALL.index()] = framesForStillTile(TileEnhancer.enhance(Tile.BRICK_WALL, data[79][0]));
             mappedData[Tile.PIRATE_SHIP_WEST.index()] = framesForStillTile(TileEnhancer.enhance(Tile.PIRATE_SHIP_WEST, data[0][0]));
@@ -429,6 +429,10 @@ public class U5TileMapper implements TileMapper {
             frames[frameIndex] = TileEnhancer.animateFlag(data, frameIndex, firstRow, lastRow, firstCol, lastCol, flagColour);
         }
         return frames;
+    }
+
+    private int[][][] framesForRotatingAnimatedTile(int[][] frame1, int[][] frame2) {
+        return framesForRotatingAnimatedTile(frame1, frame2, frame1, frame2);
     }
 
     private int[][][] framesForRotatingAnimatedTile(int[][] frame1, int[][] frame2, int[][] frame3, int[][] frame4) {

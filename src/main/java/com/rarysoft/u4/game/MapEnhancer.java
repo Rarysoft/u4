@@ -26,5 +26,7 @@ package com.rarysoft.u4.game;
 import java.util.Optional;
 
 public interface MapEnhancer {
+    Optional<Tile> replacementTile(Map map, int row, int col);
+
     Optional<Tile> overlayTile(Map map, Tile[][] data, Tile tile, int row, int col);
 }

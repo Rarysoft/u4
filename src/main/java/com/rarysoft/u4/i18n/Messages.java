@@ -75,6 +75,22 @@ public class Messages {
         return resourceBundle.getString("action.response.ignored");
     }
 
+    public String actionResponseLockedHaveKeys() {
+        return resourceBundle.getString("action.response.locked.haveKeys");
+    }
+
+    public String actionResponseLockedHaveNoKeys() {
+        return resourceBundle.getString("action.response.locked.haveNoKeys");
+    }
+
+    public String actionResponseUnlocked() {
+        return resourceBundle.getString("action.response.unlocked");
+    }
+
+    public String actionResponseNotUnlocked() {
+        return resourceBundle.getString("action.response.notUnlocked");
+    }
+
     public String speechCitizenIntro(String who) {
         return resourceBundle.getString("speech.citizen.intro").replace("{who}", who);
     }

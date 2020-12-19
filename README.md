@@ -45,5 +45,4 @@ that is a manual process that I've done locally, but I intend to make it runnabl
 * Include the option to use other tile sets, including a modified Ultima V tile set
 * Render dungeons in 2D style like the rest of the game, exploding each tile into an 11x11 grid
 * Seamlessly integrate dungeon rooms into the rest of the dungeon map
-* Add animation to energy fields similar to water animation
 * more to come...

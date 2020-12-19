@@ -31,6 +31,33 @@ import java.util.Optional;
 
 public class U5MapEnhancer implements MapEnhancer {
     @Override
+    public Optional<Tile> replacementTile(Map map, int row, int col) {
+        switch (map.location()) {
+            case TRINSIC:
+                if (row == 2) {
+                    if (col == 1) {
+                        return Optional.of(Tile.LEFT);
+                    }
+                    if (col == 9) {
+                        return Optional.of(Tile.RIGHT);
+                    }
+                    if (col == 10) {
+                        return Optional.of(Tile.BRICK_WALL);
+                    }
+                }
+                else if (row == 4) {
+                    if (col >= 10 && col <= 12) {
+                        return Optional.of(Tile.BRICK_WALL);
+                    }
+                }
+                break;
+            default:
+                break;
+        }
+        return Optional.empty();
+    }
+
+    @Override
     public Optional<Tile> overlayTile(Map map, Tile[][] data, Tile tile, int row, int col) {
         Tile overlayTile = null;
         if (! (row < 1 || row >= map.height() - 1 || col < 1 || col >= map.width() - 1)) {

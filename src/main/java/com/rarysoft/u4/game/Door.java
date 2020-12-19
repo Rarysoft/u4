@@ -64,10 +64,15 @@ public class Door {
         locked = false;
     }
 
-    public void turnCompleted() {
+    public void turnCompleted(boolean standingInDoorway) {
         if (closeTurnCounter > 0) {
             closeTurnCounter --;
-            if (closeTurnCounter == 0) {
+            if (closeTurnCounter == 0 && ! standingInDoorway) {
+                closed = true;
+            }
+        }
+        else {
+            if (! standingInDoorway) {
                 closed = true;
             }
         }

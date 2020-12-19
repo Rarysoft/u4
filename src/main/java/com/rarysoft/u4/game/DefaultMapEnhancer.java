@@ -27,6 +27,11 @@ import java.util.Optional;
 
 public class DefaultMapEnhancer implements MapEnhancer {
     @Override
+    public Optional<Tile> replacementTile(Map map, int row, int col) {
+        return Optional.empty();
+    }
+
+    @Override
     public Optional<Tile> overlayTile(Map map, Tile[][] data, Tile tile, int row, int col) {
         return Optional.empty();
     }

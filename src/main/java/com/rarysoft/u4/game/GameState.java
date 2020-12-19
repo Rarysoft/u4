@@ -46,12 +46,15 @@ public class GameState {
     private String input;
 
     private Set<Door> doors;
+    private int targetRow;
+    private int targetCol;
 
     public GameState(MapEnhancer mapEnhancer, Maps maps, Party party) {
         this.mapEnhancer = mapEnhancer;
         this.maps = maps;
         this.map = maps.map(party.getCurrentPartyLocation(), party.getDungeonLevel());
         this.party = party;
+        this.party.setKeys(1);
         this.playMode = PlayMode.NORMAL;
         switchToMap(this.map);
     }
@@ -78,6 +81,20 @@ public class GameState {
 
     public void changeCol(int delta) {
         party.setCol(party.getCol() + delta);
+    }
+
+    public PlayMode playMode() {
+        return playMode;
+    }
+
+    public void setPlayMode(PlayMode playMode) {
+        this.playMode = playMode;
+    }
+
+    public void queryUnlockDoor(int row, int col) {
+        playMode = PlayMode.UNLOCK_QUERIED;
+        targetRow = row;
+        targetCol = col;
     }
 
     public boolean inConversation() {
@@ -187,7 +204,7 @@ public class GameState {
         party.setMoves(party.getMoves() + 1);
         updateMoonPhases();
         map.movePeople(new NpcMover(random, viewFinder, wayFinder), party.getRow(), party.getCol(), conversingPerson);
-        doors.forEach(Door::turnCompleted);
+        doors.forEach(door -> door.turnCompleted(door.getRow() == party.getRow() && door.getCol() == party.getCol()));
     }
 
     public void startConversation(Dialog dialog, Person person) {
@@ -226,8 +243,17 @@ public class GameState {
         input = null;
     }
 
+    public boolean hasKey() {
+        return party.getKeys() > 0;
+    }
+
     public void openDoor(int row, int col) {
         doors.stream().filter(door -> door.getRow() == row && door.getCol() == col).findAny().ifPresent(door -> door.open(5));
+    }
+
+    public void unlockDoor() {
+        doors.stream().filter(door -> door.getRow() == targetRow && door.getCol() == targetCol).findAny().ifPresent(Door::unlock);
+        party.setKeys(party.getKeys() - 1);
     }
 
     public void adjustKarma(Virtue virtue, int delta) {
@@ -310,10 +336,13 @@ public class GameState {
     }
 
     private RenderedTile renderedTile(Tile[][] data, Tile tile, int row, int col) {
-        Tile tileToRender = tile;
+        Tile tileToRender = mapEnhancer.replacementTile(map, row, col).orElse(tile);
         if (tile == Tile.UNLOCKED_DOOR || tile == Tile.LOCKED_DOOR) {
             if (isDoorOpen(row, col)) {
                 tileToRender = Tile.BRICK_FLOOR;
+            }
+            else if (isDoorUnlocked(row, col)) {
+                tileToRender = Tile.UNLOCKED_DOOR;
             }
         }
         Tile overlayTile = mapEnhancer.overlayTile(map, data, tileToRender, row, col).orElse(null);
@@ -342,6 +371,10 @@ public class GameState {
 
     private boolean isDoorOpen(int row, int col) {
         return doors.stream().filter(door -> door.getRow() == row && door.getCol() == col).map(Door::isClosed).anyMatch(doorIsClosed -> ! doorIsClosed);
+    }
+
+    private boolean isDoorUnlocked(int row, int col) {
+        return doors.stream().filter(door -> door.getRow() == row && door.getCol() == col).map(Door::isLocked).anyMatch(doorIsLocked -> ! doorIsLocked);
     }
 
     private Tile guessGroundTile(Tile[][] background, int row, int col) {

@@ -176,6 +176,16 @@ public class Game {
             }
             type(gameState.input());
         }
+        else if (gameState.playMode() == PlayMode.UNLOCK_QUERIED) {
+            if (input == 'y') {
+                gameState.unlockDoor();
+                actionCompleted(messages.actionResponseUnlocked());
+            }
+            else {
+                actionCompleted(messages.actionResponseNotUnlocked());
+            }
+            gameState.setPlayMode(PlayMode.NORMAL);
+        }
         else {
             if (input == ' ') {
                 pass();
@@ -225,6 +235,16 @@ public class Game {
                 if (renderedTile.baseTiles().contains(Tile.UNLOCKED_DOOR)) {
                     gameState.openDoor(gameState.row() + rowDelta, gameState.col() + colDelta);
                     actionCompleted(messages.actionOpen(actionDirection));
+                }
+                else if (renderedTile.baseTiles().contains(Tile.LOCKED_DOOR)) {
+                    if (gameState.hasKey()) {
+                        prompt(messages.actionResponseLockedHaveKeys());
+                        gameState.queryUnlockDoor(gameState.row() + rowDelta, gameState.col() + colDelta);
+                        gameState.setPlayMode(PlayMode.UNLOCK_QUERIED);
+                    }
+                    else {
+                        actionCompleted(messages.actionResponseLockedHaveNoKeys());
+                    }
                 }
                 else if (renderedTile.canTalkThrough()) {
                     Optional<Person> adjacentPerson = gameState.personAt(gameState.row() + rowDelta + rowDelta, gameState.col() + colDelta + colDelta);
@@ -352,6 +372,10 @@ public class Game {
         spokenTo(input + "\n\n" + response + "\n\n" + (question == null ? messages.speechCitizenPrompt() : question));
     }
 
+    private void prompt(String question) {
+        spokenTo(question);
+    }
+
     private void abandonConversation() {
         Conversation conversation = new Conversation(gameState.dialog(), gameState.playerName(), 0, 0, 0, 0, 0, 0, 0, 0).forInput("BYE");
         conversation.response().ifPresent(this::spokenTo);
@@ -396,7 +420,7 @@ public class Game {
 
     private void applyFire() {
         // I don't know the actual algorithm used in the original U4, so this will have to suffice.
-        // Perhaps character level and/or stats should play into this in some way.....
+        // Perhaps character level and/or stats and armour should play into this in some way.....
         for (Character character : gameState.charactersInParty()) {
             int damage = (random.nextInt(Effects.FIRE_DAMAGE_MAXIMUM - Effects.FIRE_DAMAGE_MINIMUM) + Effects.FIRE_DAMAGE_MINIMUM) + 1;
             applyDamage(character, damage);
