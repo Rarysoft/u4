@@ -1,7 +1,7 @@
 package com.rarysoft.u4.game;
 
 import com.rarysoft.u4.game.npc.Person;
-import com.rarysoft.u4.game.model.Location;
+import com.rarysoft.u4.game.party.Location;
 
 import java.io.IOException;
 import java.io.InputStream;

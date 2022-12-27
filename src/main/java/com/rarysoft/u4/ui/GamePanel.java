@@ -23,15 +23,14 @@
  */
 package com.rarysoft.u4.ui;
 
+import com.rarysoft.u4.game.RenderedTile;
 import com.rarysoft.u4.game.Tiles;
-import com.rarysoft.u4.game.event.Event;
-import com.rarysoft.u4.game.event.EventListener;
-import com.rarysoft.u4.game.state.GameState;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.List;
 
-public class GamePanel extends JPanel implements EventListener {
+public class GamePanel extends JPanel implements BorderProvider, GameProvider, StatisticsProvider, CommunicationProvider {
     private final GameViewRenderer gameViewRenderer;
 
     public GamePanel(GameViewRenderer gameViewRenderer) {
@@ -41,31 +40,50 @@ public class GamePanel extends JPanel implements EventListener {
     }
 
     @Override
+    public void showGameView(RenderedTile[][] background, int animationCycle) {
+        gameViewRenderer.setBackground(background);
+        gameViewRenderer.setAnimationCycle(animationCycle);
+        this.getParent().repaint();
+    }
+
+    @Override
+    public void showText(List<String> textLines) {
+        gameViewRenderer.setTextLines(textLines);
+        gameViewRenderer.setAllowInput(false);
+        this.getParent().repaint();
+    }
+
+    @Override
+    public void showTextAndAwaitResponse(List<String> textLines) {
+        gameViewRenderer.setTextLines(textLines);
+        gameViewRenderer.setAllowInput(true);
+        this.getParent().repaint();
+    }
+
+    @Override
+    public void showInput(String input) {
+        gameViewRenderer.setInputLine(input);
+        this.getParent().repaint();
+    }
+
+    @Override
+    public void drawBorder(int phaseOfTrammel, int phaseOfFelucca, int windDirection) {
+        gameViewRenderer.setPhaseOfTrammel(phaseOfTrammel);
+        gameViewRenderer.setPhaseOfFelucca(phaseOfFelucca);
+        gameViewRenderer.setWindDirection(windDirection);
+        this.getParent().repaint();
+    }
+
+    @Override
+    public void showStatistics(List<String> textLines) {
+        gameViewRenderer.setStatistics(textLines);
+        this.getParent().repaint();
+    }
+
+    @Override
     public void paint(Graphics graphics) {
         super.paint(graphics);
         Dimension windowSize = this.getParent().getSize();
         gameViewRenderer.drawGameView(graphics, windowSize.width, windowSize.height);
-    }
-
-    @Override
-    public void eventCompleted(Event event, GameState state) {
-        switch (event) {
-            case DISPLAY_UPDATED:
-                gameViewRenderer.setBackground(state.getMapView());
-                gameViewRenderer.setAnimationCycle(state.getCounter() % 16);
-                gameViewRenderer.setPhaseOfTrammel(state.getPhaseOfTrammel());
-                gameViewRenderer.setPhaseOfFelucca(state.getPhaseOfFelucca());
-                gameViewRenderer.setWindDirection(state.getWinds());
-                break;
-            case INFORMATION_UPDATED:
-                gameViewRenderer.setStatistics(state.getMessages());
-                break;
-            case COMMUNICATION_UPDATED:
-                gameViewRenderer.setTextLines(state.getMessages());
-                gameViewRenderer.setAllowInput(state.isRespondingToPerson());
-                gameViewRenderer.setInputLine(state.getInput());
-                break;
-        }
-        this.getParent().repaint();
     }
 }

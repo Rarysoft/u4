@@ -21,26 +21,38 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.rarysoft.u4.ui;
+package com.rarysoft.u4.game.party;
 
-import com.rarysoft.u4.game.Game;
-import com.rarysoft.u4.ui.graphics.Charset;
-import com.rarysoft.u4.ui.graphics.ExtendedCharset;
-import com.rarysoft.u4.game.Tiles;
+public enum Transportation {
+    SHIP_WEST,
+    SHIP_NORTH,
+    SHIP_EAST,
+    SHIP_SOUTH,
+    HORSE_WEST,
+    HORSE_EAST,
+    BALLOON,
+    ON_FOOT;
 
-import javax.swing.*;
-import java.awt.*;
-
-public class UiBuilder {
-    public void buildGamePanel(JFrame gameWindow, Game game, Tiles tiles, Charset charset) {
-        GameViewRenderer gameViewRenderer = new GameViewRenderer(tiles, charset, new ExtendedCharset());
-        GamePanel gamePanel = new GamePanel(gameViewRenderer);
-        gameWindow.add(gamePanel, BorderLayout.CENTER);
-        game.addInformationListener(new CommunicationListener(gamePanel, gamePanel, gamePanel));
-        game.addViewListener(new GameListener(gamePanel));
-    }
-
-    public JFrame buildGameWindow(String title) {
-        return new JFrame(title);
+    public static Transportation forCode(int code) {
+        switch (code) {
+            case 0x10:
+                return SHIP_WEST;
+            case 0x11:
+                return SHIP_NORTH;
+            case 0x12:
+                return SHIP_EAST;
+            case 0x13:
+                return SHIP_SOUTH;
+            case 0x14:
+                return HORSE_WEST;
+            case 0x15:
+                return HORSE_EAST;
+            case 0x18:
+                return BALLOON;
+            case 0x1F:
+                return ON_FOOT;
+            default:
+                throw new RuntimeException("Unknown transportation: " + code);
+        }
     }
 }

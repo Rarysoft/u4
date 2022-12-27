@@ -23,7 +23,7 @@
  */
 package com.rarysoft.u4.game;
 
-import com.rarysoft.u4.game.model.Character;
+import com.rarysoft.u4.game.party.Character;
 
 import java.io.IOException;
 import java.io.InputStream;

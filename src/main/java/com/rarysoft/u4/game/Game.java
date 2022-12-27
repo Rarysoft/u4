@@ -23,36 +23,29 @@
  */
 package com.rarysoft.u4.game;
 
-import com.rarysoft.u4.game.event.Event;
-import com.rarysoft.u4.game.model.Character;
-import com.rarysoft.u4.game.model.Status;
+import com.rarysoft.u4.game.party.Character;
+import com.rarysoft.u4.game.party.Status;
 import com.rarysoft.u4.game.physics.ViewFinder;
 import com.rarysoft.u4.game.physics.WayFinder;
-import com.rarysoft.u4.game.state.GameState;
-import com.rarysoft.u4.game.state.StateManager;
 import com.rarysoft.u4.i18n.Messages;
 import com.rarysoft.u4.game.npc.Conversation;
 import com.rarysoft.u4.game.npc.Dialog;
 import com.rarysoft.u4.game.npc.Dialogs;
 import com.rarysoft.u4.game.npc.Person;
-import com.rarysoft.u4.game.model.Location;
+import com.rarysoft.u4.game.party.Location;
 
 import java.util.*;
 
 public class Game {
     private static final int VIEW_RADIUS = 9;
 
-    private final StateManager stateManager;
-
     private final Messages messages;
-
-    private final Maps maps;
-
-    private final MapEnhancer mapEnhancer;
 
     private final Dialogs dialogs;
 
     private final Set<InformationListener> informationListeners;
+
+    private final Set<ViewListener> viewListeners;
 
     private final Random random;
 
@@ -62,15 +55,15 @@ public class Game {
 
     private final Timer timer;
 
-    private Map map;
+    private GameState gameState;
 
-    public Game(StateManager stateManager, Messages messages, Maps maps, MapEnhancer mapEnhancer, Dialogs dialogs, Random random, ViewFinder viewFinder, WayFinder wayFinder) {
-        this.stateManager = stateManager;
+    private int animationCycle;
+
+    public Game(Messages messages, Dialogs dialogs, Random random, ViewFinder viewFinder, WayFinder wayFinder) {
         this.messages = messages;
-        this.maps = maps;
-        this.mapEnhancer = mapEnhancer;
         this.dialogs = dialogs;
         this.informationListeners = new HashSet<>();
+        this.viewListeners = new HashSet<>();
         this.random = random;
         this.viewFinder = viewFinder;
         this.wayFinder = wayFinder;
@@ -81,15 +74,18 @@ public class Game {
         informationListeners.add(informationListener);
     }
 
+    public void addViewListener(ViewListener viewListener) {
+        viewListeners.add(viewListener);
+    }
+
     @Override
     public String toString() {
         return super.toString();
     }
 
-    public void start() {
-        this.map = maps.map(stateManager.gameState().getCurrentPartyLocation(), stateManager.gameState().getDungeonLevel());
-        switchToMap(this.map);
-        initializeCounter();
+    public void start(GameState gameState) {
+        this.gameState = gameState;
+        initializeAnimation();
         initializeDisplay();
         updateBackground();
     }
@@ -140,53 +136,55 @@ public class Game {
     }
 
     public void onUserInput(char input) {
-        GameState gameState = stateManager.gameState();
-        if (gameState.getPersonConversingWith() != null) {
-            if (input == '\n' || gameState.isRespondingToPerson()) {
-                Dialog dialog = gameState.getDialog();
+        if (gameState.inConversation()) {
+            if (input == '\n' || gameState.inConversationRespondingYesOrNo()) {
+                Dialog dialog = gameState.dialog();
                 Conversation conversation;
-                if (gameState.isRespondingToPerson()) {
-                    stateManager.changeState(state -> state.withAdditionalInput(input).withNotRespondingToPerson(), Event.COMMUNICATION_UPDATED);
-                    conversation = new Conversation(dialog, gameState.getPlayer0().getName(), 0, 0, 0, 0, 0, 0, 0, 0).forResponse(gameState.getInput());
+                if (gameState.inConversationRespondingYesOrNo()) {
+                    gameState.addToOngoingInput(input);
+                    conversation = new Conversation(dialog, gameState.playerName(), 0, 0, 0, 0, 0, 0, 0, 0).forResponse(gameState.input());
+                    gameState.queryAnswered();
                 }
                 else {
-                    conversation = new Conversation(dialog, gameState.getPlayer0().getName(), 0, 0, 0, 0, 0, 0, 0, 0).forInput(gameState.getInput());
+                    conversation = new Conversation(dialog, gameState.playerName(), 0, 0, 0, 0, 0, 0, 0, 0).forInput(gameState.input());
                 }
                 conversation.response().ifPresent(response -> {
                     String question = conversation.question().orElse(null);
                     if (conversation.endConversation()) {
-                        say(gameState.getInput(), response);
+                        say(gameState.input(), response);
                         endConversation();
                     }
                     else {
-                        sayAndPrompt(gameState.getInput(), response, question);
+                        sayAndPrompt(gameState.input(), response, question);
                         if (conversation.question().isPresent()) {
-                            stateManager.changeState(GameState::withRespondingToPerson, Event.NONE);
+                            gameState.playerQueried();
                         }
                     }
                 });
-                stateManager.changeState(state -> state.withHumilityChanged(conversation.humilityDelta()), Event.NONE);
+                gameState.adjustKarma(Virtue.HUMILITY, conversation.humilityDelta());
                 if (conversation.healPlayer()) {
                     // TODO heal the party
                 }
-                stateManager.changeState(GameState::withNoInput, Event.NONE);
+                gameState.resetInput();
                 afterPlayerMove();
             }
             else if (input == '\b') {
-                stateManager.changeState(GameState::withoutPreviousAdditionalInput, Event.COMMUNICATION_UPDATED);
+                gameState.revertLastInput();
             }
             else {
-                stateManager.changeState(state -> state.withAdditionalInput(input), Event.COMMUNICATION_UPDATED);
+                gameState.addToOngoingInput(input);
             }
+            type(gameState.input());
         }
-        else if (stateManager.gameState().getDoorInteractingWith() != null) {
+        else if (gameState.playMode() == PlayMode.UNLOCK_QUERIED) {
             if (input == 'y') {
-                stateManager.changeState(state -> state.withDoorInteractingWithUnlocked().withNoDoorInteractingWith().withKeysDecremented(), Event.DISPLAY_UPDATED);
-                stateManager.changeState(state -> state.withMessage(messages.actionResponseUnlocked()), Event.COMMUNICATION_UPDATED);
+                gameState.unlockDoor();
+                actionCompleted(messages.actionResponseUnlocked());
             }
             else {
-                stateManager.changeState(state -> state.withMessage(messages.actionResponseNotUnlocked()).withNoDoorInteractingWith(), Event.COMMUNICATION_UPDATED);
+                actionCompleted(messages.actionResponseNotUnlocked());
             }
+            gameState.setPlayMode(PlayMode.NORMAL);
         }
         else {
             if (input == ' ') {
@@ -195,106 +193,19 @@ public class Game {
         }
     }
 
-    private void initializeCounter() {
+    private void initializeAnimation() {
+        animationCycle = 0;
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                stateManager.changeState(GameState::withCounterIncremented, Event.DISPLAY_UPDATED);
+                animationCycle = animationCycle + 1 < 16 ? animationCycle + 1 : 0;
+                updateBackground();
             }
         }, 0, 200);
     }
 
-    private void switchToMap(Map map) {
-        this.map = map;
-        stateManager.changeState(state -> state.withCurrentPartyLocation(map.location()).withDungeonLevel(map.level()), Event.DISPLAY_UPDATED);
-        prepareDoors(map);
-    }
-
-    private RenderedTile renderedTile(Tile[][] data, Tile tile, int row, int col) {
-        Tile tileToRender = mapEnhancer.replacementTile(map, row, col).orElse(tile);
-        if (tile == Tile.UNLOCKED_DOOR || tile == Tile.LOCKED_DOOR) {
-            if (isDoorOpen(row, col)) {
-                tileToRender = Tile.BRICK_FLOOR;
-            }
-            else if (isDoorUnlocked(row, col)) {
-                tileToRender = Tile.UNLOCKED_DOOR;
-            }
-        }
-        Tile overlayTile = mapEnhancer.overlayTile(map, data, tileToRender, row, col).orElse(null);
-        Tile groundTile = (tileToRender != null && tileToRender.isRenderedAtopNearbyGroundTile()) ? guessGroundTile(data, row, col) : null;
-        Tile personTile = (row == stateManager.gameState().getRow() && col == stateManager.gameState().getCol()) ? Tile.AVATAR : map.personAt(row, col).map(Person::tileIndex).map(Tile::forIndex).orElse(null);
-        return new RenderedTile().withBaseTile(groundTile).withBaseTile(tileToRender).withBaseTile(overlayTile).withTransientTile(personTile);
-    }
-
-    private void prepareDoors(Map map) {
-        Set<Door> doors = new HashSet<>();
-        if (map.location() == Location.SURFACE) {
-            // there are no doors in the surface map
-            return;
-        }
-        Tile[][] tiles = map.data();
-        for (int row = 0; row < tiles.length; row ++) {
-            for (int col = 0; col < tiles[row].length; col ++) {
-                Tile tile = tiles[row][col];
-                if (tile == Tile.UNLOCKED_DOOR || tile == Tile.LOCKED_DOOR) {
-                    Door door = new Door(row, col, true, tile == Tile.LOCKED_DOOR);
-                    doors.add(door);
-                }
-            }
-        }
-        stateManager.changeState(GameState::withNoDoors, Event.NONE);
-    }
-
-    private boolean isDoorOpen(int row, int col) {
-        return stateManager.gameState().getDoors().stream().filter(door -> door.getRow() == row && door.getCol() == col).map(Door::isClosed).anyMatch(doorIsClosed -> ! doorIsClosed);
-    }
-
-    private boolean isDoorUnlocked(int row, int col) {
-        return stateManager.gameState().getDoors().stream().filter(door -> door.getRow() == row && door.getCol() == col).map(Door::isLocked).anyMatch(doorIsLocked -> ! doorIsLocked);
-    }
-
-    private Tile guessGroundTile(Tile[][] background, int row, int col) {
-        java.util.List<Tile> groundTiles = new ArrayList<>();
-        List<Integer> counts = new ArrayList<>();
-        for (int surroundingRow = (row >= 0 ? row - 1 : row); surroundingRow < (row + 1 < background.length ? row + 1 : row) + 1; surroundingRow ++) {
-            for (int surroundingCol = (col >= 0 ? col - 1 : col); surroundingCol < (col + 1 < background[surroundingRow].length ? col + 1 : col) + 1; surroundingCol ++) {
-                Tile tile = Optional.ofNullable(background[surroundingRow][surroundingCol]).orElse(Tile.GRASSLANDS);
-                if (tile.isGroundTile()) {
-                    int tileIndex = groundTiles.indexOf(tile);
-                    if (tileIndex > -1) {
-                        counts.set(tileIndex, counts.get(tileIndex) + 1);
-                    }
-                    else {
-                        groundTiles.add(tile);
-                        counts.add(1);
-                    }
-                }
-            }
-        }
-        int highestCount = counts.stream().mapToInt(count -> count).max().orElse(0);
-        if (highestCount == 0) {
-            return null;
-        }
-        return groundTiles.get(counts.indexOf(highestCount));
-    }
-
-    private void updateMoonPhases() {
-        if (stateManager.gameState().getMoves() % Effects.TRAMMEL_CYCLE_LENGTH == 0) {
-            stateManager.changeState(state -> state.withPhaseOfTrammelCycled(8), Event.DISPLAY_UPDATED);
-        }
-        if (stateManager.gameState().getMoves() % Effects.FELUCCA_CYCLE_LENGTH == 0) {
-            stateManager.changeState(state -> state.withPhaseOfFeluccaCycled(8), Event.DISPLAY_UPDATED);
-        }
-    }
-
-    private void updateWinds() {
-        if (random.nextInt(100) < Effects.WIND_CHANGE_PERCENTAGE) {
-            stateManager.changeState(state -> state.withWinds(random.nextInt(8)), Event.DISPLAY_UPDATED);
-        }
-    }
-
     private void pass() {
-        stateManager.changeState(state -> state.withMessage(messages.actionPass()).withNoDoorInteractingWith(), Event.COMMUNICATION_UPDATED);
+        actionCompleted(messages.actionPass());
         afterPlayerMove();
     }
 
@@ -303,42 +214,44 @@ public class Game {
             return;
         }
         if (DevMode.isMapBrowsingEnabled()) {
-            stateManager.changeState(state -> state.withRowAndColChanged(rowDelta, colDelta), Event.DISPLAY_UPDATED);
-            actionCompleted("Row: " + stateManager.gameState().getRow() + " Col: " + stateManager.gameState().getCol());
+            gameState.changeRow(rowDelta);
+            gameState.changeCol(colDelta);
+            actionCompleted("Row: " + gameState.row() + " Col: " + gameState.col());
             return;
         }
-        if (stateManager.gameState().getPersonConversingWith() != null) {
+        if (gameState.inConversation()) {
             abandonConversation();
         }
-        GameState gameState = stateManager.gameState();
-        int targetRow = gameState.getRow() + rowDelta;
-        int targetCol = gameState.getCol() + colDelta;
-        RenderedTile renderedTile = stateManager.gameState().getMapView()[targetRow][targetCol];
-        Optional<Person> npc = map.personAt(targetRow, targetCol);
+        RenderedTile renderedTile = gameState.tileAt(gameState.row() + rowDelta, gameState.col() + colDelta);
+        Optional<Person> npc = gameState.personAt(gameState.row() + rowDelta, gameState.col() + colDelta);
         if (renderedTile.baseTiles().isEmpty()) {
             actionCompleted(messages.actionMove(actionDirection));
-            returnToSurface();
+            gameState.returnToSurface();
             actionCompleted(messages.actionExit());
             afterPlayerMove();
         }
         else {
             if (renderedTile.walkability() == 0) {
-                Optional<Door> door = stateManager.gameState().getDoors().stream().filter(potentialDoor -> potentialDoor.getRow() == targetRow && potentialDoor.getCol() == targetCol).findAny();
                 if (renderedTile.baseTiles().contains(Tile.UNLOCKED_DOOR)) {
-                    door.ifPresent(doorToOpen -> doorToOpen.open(5));   // TODO: make this an normal state change
-                    stateManager.changeState(state -> state.withMessage(messages.actionOpen(actionDirection)), Event.COMMUNICATION_UPDATED);
+                    gameState.openDoor(gameState.row() + rowDelta, gameState.col() + colDelta);
+                    actionCompleted(messages.actionOpen(actionDirection));
                 }
                 else if (renderedTile.baseTiles().contains(Tile.LOCKED_DOOR)) {
-                    if (stateManager.gameState().getKeys() > 0) {
-                        stateManager.changeState(state -> state.withDoorInteractingWith(door.orElse(null)).withRespondingToPerson().withMessage(messages.actionResponseLockedHaveKeys()), Event.COMMUNICATION_UPDATED);
+                    if (gameState.hasKey()) {
+                        prompt(messages.actionResponseLockedHaveKeys());
+                        gameState.queryUnlockDoor(gameState.row() + rowDelta, gameState.col() + colDelta);
+                        gameState.setPlayMode(PlayMode.UNLOCK_QUERIED);
                     }
                     else {
-                        stateManager.changeState(state -> state.withMessage(messages.actionResponseLockedHaveNoKeys()), Event.COMMUNICATION_UPDATED);
+                        actionCompleted(messages.actionResponseLockedHaveNoKeys());
                     }
                 }
                 else if (renderedTile.canTalkThrough()) {
-                    Optional<Person> adjacentPerson = map.personAt(targetRow + rowDelta, targetCol + colDelta);
-                    adjacentPerson.ifPresent(person -> attemptConversationWith(person, actionDirection));
+                    Optional<Person> adjacentPerson = gameState.personAt(gameState.row() + rowDelta + rowDelta, gameState.col() + colDelta + colDelta);
+                    adjacentPerson.ifPresent(person -> {
+                        actionCompleted(messages.actionTalk(actionDirection));
+                        attemptConversationWith(person);
+                    });
                 }
                 else {
                     actionCompleted(messages.actionMove(actionDirection));
@@ -348,7 +261,7 @@ public class Game {
                 return;
             }
             // Special case: don't allow northward exit from LB's castle
-            if (rowDelta == -1 && map.at(stateManager.gameState().getRow(), stateManager.gameState().getCol()) == Tile.CASTLE_BRITANNIA_ENTRANCE) {
+            if (rowDelta == -1 && gameState.tileAt(gameState.row(), gameState.col()).baseTiles().contains(Tile.CASTLE_BRITANNIA_ENTRANCE)) {
                 actionCompleted(messages.actionMove(actionDirection));
                 moveBlocked();
                 afterPlayerMove();
@@ -363,7 +276,7 @@ public class Game {
             }
             if (npc.isPresent()) {
                 actionCompleted(messages.actionTalk(actionDirection));
-                attemptConversationWith(npc.get(), actionDirection);
+                attemptConversationWith(npc.get());
                 afterPlayerMove();
                 return;
             }
@@ -373,11 +286,12 @@ public class Game {
                 afterPlayerMove();
                 return;
             }
-            stateManager.changeState(state -> state.withRowAndCol(targetRow, targetCol), Event.DISPLAY_UPDATED);
+            gameState.changeRow(rowDelta);
+            gameState.changeCol(colDelta);
             if (renderedTile.isPortal()) {
                 actionCompleted(messages.actionMove(actionDirection));
                 enterPortal();
-                actionCompleted(messages.actionEnter(stateManager.gameState().getCurrentPartyLocation().displayName()));
+                actionCompleted(messages.actionEnter(gameState.location().displayName()));
                 afterPlayerMove();
             }
             else {
@@ -387,14 +301,13 @@ public class Game {
         }
     }
 
-    private void attemptConversationWith(Person person, String actionDirection) {
-        stateManager.changeState(state -> state.withMessage(messages.actionTalk(actionDirection)), Event.COMMUNICATION_UPDATED);
-        Optional<Dialog> possibleConversation = dialogs.findCharacterConversationFor(stateManager.gameState().getCurrentPartyLocation().code(), person);
+    private void attemptConversationWith(Person person) {
+        Optional<Dialog> possibleConversation = dialogs.findCharacterConversationFor(gameState.location().code(), person);
         if (possibleConversation.isPresent()) {
             Dialog dialog = possibleConversation.get();
-            Conversation conversation = new Conversation(dialog, stateManager.gameState().getPlayer0().getName(), 0, 0, 0, 0, 0, 0, 0, 0);
+            Conversation conversation = new Conversation(dialog, gameState.playerName(), 0, 0, 0, 0, 0, 0, 0, 0);
             conversation.response().ifPresent(response -> {
-                stateManager.changeState(state -> state.withDialog(dialog).withPersonConversingWith(person).withNoInput(), Event.COMMUNICATION_UPDATED);
+                gameState.startConversation(dialog, person);
                 spokenTo("\n" + response + "\n\n" + messages.speechCitizenPrompt());
             });
             if (! conversation.response().isPresent()) {
@@ -407,18 +320,13 @@ public class Game {
         afterPlayerMove();
     }
 
-    private void returnToSurface() {
-        map = maps.surface();
-        stateManager.changeState(state -> state.withCurrentPartyLocation(Location.SURFACE).withRowAndColFromDungeonRowAndCol(), Event.DISPLAY_UPDATED);
-    }
-
     private void initializeDisplay() {
         informationListeners.forEach(InformationListener::initialize);
         updateCharacters();
     }
 
     private void updateCharacters() {
-        List<Character> characters = charactersInParty();
+        List<Character> characters = gameState.charactersInParty();
         for (int index = 0; index < characters.size(); index ++) {
             Character character = characters.get(index);
             int characterIndex = index;
@@ -426,45 +334,14 @@ public class Game {
         }
     }
 
-    private List<Character> charactersInParty() {
-        List<Character> charactersInParty = new ArrayList<>();
-        for (int index = 0; index < stateManager.gameState().getNumberOfCharacters(); index ++) {
-            charactersInParty.add(
-                    index == 0 ? stateManager.gameState().getPlayer0() :
-                            index == 1 ? stateManager.gameState().getPlayer1() :
-                                    index == 2 ? stateManager.gameState().getPlayer2() :
-                                            index == 3 ? stateManager.gameState().getPlayer3() :
-                                                    index == 4 ? stateManager.gameState().getPlayer4() :
-                                                            index == 5 ? stateManager.gameState().getPlayer5() :
-                                                                    index == 6 ? stateManager.gameState().getPlayer6() :
-                                                                            stateManager.gameState().getPlayer7()
-            );
-        }
-        return charactersInParty;
-    }
-
     private void updateBackground() {
-        stateManager.changeState(state -> state.withMapView(determinePlayerView(mapView())), Event.DISPLAY_UPDATED);
-    }
-
-    private RenderedTile[][] mapView() {
-        int row = stateManager.gameState().getRow();
-        int col = stateManager.gameState().getCol();
-        Area<Tile> mapView = viewFinder.view(map.data(), map.surroundingTile(), VIEW_RADIUS, row, col);
-        RenderedTile[][] view = new RenderedTile[mapView.rows()][mapView.cols()];
-        for (int viewRow = 0; viewRow < mapView.rows(); viewRow ++) {
-            for (int viewCol = 0; viewCol < mapView.cols(); viewCol ++) {
-                int mapRow = row - VIEW_RADIUS + viewRow;
-                int mapCol = col - VIEW_RADIUS + viewCol;
-                RenderedTile renderedTile = renderedTile(map.data(), mapView.get(viewRow, viewCol), mapRow, mapCol);
-                view[viewRow][viewCol] = renderedTile;
-            }
-        }
-        return view;
+        RenderedTile[][] playerView = determinePlayerView(gameState.mapView(viewFinder, VIEW_RADIUS));
+        viewListeners.forEach(viewListener -> viewListener.backgroundUpdated(playerView, animationCycle));
+        informationListeners.forEach(informationListener -> informationListener.environmentUpdated(gameState.phaseOfTrammel(), gameState.phaseOfFelucca(), gameState.windDirection()));
     }
 
     private void actionCompleted(String message) {
-        stateManager.changeState(state -> state.withMessage(message), Event.COMMUNICATION_UPDATED);
+        informationListeners.forEach(displayListener -> displayListener.actionCompleted(message));
     }
 
     private void moveBlocked() {
@@ -500,13 +377,13 @@ public class Game {
     }
 
     private void abandonConversation() {
-        Conversation conversation = new Conversation(stateManager.gameState().getDialog(), stateManager.gameState().getPlayer0().getName(), 0, 0, 0, 0, 0, 0, 0, 0).forInput("BYE");
+        Conversation conversation = new Conversation(gameState.dialog(), gameState.playerName(), 0, 0, 0, 0, 0, 0, 0, 0).forInput("BYE");
         conversation.response().ifPresent(this::spokenTo);
         endConversation();
     }
 
     private void endConversation() {
-        stateManager.changeState(state -> state.withNoDialog().withNoPersonConversingWith().withNoInput(), Event.COMMUNICATION_UPDATED);
+        gameState.endConversation();
     }
 
     private boolean allowWalkTo(RenderedTile tile) {
@@ -520,9 +397,9 @@ public class Game {
         // I don't know the actual algorithm used in the original U4, so this will have to suffice.
         // Each character will have a 20% chance of being poisoned.
         // Perhaps character level and/or stats should play into this in some way.....
-        for (Character character : charactersInParty()) {
+        for (Character character : gameState.charactersInParty()) {
             if (character.getStatus() == Status.GOOD) {
-                if (random.nextInt(100) < Effects.POISON_PERCENTAGE) {
+                if (random.nextInt(100) < 20) {
                     character.setStatus(Status.POISONED);
                 }
             }
@@ -532,7 +409,7 @@ public class Game {
     private void applySleep() {
         // I don't know the actual algorithm used in the original U4, so this will have to suffice.
         // Perhaps character level and/or stats should play into this in some way.....
-        for (Character character : charactersInParty()) {
+        for (Character character : gameState.charactersInParty()) {
             if (character.getStatus() == Status.GOOD) {
                 if (random.nextInt(100) < Effects.SLEEP_PERCENTAGE) {
                     character.setStatus(Status.SLEEPING);
@@ -544,7 +421,7 @@ public class Game {
     private void applyFire() {
         // I don't know the actual algorithm used in the original U4, so this will have to suffice.
         // Perhaps character level and/or stats and armour should play into this in some way.....
-        for (Character character : charactersInParty()) {
+        for (Character character : gameState.charactersInParty()) {
             int damage = (random.nextInt(Effects.FIRE_DAMAGE_MAXIMUM - Effects.FIRE_DAMAGE_MINIMUM) + Effects.FIRE_DAMAGE_MINIMUM) + 1;
             applyDamage(character, damage);
         }
@@ -563,7 +440,7 @@ public class Game {
     }
 
     private void applyTerrainEffects() {
-        RenderedTile renderedTile = stateManager.gameState().getMapView()[stateManager.gameState().getRow()][stateManager.gameState().getCol()];
+        RenderedTile renderedTile = gameState.tileAt(gameState.row(), gameState.col());
         if (renderedTile.baseTiles().contains(Tile.SWAMP) || renderedTile.baseTiles().contains(Tile.POISON_FIELD)) {
             applyPoison();
         }
@@ -576,7 +453,7 @@ public class Game {
     }
 
     private void applyCharacterDamage() {
-        for (Character character : charactersInParty()) {
+        for (Character character : gameState.charactersInParty()) {
             if (character.getStatus() == Status.POISONED) {
                 applyDamage(character, Effects.POISON_DAMAGE_PER_TURN);
             }
@@ -584,64 +461,36 @@ public class Game {
     }
 
     private void enterPortal() {
-        int row = stateManager.gameState().getRow();
-        int col = stateManager.gameState().getCol();
-        if (stateManager.gameState().getCurrentPartyLocation() == Location.SURFACE) {
-            Map map = maps.mapAt(row, col);
-            switchToMap(map);
-            stateManager.changeState(state -> state.withDungeonRowAndColFromRowAndCol().withRowAndCol(map.startRow(), map.startCol()), Event.DISPLAY_UPDATED);
+        int row = gameState.row();
+        int col = gameState.col();
+        if (gameState.location() == Location.SURFACE) {
+            gameState.enter();
         }
-        else if (stateManager.gameState().getCurrentPartyLocation() == Location.CASTLE_BRITANNIA) {
-            if (stateManager.gameState().getMapView()[row][col].baseTiles().contains(Tile.LADDER_DOWN)) {
-                descend();
+        else if (gameState.location() == Location.CASTLE_BRITANNIA) {
+            if (gameState.tileAt(row, col).baseTiles().contains(Tile.LADDER_DOWN)) {
+                gameState.descend();
             }
             else {
-                ascend();
+                gameState.ascend();
             }
         }
         else {
             // if not on the surface or in LB's castle, the only other places with portals are the dungeons
-            if (stateManager.gameState().getMapView()[row][col].baseTiles().contains(Tile.LADDER_DOWN)) {
-                ascend(); // in dungeons, we go down to higher numbered levels
+            if (gameState.tileAt(row, col).baseTiles().contains(Tile.LADDER_DOWN)) {
+                gameState.ascend(); // in dungeons, we go down to higher numbered levels
             }
             else {
-                descend(); // in dungeons, we go up to lower numbered levels;
+                gameState.descend(); // in dungeons, we go up to lower numbered levels;
             }
-        }
-    }
-
-    private void ascend() {
-        int nextLevel = map.level() + 1;
-        Map nextLevelMap = maps.map(map.location(), nextLevel);
-        switchToMap(nextLevelMap);
-        stateManager.changeState(state -> state.withDungeonLevel(nextLevel), Event.DISPLAY_UPDATED);
-    }
-
-    private void descend() {
-        int nextLevel = map.level() - 1;
-        if (nextLevel < 0) {
-            // special case: there's a ladder in LB's castle that leads down to Hythloth
-            if (stateManager.gameState().getCurrentPartyLocation() == Location.CASTLE_BRITANNIA && stateManager.gameState().getRow() == 2 && stateManager.gameState().getCol() == 7) {
-                switchToMap(maps.map(Location.HYTHLOTH, 0));
-                stateManager.changeState(state -> state.withRowAndCol(61, 61).withDungeonLevel(0), Event.DISPLAY_UPDATED);
-            }
-            else {
-                returnToSurface();
-            }
-        }
-        else {
-            Map nextLevelMap = maps.map(map.location(), nextLevel);
-            switchToMap(nextLevelMap);
-            stateManager.changeState(state -> state.withDungeonLevel(nextLevel), Event.DISPLAY_UPDATED);
         }
     }
 
     private RenderedTile[][] determinePlayerView(RenderedTile[][] view) {
         int size = view.length;
-        if (stateManager.gameState().getCurrentPartyLocation() == Location.SURFACE) {
+        if (gameState.location() == Location.SURFACE) {
             for (int row = 0; row < size; row++) {
                 for (int col = 0; col < size; col++) {
-                    if (!isInStandardView(row, col)) {    // || stateManager.gameState().isResurrecting()) {  TODO: reinstate this logic
+                    if (!isInStandardView(row, col) || gameState.isResurrecting()) {
                         if (!DevMode.isFullVisibilityEnabled()) {
                             view[row][col] = view[row][col].hidden();
                         }
@@ -698,11 +547,7 @@ public class Game {
     }
 
     private void afterPlayerMove() {
-        stateManager.changeState(state -> state.withCounterIncremented().withMovesIncremented(), Event.DISPLAY_UPDATED);
-        map.movePeople(new NpcMover(random, viewFinder, wayFinder), stateManager.gameState().getRow(), stateManager.gameState().getCol(), stateManager.gameState().getPersonConversingWith());
-        stateManager.gameState().getDoors().forEach(door -> door.turnCompleted(stateManager.gameState().getRow() == door.getRow() && stateManager.gameState().getCol() == door.getCol()));  // TODO: ?
-        updateMoonPhases();
-        updateWinds();
+        gameState.postTurnUpdates(random, viewFinder, wayFinder);
         applyTerrainEffects();
         applyCharacterDamage();
         attemptToAwakenSleepingCharacters();
@@ -713,7 +558,7 @@ public class Game {
     }
 
     private void attemptToAwakenSleepingCharacters() {
-        for (Character character : charactersInParty()) {
+        for (Character character : gameState.charactersInParty()) {
             if (character.getStatus() == Status.SLEEPING) {
                 if (random.nextInt(100) < Effects.SLEEP_PERCENTAGE) {
                     character.setStatus(Status.GOOD);
@@ -724,8 +569,8 @@ public class Game {
 
     private void checkForAndHandlePartyDeath() {
         if (isEntirePartyStatus(Status.DEAD)) {
-            //initiateResurrection();   TODO: ?
-            List<String> resurrectionMessages = this.messages.messageResurrection(stateManager.gameState().getPlayer0().getName());
+            gameState.initiateResurrection();
+            List<String> resurrectionMessages = this.messages.messageResurrection(gameState.playerName());
             for (int index = 0; index < resurrectionMessages.size(); index ++) {
                 boolean lastMessage = index == resurrectionMessages.size() - 1;
                 String message = resurrectionMessages.get(index);
@@ -734,7 +579,7 @@ public class Game {
                     public void run() {
                         informationListeners.forEach(displayListener -> displayListener.actionCompleted(message));
                         if (lastMessage) {
-                            completeResurrection();
+                            gameState.completeResurrection();
                             updateBackground();
                             updateCharacters();
                         }
@@ -742,16 +587,6 @@ public class Game {
                 }, 2000L * index);
             }
         }
-    }
-
-    private void completeResurrection() {
-        charactersInParty().forEach(character -> {
-            character.setHp(character.getMaxHp());
-            character.setStatus(Status.GOOD);
-        });
-        stateManager.changeState(state -> state.withCurrentPartyLocation(Location.CASTLE_BRITANNIA).withDungeonLevel(1).withRowAndCol(8, 19).withDungeonRowAndCol(map.worldRow(), map.worldCol()), Event.DISPLAY_UPDATED);
-        switchToMap(maps.map(Location.CASTLE_BRITANNIA, 1));
-        // TODO: remove some items from inventory
     }
 
     private void checkForAndHandlePartySleeping() {
@@ -767,7 +602,7 @@ public class Game {
     }
 
     private boolean isEntirePartyStatus(Status status) {
-        for (Character character : charactersInParty()) {
+        for (Character character : gameState.charactersInParty()) {
             if (character.getStatus() != status) {
                 return false;
             }
@@ -776,7 +611,7 @@ public class Game {
     }
 
     private boolean isEntirePartyIncapacitated() {
-        for (Character character : charactersInParty()) {
+        for (Character character : gameState.charactersInParty()) {
             if (character.getStatus() != Status.SLEEPING && character.getStatus() != Status.DEAD) {
                 return false;
             }
