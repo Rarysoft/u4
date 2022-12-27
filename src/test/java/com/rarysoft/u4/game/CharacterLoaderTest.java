@@ -23,8 +23,8 @@
  */
 package com.rarysoft.u4.game;
 
-import com.rarysoft.u4.game.party.*;
-import com.rarysoft.u4.game.party.Character;
+import com.rarysoft.u4.game.model.*;
+import com.rarysoft.u4.game.model.Character;
 import org.junit.Test;
 
 import java.io.IOException;

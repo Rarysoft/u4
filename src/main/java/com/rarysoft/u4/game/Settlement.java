@@ -3,7 +3,7 @@ package com.rarysoft.u4.game;
 import com.rarysoft.u4.game.npc.MovementBehaviour;
 import com.rarysoft.u4.game.npc.NonPlayerCharacter;
 import com.rarysoft.u4.game.npc.Person;
-import com.rarysoft.u4.game.party.Location;
+import com.rarysoft.u4.game.model.Location;
 
 import java.io.IOException;
 import java.io.InputStream;

@@ -21,15 +21,38 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.rarysoft.u4.game;
+package com.rarysoft.u4.game.model;
 
-public class Effects {
-    public static final int POISON_PERCENTAGE = 20;
-    public static final int POISON_DAMAGE_PER_TURN = 2;
-    public static final int SLEEP_PERCENTAGE = 20;
-    public static final int FIRE_DAMAGE_MINIMUM = 5;
-    public static final int FIRE_DAMAGE_MAXIMUM = 30;
-    public static final int TRAMMEL_CYCLE_LENGTH = 24;
-    public static final int FELUCCA_CYCLE_LENGTH = 8;
-    public static final int WIND_CHANGE_PERCENTAGE = 12;
+public enum Transportation {
+    SHIP_WEST,
+    SHIP_NORTH,
+    SHIP_EAST,
+    SHIP_SOUTH,
+    HORSE_WEST,
+    HORSE_EAST,
+    BALLOON,
+    ON_FOOT;
+
+    public static Transportation forCode(int code) {
+        switch (code) {
+            case 0x10:
+                return SHIP_WEST;
+            case 0x11:
+                return SHIP_NORTH;
+            case 0x12:
+                return SHIP_EAST;
+            case 0x13:
+                return SHIP_SOUTH;
+            case 0x14:
+                return HORSE_WEST;
+            case 0x15:
+                return HORSE_EAST;
+            case 0x18:
+                return BALLOON;
+            case 0x1F:
+                return ON_FOOT;
+            default:
+                throw new RuntimeException("Unknown transportation: " + code);
+        }
+    }
 }

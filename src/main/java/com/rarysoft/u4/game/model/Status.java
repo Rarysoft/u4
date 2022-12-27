@@ -21,15 +21,36 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.rarysoft.u4.game;
+package com.rarysoft.u4.game.model;
 
-public class Effects {
-    public static final int POISON_PERCENTAGE = 20;
-    public static final int POISON_DAMAGE_PER_TURN = 2;
-    public static final int SLEEP_PERCENTAGE = 20;
-    public static final int FIRE_DAMAGE_MINIMUM = 5;
-    public static final int FIRE_DAMAGE_MAXIMUM = 30;
-    public static final int TRAMMEL_CYCLE_LENGTH = 24;
-    public static final int FELUCCA_CYCLE_LENGTH = 8;
-    public static final int WIND_CHANGE_PERCENTAGE = 12;
+public enum Status {
+    GOOD("G"),
+    POISONED("P"),
+    SLEEPING("S"),
+    DEAD("D");
+
+    private final String displayName;
+
+    public static Status forCode(String code) {
+        switch (code) {
+            case "G":
+                return GOOD;
+            case "P":
+                return POISONED;
+            case "S":
+                return SLEEPING;
+            case "D":
+                return DEAD;
+            default:
+                throw new RuntimeException("Unknown status: " + code);
+        }
+    }
+
+    Status(String displayName) {
+        this.displayName = displayName;
+    }
+
+    public String displayName() {
+        return displayName;
+    }
 }

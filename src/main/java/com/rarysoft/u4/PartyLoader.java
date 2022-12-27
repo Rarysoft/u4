@@ -24,11 +24,11 @@
 package com.rarysoft.u4;
 
 import com.rarysoft.u4.game.CharacterLoader;
-import com.rarysoft.u4.game.party.BalloonStatus;
-import com.rarysoft.u4.game.party.Character;
-import com.rarysoft.u4.game.party.Location;
-import com.rarysoft.u4.game.party.Party;
-import com.rarysoft.u4.game.party.Transportation;
+import com.rarysoft.u4.game.model.BalloonStatus;
+import com.rarysoft.u4.game.model.Character;
+import com.rarysoft.u4.game.model.Location;
+import com.rarysoft.u4.game.state.SaveState;
+import com.rarysoft.u4.game.model.Transportation;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -42,7 +42,7 @@ public class PartyLoader {
         this.characterLoader = characterLoader;
     }
 
-    public Party load(InputStream inputStream) throws IOException {
+    public SaveState load(InputStream inputStream) throws IOException {
         int counter = fourBytesToInt(inputStream);
         int moves = fourBytesToInt(inputStream);
         Character character0 = characterLoader.load(inputStream);
@@ -155,7 +155,7 @@ public class PartyLoader {
         else {
             balloonStatus = BalloonStatus.forCode(balloonStatusOrTorchDuration);
         }
-        return new Party(
+        return new SaveState(
                 counter,
                 moves,
                 character0,

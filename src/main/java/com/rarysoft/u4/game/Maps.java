@@ -23,7 +23,7 @@
  */
 package com.rarysoft.u4.game;
 
-import com.rarysoft.u4.game.party.Location;
+import com.rarysoft.u4.game.model.Location;
 
 import java.io.File;
 import java.io.IOException;

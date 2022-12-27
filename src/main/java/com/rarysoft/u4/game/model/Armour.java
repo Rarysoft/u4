@@ -21,15 +21,48 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.rarysoft.u4.game;
+package com.rarysoft.u4.game.model;
 
-public class Effects {
-    public static final int POISON_PERCENTAGE = 20;
-    public static final int POISON_DAMAGE_PER_TURN = 2;
-    public static final int SLEEP_PERCENTAGE = 20;
-    public static final int FIRE_DAMAGE_MINIMUM = 5;
-    public static final int FIRE_DAMAGE_MAXIMUM = 30;
-    public static final int TRAMMEL_CYCLE_LENGTH = 24;
-    public static final int FELUCCA_CYCLE_LENGTH = 8;
-    public static final int WIND_CHANGE_PERCENTAGE = 12;
+public enum Armour {
+    SKIN("Skin"),
+    CLOTH("Cloth"),
+    LEATHER("Leather"),
+    CHAIN_MAIL("Chain Mail"),
+    PLATE_MAIL("Plate Mail"),
+    MAGIC_CHAIN("Magic Chain"),
+    MAGIC_PLATE("Magic Plate"),
+    MYSTIC_ROBE("Mystic Robe");
+
+    private final String displayName;
+
+    public static Armour forCode(int code) {
+        switch (code) {
+            case 0:
+                return SKIN;
+            case 1:
+                return CLOTH;
+            case 2:
+                return LEATHER;
+            case 3:
+                return CHAIN_MAIL;
+            case 4:
+                return PLATE_MAIL;
+            case 5:
+                return MAGIC_CHAIN;
+            case 6:
+                return MAGIC_PLATE;
+            case 7:
+                return MYSTIC_ROBE;
+            default:
+                throw new RuntimeException("Unknown armour: " + code);
+        }
+    }
+
+    Armour(String displayName) {
+        this.displayName = displayName;
+    }
+
+    public String displayName() {
+        return displayName;
+    }
 }

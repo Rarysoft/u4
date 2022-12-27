@@ -21,15 +21,48 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.rarysoft.u4.game;
+package com.rarysoft.u4.game.model;
 
-public class Effects {
-    public static final int POISON_PERCENTAGE = 20;
-    public static final int POISON_DAMAGE_PER_TURN = 2;
-    public static final int SLEEP_PERCENTAGE = 20;
-    public static final int FIRE_DAMAGE_MINIMUM = 5;
-    public static final int FIRE_DAMAGE_MAXIMUM = 30;
-    public static final int TRAMMEL_CYCLE_LENGTH = 24;
-    public static final int FELUCCA_CYCLE_LENGTH = 8;
-    public static final int WIND_CHANGE_PERCENTAGE = 12;
+public enum CharacterClass {
+    MAGE("Mage"),
+    BARD("Bard"),
+    FIGHTER("Fighter"),
+    DRUID("Druid"),
+    TINKER("Tinker"),
+    PALADIN("Paladin"),
+    RANGER("Ranger"),
+    SHEPHERD("Shepherd");
+
+    private final String displayName;
+
+    public static CharacterClass forCode(int code) {
+        switch (code) {
+            case 0:
+                return MAGE;
+            case 1:
+                return BARD;
+            case 2:
+                return FIGHTER;
+            case 3:
+                return DRUID;
+            case 4:
+                return TINKER;
+            case 5:
+                return PALADIN;
+            case 6:
+                return RANGER;
+            case 7:
+                return SHEPHERD;
+            default:
+                throw new RuntimeException("Unknown character class: " + code);
+        }
+    }
+
+    CharacterClass(String displayName) {
+        this.displayName = displayName;
+    }
+
+    public String displayName() {
+        return displayName;
+    }
 }

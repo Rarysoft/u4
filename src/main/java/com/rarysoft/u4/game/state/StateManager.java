@@ -21,15 +21,34 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.rarysoft.u4.game;
+package com.rarysoft.u4.game.state;
 
-public class Effects {
-    public static final int POISON_PERCENTAGE = 20;
-    public static final int POISON_DAMAGE_PER_TURN = 2;
-    public static final int SLEEP_PERCENTAGE = 20;
-    public static final int FIRE_DAMAGE_MINIMUM = 5;
-    public static final int FIRE_DAMAGE_MAXIMUM = 30;
-    public static final int TRAMMEL_CYCLE_LENGTH = 24;
-    public static final int FELUCCA_CYCLE_LENGTH = 8;
-    public static final int WIND_CHANGE_PERCENTAGE = 12;
+import com.rarysoft.u4.game.event.Event;
+import com.rarysoft.u4.game.event.EventManager;
+
+import java.util.Stack;
+import java.util.function.Function;
+
+public class StateManager {
+    private final EventManager eventManager;
+    private final Stack<GameState> gameStates;
+
+    public StateManager(EventManager eventManager, GameState gameState) {
+        this.eventManager = eventManager;
+        this.gameStates = new Stack<>();
+        this.gameStates.push(gameState);
+    }
+
+    public GameState gameState() {
+        return currentState();
+    }
+
+    public void changeState(Function<GameState, GameState> stateSetter, Event event) {
+        gameStates.push(stateSetter.apply(currentState()));
+        eventManager.publish(event, currentState());
+    }
+
+    private GameState currentState() {
+        return gameStates.peek();
+    }
 }

@@ -23,7 +23,7 @@
  */
 package com.rarysoft.u4.ui;
 
-import com.rarysoft.u4.game.Game;
+import com.rarysoft.u4.game.event.EventManager;
 import com.rarysoft.u4.ui.graphics.Charset;
 import com.rarysoft.u4.ui.graphics.ExtendedCharset;
 import com.rarysoft.u4.game.Tiles;
@@ -32,12 +32,11 @@ import javax.swing.*;
 import java.awt.*;
 
 public class UiBuilder {
-    public void buildGamePanel(JFrame gameWindow, Game game, Tiles tiles, Charset charset) {
+    public void buildGamePanel(JFrame gameWindow, EventManager eventManager, Tiles tiles, Charset charset) {
         GameViewRenderer gameViewRenderer = new GameViewRenderer(tiles, charset, new ExtendedCharset());
         GamePanel gamePanel = new GamePanel(gameViewRenderer);
         gameWindow.add(gamePanel, BorderLayout.CENTER);
-        game.addInformationListener(new CommunicationListener(gamePanel, gamePanel, gamePanel));
-        game.addViewListener(new GameListener(gamePanel));
+        eventManager.subscribe(gamePanel);
     }
 
     public JFrame buildGameWindow(String title) {

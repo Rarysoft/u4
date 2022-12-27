@@ -23,7 +23,11 @@
  */
 package com.rarysoft.u4;
 
+import com.rarysoft.u4.game.event.EventManager;
 import com.rarysoft.u4.game.physics.ViewFinder;
+import com.rarysoft.u4.game.state.GameState;
+import com.rarysoft.u4.game.state.SaveState;
+import com.rarysoft.u4.game.state.StateManager;
 import com.rarysoft.u4.game.u5.U5MapEnhancer;
 import com.rarysoft.u4.game.u5.U5SurfaceMapper;
 import com.rarysoft.u4.game.u5.U5TileMapper;
@@ -34,7 +38,6 @@ import com.rarysoft.u4.game.npc.Dialogs;
 import com.rarysoft.u4.ui.graphics.Charset;
 import com.rarysoft.u4.game.Tiles;
 import com.rarysoft.u4.game.physics.WayFinder;
-import com.rarysoft.u4.game.party.*;
 import com.rarysoft.u4.ui.*;
 import com.rarysoft.u4.ui.util.FrameHelper;
 
@@ -81,15 +84,17 @@ public class Launcher {
         Dialogs dialogs = initializeConversations("/data", messages);
         UiBuilder uiBuilder = new UiBuilder();
         JFrame gameWindow = uiBuilder.buildGameWindow(messages.windowTitle());
-        Game game = initializeGame(messages, gameWindow, dialogs);
-        Party party = initializeParty("/data/party.sav");
-        uiBuilder.buildGamePanel(gameWindow, game, tiles, charset);
+        EventManager eventManager = new EventManager();
+        SaveState saveState = initializeParty("/data/party.sav");
+        StateManager stateManager = new StateManager(eventManager, new GameState(saveState));
+        Game game = initializeGame(stateManager, messages, maps, mapEnhancer, gameWindow, dialogs);
+        uiBuilder.buildGamePanel(gameWindow, eventManager, tiles, charset);
         gameWindow.setIconImage(icon);
         FrameHelper.enableExitOnClose(gameWindow);
         FrameHelper.center(gameWindow);
         FrameHelper.maximize(gameWindow);
         FrameHelper.show(gameWindow);
-        game.start(new GameState(mapEnhancer, maps, party));
+        game.start();
     }
 
     private void initializeLogFile() {
@@ -172,13 +177,13 @@ public class Launcher {
         }
     }
 
-    private Game initializeGame(Messages messages, JFrame gameWindow, Dialogs dialogs) {
-        Game game = new Game(messages, dialogs, new Random(), new ViewFinder(), new WayFinder());
+    private Game initializeGame(StateManager stateManager, Messages messages, Maps maps, MapEnhancer mapEnhancer, JFrame gameWindow, Dialogs dialogs) {
+        Game game = new Game(stateManager, messages, maps, mapEnhancer, dialogs, new Random(), new ViewFinder(), new WayFinder());
         gameWindow.addKeyListener(new KeyboardListener(game));
         return game;
     }
 
-    private Party initializeParty(String filename) throws IOException {
+    private SaveState initializeParty(String filename) throws IOException {
         PartyLoader partyLoader = new PartyLoader(new CharacterLoader());
         return partyLoader.load(Launcher.class.getResourceAsStream(filename));
     }
